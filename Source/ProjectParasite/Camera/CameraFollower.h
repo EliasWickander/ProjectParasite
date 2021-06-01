@@ -3,30 +3,22 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PawnBase.h"
-#include "PawnParasite.generated.h"
+#include "GameFramework/Actor.h"
+#include "CameraFollower.generated.h"
 
 class UCameraComponent;
 class USpringArmComponent;
-class AParasitePlayerController;
-
-/**
- * 
- */
 UCLASS()
-class PROJECTPARASITE_API APawnParasite : public APawnBase
+class PROJECTPARASITE_API ACameraFollower : public AActor
 {
 	GENERATED_BODY()
-
-public:
-
-	APawnParasite();
-
+	
+public:	
+	// Sets default values for this actor's properties
+	ACameraFollower();
+	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -34,19 +26,12 @@ protected:
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	USceneComponent* root = nullptr;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* camera = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* springArm = nullptr;
-	
-	void CalculateMovementHorizontal(float axis);
-	void CalculateMovementVertical(float axis);
 
-	void RotateToMouseCursor();
-	void MoveInInputDirection();
-
-	AParasitePlayerController* playerControllerRef;
-	
-	float horizontalAxis = 0;
-	float verticalAxis = 0;
 };

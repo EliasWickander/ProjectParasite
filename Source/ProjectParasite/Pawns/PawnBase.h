@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "PawnBase.generated.h"
 
+class UCapsuleComponent;
 UCLASS()
 class PROJECTPARASITE_API APawnBase : public APawn
 {
@@ -16,11 +17,18 @@ public:
 	APawnBase();
 
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UCapsuleComponent* capsuleCollider = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UStaticMeshComponent* baseMesh = nullptr;
+	
 	void Move(FVector moveDir);
+	void Rotate(FVector targetPoint);
 
 private:
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
-	float moveSpeed = 100;
+	float moveSpeed = 300;
 
 };
