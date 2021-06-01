@@ -6,9 +6,9 @@
 #include "PawnBase.h"
 #include "PawnParasite.generated.h"
 
-class UCameraComponent;
-class USpringArmComponent;
-class AParasitePlayerController;
+
+class UParasiteDebugComponent;
+class APawnEnemy;
 
 /**
  * 
@@ -28,25 +28,18 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	float GetPossessRadius() { return possessRadius; }
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* camera = nullptr;
+	UParasiteDebugComponent* parasiteDebugger = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	USpringArmComponent* springArm = nullptr;
-	
-	void CalculateMovementHorizontal(float axis);
-	void CalculateMovementVertical(float axis);
+	void PossessClosestEnemyInRadius();
 
-	void RotateToMouseCursor();
-	void MoveInInputDirection();
-
-	AParasitePlayerController* playerControllerRef;
-	
-	float horizontalAxis = 0;
-	float verticalAxis = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Possession", meta = (AllowPrivateAccess = "true"))
+	float possessRadius = 100;
 };

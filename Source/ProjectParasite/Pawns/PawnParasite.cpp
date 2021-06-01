@@ -4,26 +4,19 @@
 #include "PawnParasite.h"
 
 #include "DrawDebugHelpers.h"
+#include "ProjectParasite/Pawns/PawnEnemy.h"
+#include "EngineUtils.h"
+#include "ProjectParasite/Components/Debug/ParasiteDebugComponent.h"
 #include "ProjectParasite/PlayerControllers/ParasitePlayerController.h"
-#include "GameFramework/SpringArmComponent.h"
-#include "Camera/CameraComponent.h"
-#include "Kismet/KismetMathLibrary.h"
 
 APawnParasite::APawnParasite()
 {
-	springArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
-	springArm->SetupAttachment(RootComponent);
-	
-	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-	camera->SetupAttachment(springArm);
+	parasiteDebugger = CreateDefaultSubobject<UParasiteDebugComponent>(TEXT("Debug Component"));
 }
 
 // Called when the game starts or when spawned
 void APawnParasite::BeginPlay()
 {
-	
-	playerControllerRef = Cast<AParasitePlayerController>(GetWorld()->GetFirstPlayerController());
-
 	if(playerControllerRef)
 	{
 		playerControllerRef->SetPlayerInputEnabled(true);
@@ -38,9 +31,6 @@ void APawnParasite::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	MoveInInputDirection();
-	RotateToMouseCursor();
-
 }
 
 // Called to bind functionality to input
@@ -48,41 +38,31 @@ void APawnParasite::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAxis("MoveHorizontal", this, &APawnParasite::CalculateMovementHorizontal);
-	PlayerInputComponent->BindAxis("MoveVertical", this, &APawnParasite::CalculateMovementVertical);
+	PlayerInputComponent->BindAction("Possess", EInputEvent::IE_Pressed, this, &APawnParasite::PossessClosestEnemyInRadius);
 
 }
 
-void APawnParasite::MoveInInputDirection()
+void APawnParasite::PossessClosestEnemyInRadius()
 {
-	FVector moveDir(verticalAxis, horizontalAxis, 0);
-	moveDir.Normalize();
-	
-	Move(moveDir);
-}
+	TArray<APawnEnemy*> enemiesInRadius;
 
-void APawnParasite::RotateToMouseCursor()
-{
-	//Do a ray-cast below cursor
-	FHitResult hitResult;
-
-	playerControllerRef->GetHitResultUnderCursor(ECollisionChannel::ECC_WorldStatic, true, hitResult);
-
-	AActor* actorHit = hitResult.GetActor();
-
-	//If there's a hit, rotate to hit location
-	if(actorHit)
+	//Find all enemies in world that are in radius of player
+ 	for (TActorIterator<APawnEnemy> enemy(GetWorld()); enemy; ++enemy)
 	{
-		Rotate(hitResult.Location);
+		APawnEnemy* enemyFound = *enemy;
+
+ 		if(FVector::Dist(enemy->GetActorLocation(), GetActorLocation()) <= possessRadius)
+ 			enemiesInRadius.Add(enemyFound);
 	}
-}
 
-void APawnParasite::CalculateMovementHorizontal(float axis)
-{
-	horizontalAxis = axis;
-}
+	//If there are enemies in radius, possess the first one
+	if(enemiesInRadius.Num() <= 0)
+		return;
 
-void APawnParasite::CalculateMovementVertical(float axis)
-{
-	verticalAxis = axis;
+	playerControllerRef->Possess(enemiesInRadius[0]);
+	
+	for(APawnEnemy* e : enemiesInRadius)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *e->GetName());
+	}
 }
