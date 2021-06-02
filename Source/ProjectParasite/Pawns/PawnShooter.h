@@ -6,6 +6,8 @@
 #include "PawnEnemy.h"
 #include "PawnShooter.generated.h"
 
+class StateMachine;
+
 /**
  * 
  */
@@ -24,5 +26,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+private:
+	StateMachine* stateMachine;
 
 };

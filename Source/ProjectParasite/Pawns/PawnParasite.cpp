@@ -17,6 +17,7 @@ APawnParasite::APawnParasite()
 // Called when the game starts or when spawned
 void APawnParasite::BeginPlay()
 {
+
 	if(playerControllerRef)
 	{
 		playerControllerRef->SetPlayerInputEnabled(true);
@@ -30,6 +31,8 @@ void APawnParasite::BeginPlay()
 void APawnParasite::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	
 
 }
 
