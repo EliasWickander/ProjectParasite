@@ -7,6 +7,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "ProjectParasite/PlayerControllers/ParasitePlayerController.h"
+#include "ProjectParasite/Components/ParasiteMovementComponent.h"
 
 // Sets default values
 APawnBase::APawnBase()

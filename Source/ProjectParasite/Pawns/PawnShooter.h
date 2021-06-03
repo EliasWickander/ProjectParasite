@@ -6,11 +6,10 @@
 #include "PawnEnemy.h"
 #include "PawnShooter.generated.h"
 
-class StateMachine;
-
 /**
  * 
  */
+
 UCLASS()
 class PROJECTPARASITE_API APawnShooter : public APawnEnemy
 {
@@ -26,8 +25,5 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-private:
-	StateMachine* stateMachine;
 
 };

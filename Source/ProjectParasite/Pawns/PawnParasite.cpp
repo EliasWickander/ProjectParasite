@@ -42,7 +42,6 @@ void APawnParasite::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("Possess", EInputEvent::IE_Pressed, this, &APawnParasite::PossessClosestEnemyInRadius);
-
 }
 
 void APawnParasite::PossessClosestEnemyInRadius()

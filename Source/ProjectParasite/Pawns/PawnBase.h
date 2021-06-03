@@ -10,6 +10,7 @@ class UCameraComponent;
 class USpringArmComponent;
 class UCapsuleComponent;
 class AParasitePlayerController;
+class UParasiteMovementComponent;
 UCLASS()
 class PROJECTPARASITE_API APawnBase : public APawn
 {
@@ -48,7 +49,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* springArm = nullptr;
-	
+    	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float moveSpeed = 300;
 	
