@@ -3,27 +3,27 @@
 
 #include "PawnParasite.h"
 
-#include "DrawDebugHelpers.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 #include "EngineUtils.h"
 #include "ProjectParasite/Components/Debug/ParasiteDebugComponent.h"
 #include "ProjectParasite/PlayerControllers/ParasitePlayerController.h"
+#include "ProjectParasite/Utilities/StateMachine/ParasiteStateMachine.h"
 
 APawnParasite::APawnParasite()
 {
 	parasiteDebugger = CreateDefaultSubobject<UParasiteDebugComponent>(TEXT("Debug Component"));
+	stateMachine = CreateDefaultSubobject<UParasiteStateMachine>(TEXT("State Machine"));
 }
 
 // Called when the game starts or when spawned
 void APawnParasite::BeginPlay()
 {
-
+	Super::BeginPlay();
+	
 	if(playerControllerRef)
 	{
 		playerControllerRef->SetPlayerInputEnabled(true);
 	}
-	
-	Super::BeginPlay();
 	
 }
 
@@ -31,17 +31,19 @@ void APawnParasite::BeginPlay()
 void APawnParasite::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	
-
 }
 
-// Called to bind functionality to input
 void APawnParasite::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("Possess", EInputEvent::IE_Pressed, this, &APawnParasite::PossessClosestEnemyInRadius);
+	PlayerInputComponent->BindAction("Dash", EInputEvent::IE_Pressed, this, &APawnParasite::Dash);
+}
+
+void APawnParasite::Dash()
+{
+	stateMachine->SetState("State_Dash");
 }
 
 void APawnParasite::PossessClosestEnemyInRadius()

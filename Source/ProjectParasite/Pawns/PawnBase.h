@@ -3,14 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "GameFramework/DefaultPawn.h"
 #include "GameFramework/Pawn.h"
+
 #include "PawnBase.generated.h"
 
 class UCameraComponent;
 class USpringArmComponent;
 class UCapsuleComponent;
+class UMovementComponent;
 class AParasitePlayerController;
-class UParasiteMovementComponent;
 UCLASS()
 class PROJECTPARASITE_API APawnBase : public APawn
 {
@@ -22,6 +25,9 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
+	//Casts a ray to mouse cursor in world. Returns true if hit found
+	bool RaycastToMouseCursor(FHitResult& hitResult);
+
 protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -31,7 +37,7 @@ protected:
 	UStaticMeshComponent* baseMesh = nullptr;
 
 	AParasitePlayerController* playerControllerRef;
-
+	
 	float horizontalAxis = 0;
 	float verticalAxis = 0;
 
@@ -49,14 +55,16 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* springArm = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UPawnMovementComponent* movementComponent = nullptr;
     	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float moveSpeed = 300;
 	
-	void CalculateMovementHorizontal(float axis);
-	void CalculateMovementVertical(float axis);
+	void MoveHorizontal(float axis);
+	void MoveVertical(float axis);
 
 	void RotateToMouseCursor();
-	void MoveInInputDirection();
 
 };

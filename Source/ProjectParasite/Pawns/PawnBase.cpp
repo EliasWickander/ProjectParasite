@@ -7,7 +7,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "ProjectParasite/PlayerControllers/ParasitePlayerController.h"
-#include "ProjectParasite/Components/ParasiteMovementComponent.h"
+#include "GameFramework/PawnMovementComponent.h"
+#include "GameFramework/FloatingPawnMovement.h"
 
 // Sets default values
 APawnBase::APawnBase()
@@ -17,7 +18,7 @@ APawnBase::APawnBase()
 
 	capsuleCollider = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule Collider"));
 	RootComponent = capsuleCollider;
-	
+
 	baseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Base Mesh"));
 	baseMesh->SetupAttachment(RootComponent);
 
@@ -26,6 +27,9 @@ APawnBase::APawnBase()
 	
 	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	camera->SetupAttachment(springArm);
+
+	movementComponent = CreateDefaultSubobject<UPawnMovementComponent, UFloatingPawnMovement>(ADefaultPawn::MovementComponentName);
+	movementComponent->UpdatedComponent = capsuleCollider;
 
 	springArm->bInheritPitch = false;
 	springArm->bInheritYaw = false;
@@ -42,7 +46,6 @@ void APawnBase::BeginPlay()
 void APawnBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	MoveInInputDirection();
 
 	if(IsPlayerControlled())
 		RotateToMouseCursor();
@@ -52,16 +55,18 @@ void APawnBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAxis("MoveHorizontal", this, &APawnBase::CalculateMovementHorizontal);
-	PlayerInputComponent->BindAxis("MoveVertical", this, &APawnBase::CalculateMovementVertical);	
+	PlayerInputComponent->BindAxis("MoveHorizontal", this, &APawnBase::MoveHorizontal);
+	PlayerInputComponent->BindAxis("MoveVertical", this, &APawnBase::MoveVertical);	
 }
 
-
-
-//Move actor in direction (world space)
-void APawnBase::Move(FVector moveDir)
+void APawnBase::MoveVertical(float axis)
 {
-	AddActorWorldOffset(moveDir * moveSpeed * GetWorld()->GetDeltaSeconds(), true);
+	AddMovementInput(FVector::ForwardVector * axis);
+}
+
+void APawnBase::MoveHorizontal(float axis)
+{
+	AddMovementInput(FVector::RightVector * axis);
 }
 
 //Rotate actor towards target point on the yaw only
@@ -77,50 +82,24 @@ void APawnBase::Rotate(FVector targetPoint)
 	SetActorRotation(targetRotation);
 }
 
-void APawnBase::CalculateMovementHorizontal(float axis)
-{	
-	if(IsPlayerControlled())
-	{
-		horizontalAxis = axis;	
-	}
-	else
-	{
-		horizontalAxis = 0;
-	}
-}
-
-void APawnBase::CalculateMovementVertical(float axis)
-{
-	if(IsPlayerControlled())
-	{
-		verticalAxis = axis;	
-	}
-	else
-	{
-		verticalAxis = 0;
-	}
-}
-
-void APawnBase::MoveInInputDirection()
-{
-	FVector moveDir(verticalAxis, horizontalAxis, 0);
-	moveDir.Normalize();
-	
-	Move(moveDir);
-}
-
 void APawnBase::RotateToMouseCursor()
 {
-	//Do a ray-cast below cursor
 	FHitResult hitResult;
+
+	//If the ray-cast to cursor hit something, rotate to hit location
+	if(RaycastToMouseCursor(hitResult))
+	{
+		Rotate(hitResult.Location);
+	}
+}
+
+bool APawnBase::RaycastToMouseCursor(FHitResult& hitResult)
+{
+	//Do a ray-cast below cursor
 
 	playerControllerRef->GetHitResultUnderCursor(ECollisionChannel::ECC_WorldStatic, true, hitResult);
 
 	AActor* actorHit = hitResult.GetActor();
 
-	//If there's a hit, rotate to hit location
-	if(actorHit)
-	{
-		Rotate(hitResult.Location);
-	}
+	return actorHit != nullptr;
 }

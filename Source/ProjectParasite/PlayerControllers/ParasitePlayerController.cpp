@@ -5,7 +5,7 @@
 
 AParasitePlayerController::AParasitePlayerController()
 {
-	
+	SetShowMouseCursor(true);
 }
 
 void AParasitePlayerController::SetPlayerInputEnabled(bool enabled)
@@ -18,6 +18,4 @@ void AParasitePlayerController::SetPlayerInputEnabled(bool enabled)
 	{
 		DisableInput(this);
 	}
-
-	SetShowMouseCursor(enabled);
 }
