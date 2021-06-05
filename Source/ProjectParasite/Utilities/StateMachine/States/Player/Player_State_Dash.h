@@ -3,21 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "State.h"
+#include "../State.h"
 
-#include "P_State_Dash.generated.h"
+#include "Player_State_Dash.generated.h"
 
 class APawnParasite;
 /**
  * 
  */
 UCLASS()
-class PROJECTPARASITE_API UP_State_Dash : public UState
+class PROJECTPARASITE_API UPlayer_State_Dash : public UState
 {
 	GENERATED_BODY()
 
 public:
-	UP_State_Dash();
+	UPlayer_State_Dash();
 	
 protected:
 	virtual void Start() override;
@@ -26,7 +26,7 @@ protected:
 
 private:
 
-	APawnParasite* controller;
+	APawnParasite* controller = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash", meta = (AllowPrivateAccess = "true"))
 	bool dashInRotationDir = true;

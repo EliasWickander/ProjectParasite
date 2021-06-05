@@ -7,6 +7,7 @@
 #include "PawnEnemy.generated.h"
 
 class APawnParasite;
+class UWeapon;
 
 /**
  * 
@@ -24,13 +25,14 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+
+	virtual void Attack();
 	
 protected:
-
-	APawnParasite* playerRef = nullptr;
-	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	APawnParasite* playerRef = nullptr;
 
 private:
 	void Unpossess();

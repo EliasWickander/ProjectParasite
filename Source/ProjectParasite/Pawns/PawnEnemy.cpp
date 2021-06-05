@@ -9,9 +9,9 @@
 
 #include "EngineUtils.h"
 
-
 APawnEnemy::APawnEnemy()
 {
+
 }
 
 void APawnEnemy::BeginPlay()
@@ -44,6 +44,7 @@ void APawnEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Possess", IE_Pressed, this, &APawnEnemy::Unpossess);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APawnEnemy::Attack);
 }
 
 
@@ -57,3 +58,7 @@ void APawnEnemy::Unpossess()
 	playerControllerRef->Possess(playerRef);	
 }
 
+void APawnEnemy::Attack()
+{
+	
+}

@@ -22,7 +22,6 @@ class PROJECTPARASITE_API APawnParasite : public APawnBase
 
 public:
 
-	friend class UP_State_Dash;
 	APawnParasite();
 
 	// Called every frame

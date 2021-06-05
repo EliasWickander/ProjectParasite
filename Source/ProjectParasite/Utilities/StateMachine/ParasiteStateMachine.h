@@ -6,8 +6,9 @@
 #include "StateMachine.h"
 #include "ParasiteStateMachine.generated.h"
 
-class UP_State_Idle;
-class UP_State_Dash;
+class UPlayer_State_Idle;
+class UPlayer_State_Dash;
+class UPlayer_State_Possess;
 
 UCLASS()
 class PROJECTPARASITE_API UParasiteStateMachine : public UStateMachine
@@ -15,12 +16,17 @@ class PROJECTPARASITE_API UParasiteStateMachine : public UStateMachine
 	GENERATED_BODY()
 
 public:
+	friend class APawnParasite;
+	
 	UParasiteStateMachine();
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "States", meta = (AllowPrivateAccess = "true"))
-	UP_State_Idle* idleState;
+	UPlayer_State_Idle* idleState;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "States", meta = (AllowPrivateAccess = "true"))
-	UP_State_Dash* dashState;
+	UPlayer_State_Dash* dashState;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "States", meta = (AllowPrivateAccess = "true"))
+	UPlayer_State_Possess* possessState;
 };

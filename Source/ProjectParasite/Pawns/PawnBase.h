@@ -28,6 +28,11 @@ public:
 	//Casts a ray to mouse cursor in world. Returns true if hit found
 	bool RaycastToMouseCursor(FHitResult& hitResult);
 
+	void SetCanMove(bool enabled) { canMove = enabled; }
+	bool GetCanMove() { return canMove; }
+
+	AParasitePlayerController* playerControllerRef = nullptr;
+
 protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -35,8 +40,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UStaticMeshComponent* baseMesh = nullptr;
-
-	AParasitePlayerController* playerControllerRef;
 	
 	float horizontalAxis = 0;
 	float verticalAxis = 0;
@@ -61,6 +64,8 @@ private:
     	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float moveSpeed = 300;
+
+	bool canMove = true;
 	
 	void MoveHorizontal(float axis);
 	void MoveVertical(float axis);

@@ -8,6 +8,7 @@
 #include "ProjectParasite/Components/Debug/ParasiteDebugComponent.h"
 #include "ProjectParasite/PlayerControllers/ParasitePlayerController.h"
 #include "ProjectParasite/Utilities/StateMachine/ParasiteStateMachine.h"
+#include "ProjectParasite/Utilities/StateMachine/States/Player/Player_State_Possess.h"
 
 APawnParasite::APawnParasite()
 {
@@ -63,10 +64,6 @@ void APawnParasite::PossessClosestEnemyInRadius()
 	if(enemiesInRadius.Num() <= 0)
 		return;
 
-	playerControllerRef->Possess(enemiesInRadius[0]);
-	
-	for(APawnEnemy* e : enemiesInRadius)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *e->GetName());
-	}
+	stateMachine->possessState->Init(enemiesInRadius[0]);
+	stateMachine->SetState("State_Possess");
 }

@@ -61,11 +61,17 @@ void APawnBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void APawnBase::MoveVertical(float axis)
 {
+	if(!canMove)
+		return;
+	
 	AddMovementInput(FVector::ForwardVector * axis);
 }
 
 void APawnBase::MoveHorizontal(float axis)
 {
+	if(!canMove)
+		return;
+	
 	AddMovementInput(FVector::RightVector * axis);
 }
 

@@ -3,19 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "State.h"
-#include "P_State_Idle.generated.h"
+#include "../State.h"
+#include "Player_State_Idle.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTPARASITE_API UP_State_Idle : public UState
+class PROJECTPARASITE_API UPlayer_State_Idle : public UState
 {
 	GENERATED_BODY()
 
 public:
-	UP_State_Idle();
+	UPlayer_State_Idle();
 	
 protected:
 	virtual void Start() override;
