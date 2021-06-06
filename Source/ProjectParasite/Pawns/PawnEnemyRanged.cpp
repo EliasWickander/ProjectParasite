@@ -23,7 +23,8 @@ void APawnEnemyRanged::Attack()
 		FVector spawnPos = weaponSocket->GetComponentLocation();
 		FRotator spawnRot = weaponSocket->GetComponentRotation();
 
-		GetWorld()->SpawnActor<AProjectile>(projectile, spawnPos, spawnRot);
+		AProjectile* spawnedProjectile = GetWorld()->SpawnActor<AProjectile>(projectile, spawnPos, spawnRot);
+		spawnedProjectile->SetOwner(this);
 	}
 	
 }

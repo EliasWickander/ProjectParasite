@@ -3,6 +3,8 @@
 
 #include "Projectile.h"
 #include "Components/CapsuleComponent.h"
+#include "ProjectParasite/Pawns/PawnBase.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -10,10 +12,14 @@ AProjectile::AProjectile()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root Component"));
-	
 	projectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Projectile Mesh"));
-	projectileMesh->SetupAttachment(RootComponent);
+	RootComponent = projectileMesh;
+}
+
+void AProjectile::BeginPlay()
+{
+	Super::BeginPlay();
+	projectileMesh->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
 }
 
 // Called every frame
@@ -21,7 +27,7 @@ void AProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	AddActorLocalOffset(FVector::ForwardVector * moveSpeed);
+	AddActorLocalOffset(FVector::ForwardVector * moveSpeed, true);
 	
 	if(timer < lifeTime)
 	{
@@ -30,6 +36,23 @@ void AProjectile::Tick(float DeltaTime)
 	else
 	{
 		Destroy();
+	}
+}
+
+void AProjectile::OnHit(UPrimitiveComponent* hitComp, AActor* otherActor, UPrimitiveComponent* otherComp,
+	FVector normalImpulse, const FHitResult& result)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Hit"));
+	if(otherActor != this && otherActor != GetOwner())
+	{
+		APawnBase* hitPawn = Cast<APawnBase>(otherActor);
+
+		if(hitPawn != nullptr)
+		{
+			UGameplayStatics::ApplyDamage(hitPawn, damage, hitPawn->Controller, this, damageType);
+		}
+
+		Destroy();	
 	}
 }
 

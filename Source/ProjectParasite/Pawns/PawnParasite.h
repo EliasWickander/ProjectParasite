@@ -47,6 +47,6 @@ private:
 	void PossessClosestEnemyInRadius();
 	void Dash();
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Possession", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats", meta = (AllowPrivateAccess = "true"))
 	float possessRadius = 100;
 };

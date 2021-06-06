@@ -22,12 +22,12 @@ public:
 	virtual void Attack() override;
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	UStaticMeshComponent* weaponMesh = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	USceneComponent* weaponSocket = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile Type")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
 	TSubclassOf<AProjectile> projectile = nullptr;
 };

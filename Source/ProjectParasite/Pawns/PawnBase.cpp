@@ -35,12 +35,15 @@ APawnBase::APawnBase()
 	springArm->bInheritYaw = false;
 	springArm->bInheritRoll = false;
 
+	OnTakeAnyDamage.AddDynamic(this, &APawnBase::TakeDamage);
 }
 
 void APawnBase::BeginPlay()
 {
 	Super::BeginPlay();
 	playerControllerRef = Cast<AParasitePlayerController>(GetWorld()->GetFirstPlayerController());
+
+	currentHealth = maxHealth;
 }
 
 void APawnBase::Tick(float DeltaSeconds)
@@ -108,4 +111,16 @@ bool APawnBase::RaycastToMouseCursor(FHitResult& hitResult)
 	AActor* actorHit = hitResult.GetActor();
 
 	return actorHit != nullptr;
+}
+
+void APawnBase::TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* i, AActor* DamageCauser)
+{
+	currentHealth -= Damage;
+
+	UE_LOG(LogTemp, Warning, TEXT("Took %f damage"), Damage);
+	if(currentHealth <= 0)
+	{
+		//Die
+		Destroy();
+	}
 }

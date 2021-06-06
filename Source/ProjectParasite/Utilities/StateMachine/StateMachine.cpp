@@ -40,6 +40,7 @@ void UStateMachine::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 		}
 
 		currentState = nextState;
+		currentStateID = nextStateID;
 
 		currentState->OnStateTransition.AddDynamic(this, &UStateMachine::SetState);
 		currentState->Start();
@@ -56,7 +57,10 @@ void UStateMachine::SetState(FString stateName)
 	}
 
 	if(currentState != states[stateName])
+	{
 		nextState = states[stateName];
+		nextStateID = stateName;
+	}
 }
 
 void UStateMachine::AddState(FString stateName, UState* state)

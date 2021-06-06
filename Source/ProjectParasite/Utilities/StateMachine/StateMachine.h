@@ -25,7 +25,10 @@ public:
 	void AddState(FString stateName, UState* state);
 
 	UState* currentState = nullptr;
+	FString currentStateID = "";
+	
 	UState* nextState = nullptr;
+	FString nextStateID = "";
 
 protected:
 	// Called when the game starts

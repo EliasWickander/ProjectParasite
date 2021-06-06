@@ -49,6 +49,9 @@ void APawnParasite::Dash()
 
 void APawnParasite::PossessClosestEnemyInRadius()
 {
+	if(stateMachine->currentStateID != TEXT("State_Dash"))
+		return;
+	
 	TArray<APawnEnemy*> enemiesInRadius;
 
 	//Find all enemies in world that are in radius of player

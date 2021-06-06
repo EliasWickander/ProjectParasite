@@ -28,6 +28,8 @@ public:
 	//Casts a ray to mouse cursor in world. Returns true if hit found
 	bool RaycastToMouseCursor(FHitResult& hitResult);
 
+	UFUNCTION()
+	void TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* i, AActor* DamageCauser);
 	void SetCanMove(bool enabled) { canMove = enabled; }
 	bool GetCanMove() { return canMove; }
 
@@ -61,11 +63,15 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UPawnMovementComponent* movementComponent = nullptr;
-    	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = "true"))
+	float maxHealth = 100;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = "true"))
 	float moveSpeed = 300;
 
 	bool canMove = true;
+	float currentHealth;
 	
 	void MoveHorizontal(float axis);
 	void MoveVertical(float axis);

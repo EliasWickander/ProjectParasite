@@ -24,6 +24,8 @@ void UPlayer_State_Possess::Start()
 
 void UPlayer_State_Possess::Update()
 {
+	if(controller->IsPlayerControlled())
+		OnStateTransition.Broadcast("State_Idle");
 }
 
 void UPlayer_State_Possess::Exit()
