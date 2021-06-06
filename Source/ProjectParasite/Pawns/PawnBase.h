@@ -35,6 +35,9 @@ public:
 
 	AParasitePlayerController* playerControllerRef = nullptr;
 
+	void RotateToMouseCursor();
+	
+	UCapsuleComponent* GetCollider() { return capsuleCollider; }
 protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -52,6 +55,7 @@ protected:
 	
 	void Move(FVector moveDir);
 	void Rotate(FVector targetPoint);
+	void Rotate(FVector targetPoint, float speed);
 
 private:
 
@@ -75,7 +79,5 @@ private:
 	
 	void MoveHorizontal(float axis);
 	void MoveVertical(float axis);
-
-	void RotateToMouseCursor();
 
 };

@@ -6,12 +6,13 @@
 #include "ProjectParasite/PlayerControllers/ParasitePlayerController.h"
 
 #include "ProjectParasite/Pawns/PawnParasite.h"
-
+#include "AIController.h"
 #include "EngineUtils.h"
 
 APawnEnemy::APawnEnemy()
 {
-
+	napeComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Nape"));
+	napeComponent->SetupAttachment(baseMesh);
 }
 
 void APawnEnemy::BeginPlay()
@@ -38,6 +39,9 @@ void APawnEnemy::BeginPlay()
 	}
 
 	playerRef = playersInWorld[0];
+
+	AIController = Cast<AAIController>(GetController());
+	AIController->SetFocus(playerRef);
 }
 
 void APawnEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -51,11 +55,29 @@ void APawnEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 void APawnEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if(IsPlayerControlled())
+		RotateToMouseCursor();
+
 }
 
 void APawnEnemy::Unpossess()
-{	
-	playerControllerRef->Possess(playerRef);	
+{
+	playerControllerRef->Possess(playerRef);
+	SetPossessed(false);
+}
+
+void APawnEnemy::SetPossessed(bool isPossessed)
+{
+	if(isPossessed)
+	{
+		AIController->ClearFocus(EAIFocusPriority::Gameplay);
+	}
+	else
+	{
+		AIController->SetFocus(playerRef);
+		AIController->Possess(this);	
+	}
 }
 
 void APawnEnemy::Attack()

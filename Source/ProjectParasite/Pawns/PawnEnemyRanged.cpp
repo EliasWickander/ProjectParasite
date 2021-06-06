@@ -14,17 +14,26 @@ APawnEnemyRanged::APawnEnemyRanged()
 	weaponSocket->SetupAttachment(weaponMesh);
 }
 
+void APawnEnemyRanged::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	attackTimer = FMath::Clamp<float>(attackTimer - DeltaSeconds, 0, fireRate);
+}
+
 void APawnEnemyRanged::Attack()
 {
 	Super::Attack();
 
-	if(projectile)
+	if(projectile && attackTimer == 0)
 	{
 		FVector spawnPos = weaponSocket->GetComponentLocation();
 		FRotator spawnRot = weaponSocket->GetComponentRotation();
 
 		AProjectile* spawnedProjectile = GetWorld()->SpawnActor<AProjectile>(projectile, spawnPos, spawnRot);
 		spawnedProjectile->SetOwner(this);
+
+		attackTimer = fireRate;
 	}
 	
 }

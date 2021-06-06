@@ -6,6 +6,7 @@
 #include "../State.h"
 #include "Player_State_Idle.generated.h"
 
+class APawnParasite;
 /**
  * 
  */
@@ -21,4 +22,7 @@ protected:
 	virtual void Start() override;
 	virtual void Update() override;
 	virtual void Exit() override;
+
+private:
+	APawnParasite* controller = nullptr;
 };

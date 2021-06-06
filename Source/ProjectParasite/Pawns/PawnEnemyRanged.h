@@ -21,6 +21,8 @@ public:
 
 	virtual void Attack() override;
 
+	virtual void Tick(float DeltaSeconds) override;
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	UStaticMeshComponent* weaponMesh = nullptr;
@@ -30,4 +32,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
 	TSubclassOf<AProjectile> projectile = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	float fireRate = 2;
+
+	float attackTimer = 0;
 };

@@ -2,6 +2,8 @@
 
 
 #include "Player_State_Possess.h"
+
+#include "Components/CapsuleComponent.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
 #include "ProjectParasite/PlayerControllers/ParasitePlayerController.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
@@ -19,15 +21,59 @@ void UPlayer_State_Possess::Init(APawnEnemy* enemyToPossess)
 void UPlayer_State_Possess::Start()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Start Possess"));
-	controller->playerControllerRef->Possess(possessedEnemy);
+
+	currentState = PossessState::PrePossess;
+	
+	controller->GetCollider()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+
+	controller->SetCanMove(false);
+	possessedEnemy->SetPossessed(true);
 }
 
 void UPlayer_State_Possess::Update()
 {
-	if(controller->IsPlayerControlled())
-		OnStateTransition.Broadcast("State_Idle");
+	FVector napeLocation = possessedEnemy->GetNapeLocation();
+	if(currentState == PossessState::PrePossess)
+	{
+
+		if(FVector::Dist(controller->GetActorLocation(), napeLocation) > 1)
+		{
+			//TODO: Use linear interpolation instead of exponential
+			FVector lerpedPos = FMath::Lerp(controller->GetActorLocation(), napeLocation, attachLocationLerpSpeed * GetWorld()->DeltaTimeSeconds);
+
+			FRotator lerpedRot = FMath::Lerp(controller->GetActorRotation(), possessedEnemy->GetActorForwardVector().Rotation(), attachRotationLerpSpeed * GetWorld()->DeltaTimeSeconds);
+			
+			controller->SetActorLocation(lerpedPos);
+			controller->SetActorRotation(lerpedRot);
+		}
+		else
+		{
+			controller->playerControllerRef->Possess(possessedEnemy);
+			currentState = PossessState::Possess;
+		}
+	}
+	else if(currentState == PossessState::Possess)
+	{
+		controller->SetActorLocation(napeLocation);
+
+		controller->SetActorRotation(possessedEnemy->GetActorForwardVector().Rotation());
+		
+		if(controller->IsPlayerControlled())
+		{
+			currentState = PossessState::PostPossess;
+		}	
+	}
+	else if(currentState == PossessState::PostPossess)
+	{
+		OnStateTransition.Broadcast("State_Idle");	
+	}
 }
 
 void UPlayer_State_Possess::Exit()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Exit Possess"));
+	controller->SetActorLocation(possessedEnemy->GetActorLocation() + -possessedEnemy->GetActorForwardVector() * 200);
+
+	controller->GetCollider()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+	controller->SetCanMove(true);
 }

@@ -49,9 +49,6 @@ void APawnBase::BeginPlay()
 void APawnBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
-	if(IsPlayerControlled())
-		RotateToMouseCursor();
 }
 
 void APawnBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -89,6 +86,20 @@ void APawnBase::Rotate(FVector targetPoint)
 	FRotator targetRotation = rotationDir.Rotation();
 
 	SetActorRotation(targetRotation);
+}
+
+void APawnBase::Rotate(FVector targetPoint, float speed)
+{
+	targetPoint.Z = GetActorLocation().Z;
+	
+	FVector rotationDir = targetPoint - GetActorLocation();
+	rotationDir.Normalize();
+
+	FRotator targetRotation = rotationDir.Rotation();
+
+	FRotator lerpedRotation = FMath::Lerp(GetActorRotation(), targetRotation, speed * GetWorld()->DeltaTimeSeconds);
+
+	SetActorRotation(lerpedRotation);
 }
 
 void APawnBase::RotateToMouseCursor()

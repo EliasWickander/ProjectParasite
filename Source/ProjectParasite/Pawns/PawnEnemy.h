@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "PawnBase.h"
 #include "PawnEnemy.generated.h"
 
+class AAIController;
 class APawnParasite;
 class UWeapon;
 
@@ -27,6 +29,9 @@ public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	virtual void Attack();
+
+	virtual void SetPossessed(bool isPossessed);
+	FVector GetNapeLocation() { return napeComponent->GetComponentLocation(); }
 	
 protected:
 	// Called when the game starts or when spawned
@@ -34,6 +39,12 @@ protected:
 
 	APawnParasite* playerRef = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USceneComponent* napeComponent = nullptr;
+
 private:
 	void Unpossess();
+
+	AAIController* AIController = nullptr;
+	
 };

@@ -6,6 +6,8 @@
 #include "AIController.h"
 #include "ShooterAIController.generated.h"
 
+class APawnParasite;
+
 /**
  * 
  */
@@ -16,4 +18,7 @@ class PROJECTPARASITE_API AShooterAIController : public AAIController
 
 protected:
 	virtual void BeginPlay() override;
+
+private:
+	APawnParasite* playerRef = nullptr;
 };

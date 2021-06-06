@@ -42,8 +42,7 @@ void AProjectile::Tick(float DeltaTime)
 void AProjectile::OnHit(UPrimitiveComponent* hitComp, AActor* otherActor, UPrimitiveComponent* otherComp,
 	FVector normalImpulse, const FHitResult& result)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Hit"));
-	if(otherActor != this && otherActor != GetOwner())
+	if(otherActor != this && otherActor != GetOwner() && Cast<AProjectile>(otherActor) == nullptr)
 	{
 		APawnBase* hitPawn = Cast<APawnBase>(otherActor);
 
