@@ -13,7 +13,6 @@ void UPlayer_State_Dash::Start()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Start Dash"));
 
-	UE_LOG(LogTemp, Warning, TEXT("%f"), controller->GetMoveSpeed());
 	UE_LOG(LogTemp, Warning, TEXT("%f"), dashTime);
 	
 	timer = 0;
@@ -22,31 +21,34 @@ void UPlayer_State_Dash::Start()
 	dashDir.Normalize();
 
 	prevMoveSpeed = controller->GetMoveSpeed();
-	
-	controller->SetMoveSpeed(dashSpeed);
 
 	//Prevent player from moving during dash
 	controller->SetCanMove(false);
+	controller->SetMoveSpeed(dashSpeed);
 }
 
 void UPlayer_State_Dash::Update()
 {
+	
 	if(timer < dashTime)
 	{
 		timer += GetWorld()->DeltaTimeSeconds;
 		
 		controller->AddMovementInput(dashDir);	
-		
+
+		//if there are enemies close enough, possess
 		controller->PossessClosestEnemyInRadius();
 	}
 	else
 	{
+		//When been in this state for more than certain amount of time, transition back to idle
 		OnStateTransition.Broadcast("State_Idle");
 	}
 }
 
 void UPlayer_State_Dash::Exit()
 {
+	//Reset move speed to what it was before dash
 	controller->SetMoveSpeed(prevMoveSpeed);
 	controller->SetCanMove(true);
 }

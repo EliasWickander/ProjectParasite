@@ -58,7 +58,17 @@ void APawnParasite::PossessClosestEnemyInRadius()
 	if(enemiesInRadius.Num() <= 0)
 		return;
 
-	//Pass reference to possessed enemy to state
-	stateMachine->possessState->Init(enemiesInRadius[0]);
+	//Save reference to enemy player is possessing
+	possessedEnemy = enemiesInRadius[0];
 	stateMachine->SetState("State_Possess");
+}
+
+APawnEnemy* APawnParasite::GetPossessedEnemy()
+{
+	return possessedEnemy;
+}
+
+float APawnParasite::GetPossessRadius()
+{
+	return possessRadius;
 }

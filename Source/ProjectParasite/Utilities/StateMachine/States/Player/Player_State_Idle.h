@@ -7,9 +7,6 @@
 #include "Player_State_Idle.generated.h"
 
 class APawnParasite;
-/**
- * 
- */
 UCLASS()
 class PROJECTPARASITE_API UPlayer_State_Idle : public UState
 {

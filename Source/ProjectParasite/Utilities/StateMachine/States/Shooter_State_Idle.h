@@ -6,9 +6,6 @@
 #include "State.h"
 #include "Shooter_State_Idle.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class PROJECTPARASITE_API UShooter_State_Idle : public UState
 {

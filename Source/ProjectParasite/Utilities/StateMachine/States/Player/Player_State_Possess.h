@@ -9,9 +9,6 @@
 class APawnEnemy;
 class APawnParasite;
 
-/**
- * 
- */
 UCLASS()
 class PROJECTPARASITE_API UPlayer_State_Possess : public UState
 {
@@ -19,7 +16,6 @@ class PROJECTPARASITE_API UPlayer_State_Possess : public UState
 
 public:
 	UPlayer_State_Possess();
-	void Init(APawnEnemy* enemyToPossess);
 
 	enum PossessState
 	{
@@ -38,13 +34,15 @@ protected:
 
 private:
 
-	APawnParasite* controller = nullptr;
+	void HandlePossessionLoop();
+	void MoveToEnemyNape();
 	
-	APawnEnemy* possessedEnemy = nullptr;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Variables", meta = (AllowPrivateAccess = "true"))
 	float attachLocationLerpSpeed = 10;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Variables", meta = (AllowPrivateAccess = "true"))
 	float attachRotationLerpSpeed = 50;
+
+	APawnParasite* controller = nullptr;
+	APawnEnemy* possessedEnemy = nullptr;
 };

@@ -9,7 +9,7 @@
 
 class UParasiteDebugComponent;
 class UParasiteStateMachine;
-
+class APawnEnemy;
 UCLASS()
 class PROJECTPARASITE_API APawnParasite : public APawnBase
 {
@@ -24,7 +24,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void PossessClosestEnemyInRadius();
-	float GetPossessRadius() { return possessRadius; }
+
+	APawnEnemy* GetPossessedEnemy();
+	float GetPossessRadius();
 
 protected:
 	virtual void BeginPlay() override;
@@ -40,4 +42,6 @@ private:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats", meta = (AllowPrivateAccess = "true"))
 	float possessRadius = 100;
+
+	APawnEnemy* possessedEnemy = nullptr;
 };
