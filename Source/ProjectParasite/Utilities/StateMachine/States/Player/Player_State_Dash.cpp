@@ -13,19 +13,19 @@ void UPlayer_State_Dash::Start()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Start Dash"));
 
+	UE_LOG(LogTemp, Warning, TEXT("%f"), controller->GetMoveSpeed());
+	UE_LOG(LogTemp, Warning, TEXT("%f"), dashTime);
+	
 	timer = 0;
 	
-	if(dashInRotationDir)
-	{
-		dashDir = controller->GetActorForwardVector();
-	}
-	else
-	{
-		//Dash in direction of input
-	}
-
+	dashDir = controller->GetActorForwardVector();
 	dashDir.Normalize();
 
+	prevMoveSpeed = controller->GetMoveSpeed();
+	
+	controller->SetMoveSpeed(dashSpeed);
+
+	//Prevent player from moving during dash
 	controller->SetCanMove(false);
 }
 
@@ -36,6 +36,8 @@ void UPlayer_State_Dash::Update()
 		timer += GetWorld()->DeltaTimeSeconds;
 		
 		controller->AddMovementInput(dashDir);	
+		
+		controller->PossessClosestEnemyInRadius();
 	}
 	else
 	{
@@ -45,5 +47,6 @@ void UPlayer_State_Dash::Update()
 
 void UPlayer_State_Dash::Exit()
 {
+	controller->SetMoveSpeed(prevMoveSpeed);
 	controller->SetCanMove(true);
 }

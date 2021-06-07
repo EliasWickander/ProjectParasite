@@ -4,20 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "ParasitePlayerController.generated.h"
+#include "PlayerControllerParasite.generated.h"
 
-/**
- * 
- */
 UCLASS()
-class PROJECTPARASITE_API AParasitePlayerController : public APlayerController
+class PROJECTPARASITE_API APlayerControllerParasite : public APlayerController
 {
 	GENERATED_BODY()
 
 public:
-	AParasitePlayerController();
-
 	void SetPlayerInputEnabled(bool enabled);
 	
-private:
+protected:
+	virtual void BeginPlay() override;
 };

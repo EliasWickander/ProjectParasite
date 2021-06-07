@@ -5,7 +5,7 @@
 
 #include "Components/CapsuleComponent.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
-#include "ProjectParasite/PlayerControllers/ParasitePlayerController.h"
+#include "ProjectParasite/PlayerControllers/PlayerControllerParasite.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 
 UPlayer_State_Possess::UPlayer_State_Possess()
@@ -57,6 +57,8 @@ void UPlayer_State_Possess::Update()
 		controller->SetActorLocation(napeLocation);
 
 		controller->SetActorRotation(possessedEnemy->GetActorForwardVector().Rotation());
+
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *possessedEnemy->GetActorForwardVector().Rotation().ToString());
 		
 		if(controller->IsPlayerControlled())
 		{

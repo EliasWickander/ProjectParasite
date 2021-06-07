@@ -8,9 +8,6 @@
 
 class APawnParasite;
 
-/**
- * 
- */
 UCLASS()
 class PROJECTPARASITE_API AShooterAIController : public AAIController
 {

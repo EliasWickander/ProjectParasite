@@ -20,6 +20,8 @@ public:
 	
 	UParasiteStateMachine();
 
+protected:
+	virtual void BeginPlay() override;
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "States", meta = (AllowPrivateAccess = "true"))
 	UPlayer_State_Idle* idleState;

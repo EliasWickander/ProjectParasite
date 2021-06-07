@@ -6,7 +6,7 @@
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 #include "EngineUtils.h"
 #include "ProjectParasite/Components/Debug/ParasiteDebugComponent.h"
-#include "ProjectParasite/PlayerControllers/ParasitePlayerController.h"
+#include "ProjectParasite/PlayerControllers/PlayerControllerParasite.h"
 #include "ProjectParasite/Utilities/StateMachine/ParasiteStateMachine.h"
 #include "ProjectParasite/Utilities/StateMachine/States/Player/Player_State_Possess.h"
 
@@ -16,29 +16,23 @@ APawnParasite::APawnParasite()
 	stateMachine = CreateDefaultSubobject<UParasiteStateMachine>(TEXT("State Machine"));
 }
 
-// Called when the game starts or when spawned
 void APawnParasite::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	if(playerControllerRef)
-	{
-		playerControllerRef->SetPlayerInputEnabled(true);
-	}
-	
 }
 
-// Called every frame
 void APawnParasite::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	stateMachine->Update();
 }
 
 void APawnParasite::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction("Possess", EInputEvent::IE_Pressed, this, &APawnParasite::PossessClosestEnemyInRadius);
+	//PlayerInputComponent->BindAction("Possess", EInputEvent::IE_Pressed, this, &APawnParasite::PossessClosestEnemyInRadius);
 	PlayerInputComponent->BindAction("Dash", EInputEvent::IE_Pressed, this, &APawnParasite::Dash);
 }
 
@@ -49,9 +43,6 @@ void APawnParasite::Dash()
 
 void APawnParasite::PossessClosestEnemyInRadius()
 {
-	if(stateMachine->currentStateID != TEXT("State_Dash"))
-		return;
-	
 	TArray<APawnEnemy*> enemiesInRadius;
 
 	//Find all enemies in world that are in radius of player
@@ -67,6 +58,7 @@ void APawnParasite::PossessClosestEnemyInRadius()
 	if(enemiesInRadius.Num() <= 0)
 		return;
 
+	//Pass reference to possessed enemy to state
 	stateMachine->possessState->Init(enemiesInRadius[0]);
 	stateMachine->SetState("State_Possess");
 }

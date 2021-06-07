@@ -6,10 +6,8 @@
 #include "ProjectParasite/Pawns/PawnBase.h"
 #include "Kismet/GameplayStatics.h"
 
-// Sets default values
 AProjectile::AProjectile()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	projectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Projectile Mesh"));
@@ -22,13 +20,14 @@ void AProjectile::BeginPlay()
 	projectileMesh->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
 }
 
-// Called every frame
 void AProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//Move projectile forward
 	AddActorLocalOffset(FVector::ForwardVector * moveSpeed, true);
-	
+
+	//Destroy projectile after life time
 	if(timer < lifeTime)
 	{
 		timer += DeltaTime;
@@ -42,15 +41,18 @@ void AProjectile::Tick(float DeltaTime)
 void AProjectile::OnHit(UPrimitiveComponent* hitComp, AActor* otherActor, UPrimitiveComponent* otherComp,
 	FVector normalImpulse, const FHitResult& result)
 {
+	//Consider bullet hit if hit actor isn't itself, the owning actor (the shooter), or another bullet
 	if(otherActor != this && otherActor != GetOwner() && Cast<AProjectile>(otherActor) == nullptr)
 	{
 		APawnBase* hitPawn = Cast<APawnBase>(otherActor);
 
+		//Apply damage if hit actor is a pawn
 		if(hitPawn != nullptr)
 		{
 			UGameplayStatics::ApplyDamage(hitPawn, damage, hitPawn->Controller, this, damageType);
 		}
 
+		//Destroy bullet on hit
 		Destroy();	
 	}
 }

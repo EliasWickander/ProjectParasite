@@ -8,13 +8,8 @@
 
 
 class UParasiteDebugComponent;
-class APawnEnemy;
-class UStateMachine;
 class UParasiteStateMachine;
 
-/**
- * 
- */
 UCLASS()
 class PROJECTPARASITE_API APawnParasite : public APawnBase
 {
@@ -24,28 +19,24 @@ public:
 
 	APawnParasite();
 
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void PossessClosestEnemyInRadius();
 	float GetPossessRadius() { return possessRadius; }
 
 protected:
-
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 private:
+	void Dash();
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UParasiteDebugComponent* parasiteDebugger = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UParasiteStateMachine* stateMachine = nullptr;
-
-	void PossessClosestEnemyInRadius();
-	void Dash();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats", meta = (AllowPrivateAccess = "true"))
 	float possessRadius = 100;

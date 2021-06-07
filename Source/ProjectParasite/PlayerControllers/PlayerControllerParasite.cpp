@@ -1,14 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ParasitePlayerController.h"
+#include "PlayerControllerParasite.h"
 
-AParasitePlayerController::AParasitePlayerController()
+void APlayerControllerParasite::BeginPlay()
 {
 	SetShowMouseCursor(true);
+	EnableInput(this);
 }
 
-void AParasitePlayerController::SetPlayerInputEnabled(bool enabled)
+void APlayerControllerParasite::SetPlayerInputEnabled(bool enabled)
 {
 	if(enabled)
 	{

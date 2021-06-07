@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 
-#include "GameFramework/DefaultPawn.h"
 #include "GameFramework/Pawn.h"
 
 #include "PawnBase.generated.h"
@@ -13,32 +12,38 @@ class UCameraComponent;
 class USpringArmComponent;
 class UCapsuleComponent;
 class UMovementComponent;
-class AParasitePlayerController;
+class UFloatingPawnMovement;
+class APlayerControllerParasite;
 UCLASS()
 class PROJECTPARASITE_API APawnBase : public APawn
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this pawn's properties
 	APawnBase();
-
-	virtual void Tick(float DeltaSeconds) override;
 
 	//Casts a ray to mouse cursor in world. Returns true if hit found
 	bool RaycastToMouseCursor(FHitResult& hitResult);
-
-	UFUNCTION()
-	void TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* i, AActor* DamageCauser);
-	void SetCanMove(bool enabled) { canMove = enabled; }
-	bool GetCanMove() { return canMove; }
-
-	AParasitePlayerController* playerControllerRef = nullptr;
-
 	void RotateToMouseCursor();
 	
+	UFUNCTION()
+	void TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* i, AActor* DamageCauser);
+
+	void SetMoveSpeed(float speed);
+	float GetMoveSpeed();
+	
+	void SetCanMove(bool enabled);
+	bool GetCanMove();
+	
 	UCapsuleComponent* GetCollider() { return capsuleCollider; }
+	
+	APlayerControllerParasite* playerControllerRef = nullptr;
 protected:
+	virtual void BeginPlay() override;
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+
+	void Move(FVector moveDir);
+	void Rotate(FVector targetPoint);
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UCapsuleComponent* capsuleCollider = nullptr;
@@ -49,16 +54,10 @@ protected:
 	float horizontalAxis = 0;
 	float verticalAxis = 0;
 
-	virtual void BeginPlay() override;
-
-	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-	
-	void Move(FVector moveDir);
-	void Rotate(FVector targetPoint);
-	void Rotate(FVector targetPoint, float speed);
-
 private:
-
+	void MoveHorizontal(float axis);
+	void MoveVertical(float axis);
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* camera = nullptr;
 
@@ -74,10 +73,8 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = "true"))
 	float moveSpeed = 300;
 
-	bool canMove = true;
 	float currentHealth;
-	
-	void MoveHorizontal(float axis);
-	void MoveVertical(float axis);
+	bool canMove = true;
 
+	UFloatingPawnMovement* floatingPawnMovement = nullptr;
 };

@@ -6,9 +6,6 @@
 #include "GameFramework/GameModeBase.h"
 #include "CustomGameMode.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class PROJECTPARASITE_API ACustomGameMode : public AGameModeBase
 {

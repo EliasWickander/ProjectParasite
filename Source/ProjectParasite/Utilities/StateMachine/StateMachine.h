@@ -17,9 +17,8 @@ public:
 	// Sets default values for this component's properties
 	UStateMachine();
 
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+	void Update();
+	
 	UFUNCTION()
 	void SetState(FString stateName);
 	void AddState(FString stateName, UState* state);

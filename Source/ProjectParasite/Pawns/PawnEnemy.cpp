@@ -3,7 +3,7 @@
 
 #include "PawnEnemy.h"
 
-#include "ProjectParasite/PlayerControllers/ParasitePlayerController.h"
+#include "ProjectParasite/PlayerControllers/PlayerControllerParasite.h"
 
 #include "ProjectParasite/Pawns/PawnParasite.h"
 #include "AIController.h"
@@ -19,26 +19,7 @@ void APawnEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//Find all parasites in world (should only be one)
-	TArray<APawnParasite*> playersInWorld;
-	
-	for (TActorIterator<APawnParasite> p(GetWorld()); p; ++p)
-	{
-		APawnParasite* parasiteFound = *p;
-		playersInWorld.Add(parasiteFound);
-	}
-
-	if(playersInWorld.Num() > 1)
-	{
-		UE_LOG(LogTemp, Error, TEXT("More than one parasite found in world."))
-	}
-
-	if(playersInWorld.Num() <= 0)
-	{
-		UE_LOG(LogTemp, Error, TEXT("No parasite found in world."))
-	}
-
-	playerRef = playersInWorld[0];
+	playerRef = FindPlayerInWorld();
 
 	AIController = Cast<AAIController>(GetController());
 	AIController->SetFocus(playerRef);
@@ -83,4 +64,29 @@ void APawnEnemy::SetPossessed(bool isPossessed)
 void APawnEnemy::Attack()
 {
 	
+}
+
+APawnParasite* APawnEnemy::FindPlayerInWorld()
+{
+	//Find all parasites in world (should only be one)
+	TArray<APawnParasite*> playersInWorld;
+	
+	for (TActorIterator<APawnParasite> p(GetWorld()); p; ++p)
+	{
+		APawnParasite* parasiteFound = *p;
+		playersInWorld.Add(parasiteFound);
+	}
+
+	if(playersInWorld.Num() > 1)
+	{
+		UE_LOG(LogTemp, Error, TEXT("More than one parasite found in world."))
+	}
+
+	//Crash game if no parasite is in world since that would break enemy behaviour
+	if(playersInWorld.Num() <= 0)
+	{
+		UE_LOG(LogTemp, Fatal, TEXT("No parasite found in world."))
+	}
+
+	return playersInWorld[0];
 }

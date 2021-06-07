@@ -9,22 +9,21 @@
 
 UParasiteStateMachine::UParasiteStateMachine()
 {
-	//Make generic method for this somehow?
-	if (idleState == nullptr)
-	{
-		idleState = CreateDefaultSubobject<UPlayer_State_Idle>(TEXT("State_Idle"));
-		AddState(TEXT("State_Idle"), idleState);
-	}
+	idleState = CreateDefaultSubobject<UPlayer_State_Idle>(TEXT("State_Idle"));
+	idleState->SetupAttachment(this);
 	
-	if(dashState == nullptr)
-	{
-		dashState = CreateDefaultSubobject<UPlayer_State_Dash>(TEXT("State_Dash"));
-		AddState(TEXT("State_Dash"), dashState);	
-	}
+	dashState = CreateDefaultSubobject<UPlayer_State_Dash>(TEXT("State_Dash"));
+	dashState->SetupAttachment(this);
+	
+	possessState = CreateDefaultSubobject<UPlayer_State_Possess>(TEXT("State_Possess"));
+	possessState->SetupAttachment(this);
+}
 
-	if(possessState == nullptr)
-	{
-		possessState = CreateDefaultSubobject<UPlayer_State_Possess>(TEXT("State_Possess"));
-		AddState(TEXT("State_Possess"), possessState);	
-	}
+void UParasiteStateMachine::BeginPlay()
+{
+	Super::BeginPlay();
+
+	AddState(TEXT("State_Idle"), idleState);
+	AddState(TEXT("State_Dash"), dashState);
+	AddState(TEXT("State_Possess"), possessState);
 }

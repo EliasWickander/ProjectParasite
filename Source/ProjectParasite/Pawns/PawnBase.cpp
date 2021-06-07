@@ -6,14 +6,13 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
-#include "ProjectParasite/PlayerControllers/ParasitePlayerController.h"
+#include "ProjectParasite/PlayerControllers/PlayerControllerParasite.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
+#include "GameFramework/DefaultPawn.h"
 
-// Sets default values
 APawnBase::APawnBase()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	capsuleCollider = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule Collider"));
@@ -31,6 +30,7 @@ APawnBase::APawnBase()
 	movementComponent = CreateDefaultSubobject<UPawnMovementComponent, UFloatingPawnMovement>(ADefaultPawn::MovementComponentName);
 	movementComponent->UpdatedComponent = capsuleCollider;
 
+	//Remove this later
 	springArm->bInheritPitch = false;
 	springArm->bInheritYaw = false;
 	springArm->bInheritRoll = false;
@@ -41,14 +41,14 @@ APawnBase::APawnBase()
 void APawnBase::BeginPlay()
 {
 	Super::BeginPlay();
-	playerControllerRef = Cast<AParasitePlayerController>(GetWorld()->GetFirstPlayerController());
+
+	floatingPawnMovement = FindComponentByClass<UFloatingPawnMovement>();
+	
+	playerControllerRef = Cast<APlayerControllerParasite>(GetWorld()->GetFirstPlayerController());
 
 	currentHealth = maxHealth;
-}
 
-void APawnBase::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
+	SetMoveSpeed(moveSpeed);
 }
 
 void APawnBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -78,28 +78,16 @@ void APawnBase::MoveHorizontal(float axis)
 //Rotate actor towards target point on the yaw only
 void APawnBase::Rotate(FVector targetPoint)
 {
+	//Get dir to rotate in
 	targetPoint.Z = GetActorLocation().Z;
 	
 	FVector rotationDir = targetPoint - GetActorLocation();
 	rotationDir.Normalize();
 
+	//Rotate
 	FRotator targetRotation = rotationDir.Rotation();
 
 	SetActorRotation(targetRotation);
-}
-
-void APawnBase::Rotate(FVector targetPoint, float speed)
-{
-	targetPoint.Z = GetActorLocation().Z;
-	
-	FVector rotationDir = targetPoint - GetActorLocation();
-	rotationDir.Normalize();
-
-	FRotator targetRotation = rotationDir.Rotation();
-
-	FRotator lerpedRotation = FMath::Lerp(GetActorRotation(), targetRotation, speed * GetWorld()->DeltaTimeSeconds);
-
-	SetActorRotation(lerpedRotation);
 }
 
 void APawnBase::RotateToMouseCursor()
@@ -134,4 +122,25 @@ void APawnBase::TakeDamage(AActor* DamagedActor, float Damage, const UDamageType
 		//Die
 		Destroy();
 	}
+}
+
+void APawnBase::SetMoveSpeed(float speed)
+{
+	moveSpeed = speed;
+	floatingPawnMovement->MaxSpeed = moveSpeed;
+}
+
+float APawnBase::GetMoveSpeed()
+{
+	return moveSpeed;
+}
+
+void APawnBase::SetCanMove(bool enabled)
+{
+	canMove = enabled;
+}
+
+bool APawnBase::GetCanMove()
+{
+	return canMove;
 }

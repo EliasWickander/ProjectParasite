@@ -11,9 +11,6 @@ class AAIController;
 class APawnParasite;
 class UWeapon;
 
-/**
- * 
- */
 UCLASS()
 class PROJECTPARASITE_API APawnEnemy : public APawnBase
 {
@@ -23,9 +20,7 @@ public:
 
 	APawnEnemy();
 
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	virtual void Attack();
@@ -34,17 +29,16 @@ public:
 	FVector GetNapeLocation() { return napeComponent->GetComponentLocation(); }
 	
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	APawnParasite* playerRef = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USceneComponent* napeComponent = nullptr;
 
+	APawnParasite* playerRef = nullptr;
+
 private:
 	void Unpossess();
+	APawnParasite* FindPlayerInWorld();
 
 	AAIController* AIController = nullptr;
-	
 };

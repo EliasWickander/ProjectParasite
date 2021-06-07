@@ -8,9 +8,6 @@
 
 class AProjectile;
 
-/**
- * 
- */
 UCLASS()
 class PROJECTPARASITE_API APawnEnemyRanged : public APawnEnemy
 {
@@ -19,9 +16,9 @@ class PROJECTPARASITE_API APawnEnemyRanged : public APawnEnemy
 public:
 	APawnEnemyRanged();
 
-	virtual void Attack() override;
-
 	virtual void Tick(float DeltaSeconds) override;
+	
+	virtual void Attack() override;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
