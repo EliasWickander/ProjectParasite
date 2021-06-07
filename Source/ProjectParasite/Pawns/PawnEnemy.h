@@ -26,7 +26,7 @@ public:
 	virtual void Attack();
 
 	virtual void SetPossessed(bool isPossessed);
-	FVector GetNapeLocation() { return napeComponent->GetComponentLocation(); }
+	USceneComponent* GetNapeComponent() { return napeComponent; }
 	
 protected:
 	virtual void BeginPlay() override;

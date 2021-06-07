@@ -22,6 +22,7 @@ void APawnEnemy::BeginPlay()
 	playerRef = FindPlayerInWorld();
 
 	AIController = Cast<AAIController>(GetController());
+
 	AIController->SetFocus(playerRef);
 }
 
@@ -36,7 +37,7 @@ void APawnEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 void APawnEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 	if(IsPlayerControlled())
 		RotateToMouseCursor();
 

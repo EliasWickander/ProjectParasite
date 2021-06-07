@@ -32,7 +32,8 @@ void UPlayer_State_Possess::Start()
 
 void UPlayer_State_Possess::Update()
 {
-	FVector napeLocation = possessedEnemy->GetNapeLocation();
+	FVector napeLocation = possessedEnemy->GetNapeComponent()->GetComponentLocation();
+	
 	if(currentState == PossessState::PrePossess)
 	{
 
@@ -45,6 +46,8 @@ void UPlayer_State_Possess::Update()
 			
 			controller->SetActorLocation(lerpedPos);
 			controller->SetActorRotation(lerpedRot);
+
+			controller->AttachToComponent(possessedEnemy->GetNapeComponent(), FAttachmentTransformRules::KeepWorldTransform);
 		}
 		else
 		{
@@ -54,11 +57,9 @@ void UPlayer_State_Possess::Update()
 	}
 	else if(currentState == PossessState::Possess)
 	{
-		controller->SetActorLocation(napeLocation);
-
-		controller->SetActorRotation(possessedEnemy->GetActorForwardVector().Rotation());
-
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *possessedEnemy->GetActorForwardVector().Rotation().ToString());
+		// controller->SetActorLocation(napeLocation);
+		//
+		// controller->SetActorRotation(possessedEnemy->GetActorForwardVector().Rotation());
 		
 		if(controller->IsPlayerControlled())
 		{
@@ -74,6 +75,9 @@ void UPlayer_State_Possess::Update()
 void UPlayer_State_Possess::Exit()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Exit Possess"));
+
+	controller->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	
 	controller->SetActorLocation(possessedEnemy->GetActorLocation() + -possessedEnemy->GetActorForwardVector() * 200);
 
 	controller->GetCollider()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
