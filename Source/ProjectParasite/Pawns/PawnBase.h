@@ -10,6 +10,7 @@
 
 class UCameraComponent;
 class USpringArmComponent;
+class UHealthComponent;
 class UCapsuleComponent;
 class UMovementComponent;
 class UFloatingPawnMovement;
@@ -25,9 +26,6 @@ public:
 	//Casts a ray to mouse cursor in world. Returns true if hit found
 	bool RaycastToMouseCursor(FHitResult& hitResult);
 	void RotateToMouseCursor();
-	
-	UFUNCTION()
-	void TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* i, AActor* DamageCauser);
 
 	void SetMoveSpeed(float speed);
 	float GetMoveSpeed();
@@ -62,14 +60,12 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* springArm = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health", meta = (AllowPrivateAccess = "true"))
-	float maxHealth = 100;
+	
+	 UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	 UHealthComponent* healthComponent = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float moveSpeed = 300;
-
-	float currentHealth;
 	
 	bool canMove = true;
 

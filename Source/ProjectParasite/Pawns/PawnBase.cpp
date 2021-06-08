@@ -5,6 +5,7 @@
 #include "PawnParasite.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "ProjectParasite/Components/HealthComponent.h"
 #include "Camera/CameraComponent.h"
 #include "ProjectParasite/PlayerControllers/PlayerControllerParasite.h"
 #include "GameFramework/PawnMovementComponent.h"
@@ -23,6 +24,8 @@ APawnBase::APawnBase()
 
 	springArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
 	springArm->SetupAttachment(RootComponent);
+
+	healthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
 	
 	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	camera->SetupAttachment(springArm);
@@ -34,8 +37,6 @@ APawnBase::APawnBase()
 	springArm->bInheritPitch = false;
 	springArm->bInheritYaw = false;
 	springArm->bInheritRoll = false;
-
-	OnTakeAnyDamage.AddDynamic(this, &APawnBase::TakeDamage);
 }
 
 void APawnBase::BeginPlay()
@@ -45,8 +46,6 @@ void APawnBase::BeginPlay()
 	floatingPawnMovement = FindComponentByClass<UFloatingPawnMovement>();
 	
 	playerControllerRef = Cast<APlayerControllerParasite>(GetWorld()->GetFirstPlayerController());
-
-	currentHealth = maxHealth;
 
 	SetMoveSpeed(moveSpeed);
 }
@@ -110,18 +109,6 @@ bool APawnBase::RaycastToMouseCursor(FHitResult& hitResult)
 	AActor* actorHit = hitResult.GetActor();
 
 	return actorHit != nullptr;
-}
-
-void APawnBase::TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* i, AActor* DamageCauser)
-{
-	currentHealth -= Damage;
-
-	UE_LOG(LogTemp, Warning, TEXT("Took %f damage"), Damage);
-	if(currentHealth <= 0)
-	{
-		//Die
-		Destroy();
-	}
 }
 
 void APawnBase::SetMoveSpeed(float speed)
