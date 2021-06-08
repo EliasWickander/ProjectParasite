@@ -9,18 +9,20 @@
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PROJECTPARASITE_API UStateMachine : public USceneComponent
+class PROJECTPARASITE_API UStateMachine : public UObject
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this component's properties
-	UStateMachine();
-
+	void SetOwner(AActor* owningActor);
+	AActor* GetOwner();
+	
 	void Update();
 	
 	UFUNCTION()
 	void SetState(FString stateName);
+
+	UFUNCTION()
 	void AddState(FString stateName, UState* state);
 
 	UState* currentState = nullptr;
@@ -28,13 +30,10 @@ public:
 	
 	UState* nextState = nullptr;
 	FString nextStateID = "";
-
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
 private:
 
 	TMap<FString, UState*> states;
+
+	AActor* owner = nullptr;
 		
 };

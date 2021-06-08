@@ -13,22 +13,14 @@ UCLASS()
 class PROJECTPARASITE_API UPlayer_State_Dash : public UState
 {
 	GENERATED_BODY()
-
-public:
-	UPlayer_State_Dash();
 	
 protected:
+	void Init(AActor* owner) override;
 	virtual void Start() override;
 	virtual void Update() override;
 	virtual void Exit() override;
 
 private:
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variables", meta = (AllowPrivateAccess = "true"))
-	float dashTime = 2;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variables", meta = (AllowPrivateAccess = "true"))
-	float dashSpeed = 500;
 	
 	APawnParasite* controller = nullptr;
 

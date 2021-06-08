@@ -3,20 +3,15 @@
 
 #include "StateMachine.h"
 
-// Sets default values for this component's properties
-UStateMachine::UStateMachine()
-{
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = false;
 
-	// ...
+void UStateMachine::SetOwner(AActor* owningActor)
+{
+	owner = owningActor;
 }
 
-// Called when the game starts
-void UStateMachine::BeginPlay()
+AActor* UStateMachine::GetOwner()
 {
-	Super::BeginPlay();
+	return owner;
 }
 
 void UStateMachine::Update()
@@ -63,7 +58,7 @@ void UStateMachine::AddState(FString stateName, UState* state)
 {
 	//Find a way to make them visible in details dynamically
 	states.Append(TMap<FString, UState*> {{stateName, state}});
-	
+	state->Init(GetOwner());
 	//If this is the first state added, set it as first state to play
 	if(states.Num() == 1)
 	{

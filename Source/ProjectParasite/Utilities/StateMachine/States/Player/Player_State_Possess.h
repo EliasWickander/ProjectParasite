@@ -15,8 +15,6 @@ class PROJECTPARASITE_API UPlayer_State_Possess : public UState
 	GENERATED_BODY()
 
 public:
-	UPlayer_State_Possess();
-
 	enum PossessState
 	{
 		PrePossess,
@@ -27,7 +25,8 @@ public:
 	PossessState currentState;
 	
 protected:
-	
+
+	void Init(AActor* owner) override;
 	virtual void Start() override;
 	virtual void Update() override;
 	virtual void Exit() override;
@@ -36,12 +35,7 @@ private:
 
 	void HandlePossessionLoop();
 	void MoveToEnemyNape();
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Variables", meta = (AllowPrivateAccess = "true"))
-	float attachLocationLerpSpeed = 10;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Variables", meta = (AllowPrivateAccess = "true"))
-	float attachRotationLerpSpeed = 50;
 
 	APawnParasite* controller = nullptr;
 	APawnEnemy* possessedEnemy = nullptr;
