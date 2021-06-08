@@ -94,9 +94,9 @@ void UPlayer_State_Possess::MoveToEnemyNape()
 	FVector napeLocation = possessedEnemy->GetNapeComponent()->GetComponentLocation();
 
 	//TODO: Use linear interpolation instead of exponential
-	FVector lerpedPos = FMath::Lerp(controller->GetActorLocation(), napeLocation, attachLocationLerpSpeed * GetWorld()->DeltaTimeSeconds);
+	FVector lerpedPos = FMath::Lerp(controller->GetActorLocation(), napeLocation, controller->attachLocationLerpSpeed * GetWorld()->DeltaTimeSeconds);
 
-	FRotator lerpedRot = FMath::Lerp(controller->GetActorRotation(), possessedEnemy->GetActorForwardVector().Rotation(), attachRotationLerpSpeed * GetWorld()->DeltaTimeSeconds);
+	FRotator lerpedRot = FMath::Lerp(controller->GetActorRotation(), possessedEnemy->GetActorForwardVector().Rotation(), controller->attachRotationLerpSpeed * GetWorld()->DeltaTimeSeconds);
 			
 	controller->SetActorLocation(lerpedPos);
 	controller->SetActorRotation(lerpedRot);

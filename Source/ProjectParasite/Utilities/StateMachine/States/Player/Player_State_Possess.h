@@ -36,12 +36,7 @@ private:
 
 	void HandlePossessionLoop();
 	void MoveToEnemyNape();
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Variables", meta = (AllowPrivateAccess = "true"))
-	float attachLocationLerpSpeed = 10;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Variables", meta = (AllowPrivateAccess = "true"))
-	float attachRotationLerpSpeed = 50;
 
 	APawnParasite* controller = nullptr;
 	APawnEnemy* possessedEnemy = nullptr;

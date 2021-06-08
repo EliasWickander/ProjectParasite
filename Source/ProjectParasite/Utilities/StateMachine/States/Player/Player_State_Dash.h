@@ -23,12 +23,6 @@ protected:
 	virtual void Exit() override;
 
 private:
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variables", meta = (AllowPrivateAccess = "true"))
-	float dashTime = 2;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variables", meta = (AllowPrivateAccess = "true"))
-	float dashSpeed = 500;
 	
 	APawnParasite* controller = nullptr;
 

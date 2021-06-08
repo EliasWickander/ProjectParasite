@@ -13,7 +13,7 @@ void UPlayer_State_Dash::Start()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Start Dash"));
 
-	UE_LOG(LogTemp, Warning, TEXT("%f"), dashTime);
+	UE_LOG(LogTemp, Warning, TEXT("%f"), controller->dashTime);
 	
 	timer = 0;
 	
@@ -24,13 +24,13 @@ void UPlayer_State_Dash::Start()
 
 	//Prevent player from moving during dash
 	controller->SetCanMove(false);
-	controller->SetMoveSpeed(dashSpeed);
+	controller->SetMoveSpeed(controller->dashSpeed);
 }
 
 void UPlayer_State_Dash::Update()
 {
 	
-	if(timer < dashTime)
+	if(timer < controller->dashTime)
 	{
 		timer += GetWorld()->DeltaTimeSeconds;
 		

@@ -23,12 +23,12 @@ public:
 protected:
 	virtual void BeginPlay() override;
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "States", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY()
 	UPlayer_State_Idle* idleState;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "States", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY()
 	UPlayer_State_Dash* dashState;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "States", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY()
 	UPlayer_State_Possess* possessState;
 };

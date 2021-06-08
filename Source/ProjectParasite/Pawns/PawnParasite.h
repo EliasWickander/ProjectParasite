@@ -17,6 +17,10 @@ class PROJECTPARASITE_API APawnParasite : public APawnBase
 
 public:
 
+	friend class UPlayer_State_Idle;
+	friend class UPlayer_State_Dash;
+	friend class UPlayer_State_Possess;
+	
 	APawnParasite();
 
 	virtual void Tick(float DeltaTime) override;
@@ -37,11 +41,23 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UParasiteDebugComponent* parasiteDebugger = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY()
 	UParasiteStateMachine* stateMachine = nullptr;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Possession", meta = (AllowPrivateAccess = "true"))
 	float possessRadius = 100;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Possession", meta = (AllowPrivateAccess = "true"))
+	float attachLocationLerpSpeed = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Possession", meta = (AllowPrivateAccess = "true"))
+	float attachRotationLerpSpeed = 50;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash", meta = (AllowPrivateAccess = "true"))
+	float dashTime = 2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash", meta = (AllowPrivateAccess = "true"))
+	float dashSpeed = 500;
+	
 	APawnEnemy* possessedEnemy = nullptr;
 };
