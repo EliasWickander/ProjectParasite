@@ -8,7 +8,7 @@
 
 
 class UParasiteDebugComponent;
-class UParasiteStateMachine;
+class UStateMachine;
 class APawnEnemy;
 UCLASS()
 class PROJECTPARASITE_API APawnParasite : public APawnBase
@@ -42,15 +42,15 @@ private:
 	UParasiteDebugComponent* parasiteDebugger = nullptr;
 
 	UPROPERTY()
-	UParasiteStateMachine* stateMachine = nullptr;
+	UStateMachine* stateMachine = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Possession", meta = (AllowPrivateAccess = "true"))
 	float possessRadius = 100;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Possession", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Possession", meta = (AllowPrivateAccess = "true"))
 	float attachLocationLerpSpeed = 10;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Possession", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Possession", meta = (AllowPrivateAccess = "true"))
 	float attachRotationLerpSpeed = 50;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash", meta = (AllowPrivateAccess = "true"))
@@ -58,6 +58,10 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash", meta = (AllowPrivateAccess = "true"))
 	float dashSpeed = 500;
+
+	UPlayer_State_Idle* idleState;
+	UPlayer_State_Dash* dashState;
+	UPlayer_State_Possess* possessState;
 	
 	APawnEnemy* possessedEnemy = nullptr;
 };

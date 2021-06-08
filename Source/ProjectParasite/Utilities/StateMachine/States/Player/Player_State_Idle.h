@@ -11,11 +11,9 @@ UCLASS()
 class PROJECTPARASITE_API UPlayer_State_Idle : public UState
 {
 	GENERATED_BODY()
-
-public:
-	UPlayer_State_Idle();
 	
 protected:
+	void Init(AActor* owner) override;
 	virtual void Start() override;
 	virtual void Update() override;
 	virtual void Exit() override;

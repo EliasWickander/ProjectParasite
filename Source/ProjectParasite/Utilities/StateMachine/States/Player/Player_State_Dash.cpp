@@ -4,9 +4,10 @@
 #include "Player_State_Dash.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
 
-UPlayer_State_Dash::UPlayer_State_Dash()
+
+void UPlayer_State_Dash::Init(AActor* owner)
 {
-	controller = Cast<APawnParasite>(GetOwner());
+	controller = Cast<APawnParasite>(owner);
 }
 
 void UPlayer_State_Dash::Start()
@@ -32,7 +33,7 @@ void UPlayer_State_Dash::Update()
 	
 	if(timer < controller->dashTime)
 	{
-		timer += GetWorld()->DeltaTimeSeconds;
+		timer += controller->GetWorld()->DeltaTimeSeconds;
 		
 		controller->AddMovementInput(dashDir);	
 

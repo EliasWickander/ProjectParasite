@@ -3,9 +3,9 @@
 #include "Player_State_Idle.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
 
-UPlayer_State_Idle::UPlayer_State_Idle()
+void UPlayer_State_Idle::Init(AActor* owner)
 {
-	controller = Cast<APawnParasite>(GetOwner());
+	controller = Cast<APawnParasite>(owner);
 }
 
 void UPlayer_State_Idle::Start()

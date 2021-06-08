@@ -7,18 +7,30 @@
 #include "EngineUtils.h"
 #include "ProjectParasite/Components/Debug/ParasiteDebugComponent.h"
 #include "ProjectParasite/PlayerControllers/PlayerControllerParasite.h"
-#include "ProjectParasite/Utilities/StateMachine/ParasiteStateMachine.h"
+#include "ProjectParasite/Utilities/StateMachine/StateMachine.h"
+#include "ProjectParasite/Utilities/StateMachine/States/Player/Player_State_Idle.h"
+#include "ProjectParasite/Utilities/StateMachine/States/Player/Player_State_Dash.h"
 #include "ProjectParasite/Utilities/StateMachine/States/Player/Player_State_Possess.h"
 
 APawnParasite::APawnParasite()
 {
 	parasiteDebugger = CreateDefaultSubobject<UParasiteDebugComponent>(TEXT("Debug Component"));
-	stateMachine = CreateDefaultSubobject<UParasiteStateMachine>(TEXT("State Machine"));
 }
 
 void APawnParasite::BeginPlay()
 {
 	Super::BeginPlay();
+
+	stateMachine = NewObject<UStateMachine>();
+	stateMachine->SetOwner(this);
+	
+	idleState = NewObject<UPlayer_State_Idle>();
+	dashState = NewObject<UPlayer_State_Dash>();
+	possessState = NewObject<UPlayer_State_Possess>();
+	
+	stateMachine->AddState(TEXT("State_Idle"), idleState);
+	stateMachine->AddState(TEXT("State_Dash"), dashState);
+	stateMachine->AddState(TEXT("State_Possess"), possessState);
 }
 
 void APawnParasite::Tick(float DeltaTime)

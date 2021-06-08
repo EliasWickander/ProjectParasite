@@ -42,7 +42,6 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
-	void Move(FVector moveDir);
 	void Rotate(FVector targetPoint);
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -64,9 +63,6 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* springArm = nullptr;
 
-	UPROPERTY()
-	UPawnMovementComponent* movementComponent = nullptr;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health", meta = (AllowPrivateAccess = "true"))
 	float maxHealth = 100;
 	
@@ -74,7 +70,10 @@ private:
 	float moveSpeed = 300;
 
 	float currentHealth;
+	
 	bool canMove = true;
 
+	UPROPERTY()
+	UPawnMovementComponent* movementComponent = nullptr;
 	UFloatingPawnMovement* floatingPawnMovement = nullptr;
 };

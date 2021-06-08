@@ -8,10 +8,11 @@
 #include "ProjectParasite/PlayerControllers/PlayerControllerParasite.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 
-UPlayer_State_Possess::UPlayer_State_Possess()
+void UPlayer_State_Possess::Init(AActor* owner)
 {
-	controller = Cast<APawnParasite>(GetOwner());
+	controller = Cast<APawnParasite>(owner);
 }
+
 
 void UPlayer_State_Possess::Start()
 {
@@ -94,9 +95,9 @@ void UPlayer_State_Possess::MoveToEnemyNape()
 	FVector napeLocation = possessedEnemy->GetNapeComponent()->GetComponentLocation();
 
 	//TODO: Use linear interpolation instead of exponential
-	FVector lerpedPos = FMath::Lerp(controller->GetActorLocation(), napeLocation, controller->attachLocationLerpSpeed * GetWorld()->DeltaTimeSeconds);
+	FVector lerpedPos = FMath::Lerp(controller->GetActorLocation(), napeLocation, controller->attachLocationLerpSpeed * controller->GetWorld()->DeltaTimeSeconds);
 
-	FRotator lerpedRot = FMath::Lerp(controller->GetActorRotation(), possessedEnemy->GetActorForwardVector().Rotation(), controller->attachRotationLerpSpeed * GetWorld()->DeltaTimeSeconds);
+	FRotator lerpedRot = FMath::Lerp(controller->GetActorRotation(), possessedEnemy->GetActorForwardVector().Rotation(), controller->attachRotationLerpSpeed * controller->GetWorld()->DeltaTimeSeconds);
 			
 	controller->SetActorLocation(lerpedPos);
 	controller->SetActorRotation(lerpedRot);
