@@ -7,10 +7,10 @@
 #include "PawnBase.h"
 #include "PawnEnemy.generated.h"
 
+class ATargetPoint;
 class AAIController;
 class APawnParasite;
 class UWeapon;
-
 UCLASS()
 class PROJECTPARASITE_API APawnEnemy : public APawnBase
 {
@@ -21,23 +21,26 @@ public:
 	APawnEnemy();
 
 	virtual void Tick(float DeltaTime) override;
-	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
+	void SetPossessed(bool enabled);
 	virtual void Attack();
-
-	virtual void SetPossessed(bool isPossessed);
+	
 	USceneComponent* GetNapeComponent() { return napeComponent; }
+	TArray<ATargetPoint*> GetPatrolPoints() { return patrolPoints; }
+	AAIController* GetAIController() { return AIController; }
 	
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USceneComponent* napeComponent = nullptr;
-
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
+	TArray<ATargetPoint*> patrolPoints;
+	
 	APawnParasite* playerRef = nullptr;
 
 private:
-	void Unpossess();
 	APawnParasite* FindPlayerInWorld();
 
 	AAIController* AIController = nullptr;

@@ -3,15 +3,12 @@
 
 #include "Player_State_Dash.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
+#include "ProjectParasite/Utilities/StateMachine/StateMachine.h"
 
-
-void UPlayer_State_Dash::Init(AActor* owner)
-{
-	controller = Cast<APawnParasite>(owner);
-}
 
 void UPlayer_State_Dash::Start()
 {
+	controller = Cast<APawnParasite>(stateMachine->GetOwner());
 	UE_LOG(LogTemp, Warning, TEXT("Start Dash"));
 
 	UE_LOG(LogTemp, Warning, TEXT("%f"), controller->dashTime);
@@ -43,7 +40,7 @@ void UPlayer_State_Dash::Update()
 	else
 	{
 		//When been in this state for more than certain amount of time, transition back to idle
-		OnStateTransition.Broadcast("State_Idle");
+		stateMachine->SetState("State_Idle");
 	}
 }
 

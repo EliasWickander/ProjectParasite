@@ -5,9 +5,8 @@
 #include "PawnParasite.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "ProjectParasite/Components/HealthComponent.h"
 #include "Camera/CameraComponent.h"
-#include "ProjectParasite/PlayerControllers/PlayerControllerParasite.h"
+#include "ProjectParasite/PlayerControllers/PlayerControllerBase.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "GameFramework/DefaultPawn.h"
@@ -25,8 +24,6 @@ APawnBase::APawnBase()
 	springArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
 	springArm->SetupAttachment(RootComponent);
 
-	healthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
-	
 	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	camera->SetupAttachment(springArm);
 
@@ -44,18 +41,14 @@ void APawnBase::BeginPlay()
 	Super::BeginPlay();
 
 	floatingPawnMovement = FindComponentByClass<UFloatingPawnMovement>();
+	floatingPawnMovement->MaxSpeed = moveSpeed;
+
+	playerControllerRef = Cast<APlayerControllerBase>(GetWorld()->GetFirstPlayerController());
+	OnTakeAnyDamage.AddDynamic(this, &APawnBase::OnTakeDamage);
 	
-	playerControllerRef = Cast<APlayerControllerParasite>(GetWorld()->GetFirstPlayerController());
+	currentHealth = maxHealth;
 
-	SetMoveSpeed(moveSpeed);
-}
-
-void APawnBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	PlayerInputComponent->BindAxis("MoveHorizontal", this, &APawnBase::MoveHorizontal);
-	PlayerInputComponent->BindAxis("MoveVertical", this, &APawnBase::MoveVertical);	
+	//UE_LOG(LogTemp, Warning, TEXT("%s"), *playerControllerRef->GetName())
 }
 
 void APawnBase::MoveVertical(float axis)
@@ -107,7 +100,7 @@ bool APawnBase::RaycastToMouseCursor(FHitResult& hitResult)
 	playerControllerRef->GetHitResultUnderCursor(ECollisionChannel::ECC_WorldStatic, true, hitResult);
 
 	AActor* actorHit = hitResult.GetActor();
-
+	
 	return actorHit != nullptr;
 }
 
@@ -130,4 +123,17 @@ void APawnBase::SetCanMove(bool enabled)
 bool APawnBase::GetCanMove()
 {
 	return canMove;
+}
+
+void APawnBase::OnTakeDamage(AActor* damagedActor, float damage, const UDamageType* damageType, AController* causerController,
+	AActor* causerActor)
+{
+	currentHealth -= damage;
+
+	UE_LOG(LogTemp, Warning, TEXT("Took %f damage"), damage);
+	if(currentHealth <= 0)
+	{
+		//Die
+		Destroy();
+	}
 }

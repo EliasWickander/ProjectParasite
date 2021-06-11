@@ -6,7 +6,6 @@
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 #include "EngineUtils.h"
 #include "ProjectParasite/Components/Debug/ParasiteDebugComponent.h"
-#include "ProjectParasite/PlayerControllers/PlayerControllerParasite.h"
 #include "ProjectParasite/Utilities/StateMachine/StateMachine.h"
 #include "ProjectParasite/Utilities/StateMachine/States/Player/Player_State_Idle.h"
 #include "ProjectParasite/Utilities/StateMachine/States/Player/Player_State_Dash.h"
@@ -34,18 +33,12 @@ void APawnParasite::BeginPlay()
 }
 
 void APawnParasite::Tick(float DeltaTime)
-{
+{	
 	Super::Tick(DeltaTime);
 
 	stateMachine->Update();
-}
-
-void APawnParasite::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	//PlayerInputComponent->BindAction("Possess", EInputEvent::IE_Pressed, this, &APawnParasite::PossessClosestEnemyInRadius);
-	PlayerInputComponent->BindAction("Dash", EInputEvent::IE_Pressed, this, &APawnParasite::Dash);
+	
+	//UE_LOG(LogTemp, Warning, TEXT("%s"), *GetController()->GetName())
 }
 
 void APawnParasite::Dash()

@@ -25,8 +25,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	void Dash();
 	void PossessClosestEnemyInRadius();
 
 	APawnEnemy* GetPossessedEnemy();
@@ -36,12 +35,10 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	void Dash();
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UParasiteDebugComponent* parasiteDebugger = nullptr;
 
-	UPROPERTY()
 	UStateMachine* stateMachine = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Possession", meta = (AllowPrivateAccess = "true"))

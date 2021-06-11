@@ -6,7 +6,9 @@
 #include "PawnEnemy.h"
 #include "PawnEnemyRanged.generated.h"
 
+class AWeapon;
 class AProjectile;
+class UWeaponComponent;
 
 UCLASS()
 class PROJECTPARASITE_API APawnEnemyRanged : public APawnEnemy
@@ -21,17 +23,8 @@ public:
 	virtual void Attack() override;
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-	UStaticMeshComponent* weaponMesh = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-	USceneComponent* weaponSocket = nullptr;
+	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
-	TSubclassOf<AProjectile> projectile = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
-	float fireRate = 2;
-
-	float attackTimer = 0;
+	AWeapon* weapon = nullptr;
 };

@@ -16,7 +16,7 @@ class PROJECTPARASITE_API UStateMachine : public UObject
 public:
 	void SetOwner(AActor* owningActor);
 	AActor* GetOwner();
-	
+
 	void Update();
 	
 	UFUNCTION()

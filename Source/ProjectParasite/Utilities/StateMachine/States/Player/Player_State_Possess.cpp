@@ -3,19 +3,17 @@
 
 #include "Player_State_Possess.h"
 
+#include "AIController.h"
 #include "Components/CapsuleComponent.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
-#include "ProjectParasite/PlayerControllers/PlayerControllerParasite.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
-
-void UPlayer_State_Possess::Init(AActor* owner)
-{
-	controller = Cast<APawnParasite>(owner);
-}
-
+#include "ProjectParasite/PlayerControllers/PlayerControllerBase.h"
+#include "ProjectParasite/Utilities/StateMachine/StateMachine.h"
 
 void UPlayer_State_Possess::Start()
 {
+	controller = Cast<APawnParasite>(stateMachine->GetOwner());
+	
 	UE_LOG(LogTemp, Warning, TEXT("Start Possess"));
 
 	possessedEnemy = controller->GetPossessedEnemy();
@@ -24,8 +22,9 @@ void UPlayer_State_Possess::Start()
 	controller->GetCollider()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 
 	controller->SetCanMove(false);
-	possessedEnemy->SetPossessed(true);
-
+	
+	possessedEnemy->GetAIController()->UnPossess();
+	
 	currentState = PossessState::PrePossess;
 }
 
@@ -83,7 +82,7 @@ void UPlayer_State_Possess::HandlePossessionLoop()
 		}
 	case PossessState::PostPossess:
 		{
-			OnStateTransition.Broadcast("State_Idle");
+			stateMachine->SetState("State_Idle");
 			break;
 		}
 	}

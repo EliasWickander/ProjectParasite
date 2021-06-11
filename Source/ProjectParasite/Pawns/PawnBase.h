@@ -10,11 +10,10 @@
 
 class UCameraComponent;
 class USpringArmComponent;
-class UHealthComponent;
 class UCapsuleComponent;
 class UMovementComponent;
 class UFloatingPawnMovement;
-class APlayerControllerParasite;
+class APlayerControllerBase;
 UCLASS()
 class PROJECTPARASITE_API APawnBase : public APawn
 {
@@ -32,14 +31,20 @@ public:
 	
 	void SetCanMove(bool enabled);
 	bool GetCanMove();
+
+	UFUNCTION()
+	void OnTakeDamage(AActor* damagedActor, float damage, const UDamageType* damageType, AController* causerController, AActor* causerActor);
+
+	void MoveHorizontal(float axis);
+	void MoveVertical(float axis);
 	
 	UCapsuleComponent* GetCollider() { return capsuleCollider; }
-	
-	APlayerControllerParasite* playerControllerRef = nullptr;
+    
+    APlayerControllerBase* playerControllerRef = nullptr;
+    	
 protected:
 	virtual void BeginPlay() override;
-	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-
+	
 	void Rotate(FVector targetPoint);
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -52,8 +57,6 @@ protected:
 	float verticalAxis = 0;
 
 private:
-	void MoveHorizontal(float axis);
-	void MoveVertical(float axis);
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* camera = nullptr;
@@ -61,11 +64,13 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* springArm = nullptr;
 	
-	 UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	 UHealthComponent* healthComponent = nullptr;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float moveSpeed = 300;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health", meta = (AllowPrivateAccess = "true"))
+	float maxHealth = 100;
+
+	float currentHealth;
 	
 	bool canMove = true;
 

@@ -3,9 +3,11 @@
 
 #include "State.h"
 
-void UState::Init(AActor* owner)
+#include "ProjectParasite/Utilities/StateMachine/StateMachine.h"
+
+void UState::Init(UStateMachine* _stateMachine)
 {
-	
+	this->stateMachine = _stateMachine;
 }
 
 void UState::Start()

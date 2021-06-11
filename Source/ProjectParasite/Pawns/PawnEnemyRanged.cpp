@@ -3,50 +3,43 @@
 
 #include "PawnEnemyRanged.h"
 
-#include "ProjectParasite/Actors/Projectile.h"
+#include "ProjectParasite/Actors/Weapon.h"
 
 APawnEnemyRanged::APawnEnemyRanged()
 {
-	weaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon Base Mesh"));
-	weaponMesh->SetupAttachment(RootComponent);
-	
-	weaponSocket = CreateDefaultSubobject<USceneComponent>(TEXT("Weapon Socket"));
-	weaponSocket->SetupAttachment(weaponMesh);
+
+}
+
+void APawnEnemyRanged::BeginPlay()
+{
+	Super::BeginPlay();
+
+	TArray<AActor*> childActors;
+
+	GetAllChildActors(childActors);
+
+	for(AActor* actor : childActors)
+	{
+		if(Cast<AWeapon>(actor) != nullptr)
+			weapon = Cast<AWeapon>(actor);
+	}
 }
 
 void APawnEnemyRanged::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
-	//Handle attack timer
-	attackTimer = FMath::Clamp<float>(attackTimer - DeltaSeconds, 0, fireRate);
 }
 
 void APawnEnemyRanged::Attack()
 {
 	Super::Attack();
 
-	//Only attack if projectile type is set
-	if(projectile)
+	if(weapon)
 	{
-		//If pawn can attack
-		if(attackTimer == 0)
-		{
-			FVector spawnPos = weaponSocket->GetComponentLocation();
-			FRotator spawnRot = weaponSocket->GetComponentRotation();
-
-			AProjectile* spawnedProjectile = GetWorld()->SpawnActor<AProjectile>(projectile, spawnPos, spawnRot);
-
-			//Set projectile's owner to this pawn (used in projectile as a reference to this pawn)
-			spawnedProjectile->SetOwner(this);
-
-			//Reset attack timer
-			attackTimer = fireRate;
-		}
+		weapon->Fire();	
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("%s has no projectile type set. Please check that it is set up properly in the blueprint"));
+		UE_LOG(LogTemp, Error, TEXT("%s doesn't have a child actor attached matching a weapon. Can't fire."));
 	}
-	
 }
