@@ -74,7 +74,8 @@ private:
 	
 	bool canMove = true;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UPawnMovementComponent* movementComponent = nullptr;
+	
 	UFloatingPawnMovement* floatingPawnMovement = nullptr;
 };
