@@ -39,6 +39,7 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UParasiteDebugComponent* parasiteDebugger = nullptr;
 
+	UPROPERTY()
 	UStateMachine* stateMachine = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Possession", meta = (AllowPrivateAccess = "true"))

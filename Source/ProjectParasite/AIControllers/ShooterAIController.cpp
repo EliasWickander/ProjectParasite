@@ -17,12 +17,6 @@ void AShooterAIController::BeginPlay()
 
 	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	shooterRef = Cast<APawnShooter>(GetPawn());
-
-	if(behaviorTree != nullptr)
-	{
-		RunBehaviorTree(behaviorTree);
-		blackboard = GetBlackboardComponent();
-	}
 }
 
 void AShooterAIController::Tick(float DeltaSeconds)
@@ -35,6 +29,8 @@ void AShooterAIController::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 
 	SetFocus(playerRef);
+	StartAIBehavior();
+	
 }
 
 void AShooterAIController::OnUnPossess()
@@ -43,7 +39,16 @@ void AShooterAIController::OnUnPossess()
 
     //Isn't called it seems
 	UE_LOG(LogTemp, Warning, TEXT("Unpossess"));
-	AAIController::StopMovement();
+	StopMovement();
 
 	ClearFocus(EAIFocusPriority::Gameplay);
+}
+
+void AShooterAIController::StartAIBehavior()
+{
+	if(behaviorTree != nullptr)
+	{
+		RunBehaviorTree(behaviorTree);
+		blackboard = GetBlackboardComponent();
+	}
 }

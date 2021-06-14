@@ -5,6 +5,7 @@
 
 #include "ProjectParasite/PlayerControllers/PlayerControllerBase.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
+#include "ProjectParasite/Components/Debug/EnemyDebugComponent.h"
 #include "AIController.h"
 #include "Engine/TargetPoint.h"
 #include "EngineUtils.h"
@@ -13,6 +14,8 @@ APawnEnemy::APawnEnemy()
 {
 	napeComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Nape"));
 	napeComponent->SetupAttachment(baseMesh);
+
+	enemyDebugger = CreateDefaultSubobject<UEnemyDebugComponent>(TEXT("Debug Component"));
 }
 
 void APawnEnemy::BeginPlay()

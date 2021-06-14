@@ -6,23 +6,25 @@
 #include "Components/ActorComponent.h"
 #include "State.generated.h"
 
-class UStateMachine;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStateTransition, FString, location);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PROJECTPARASITE_API UState : public UObject
+class PROJECTPARASITE_API UState : public USceneComponent
 {
 	GENERATED_BODY()
 
 public:
 	friend class UStateMachine;
 
+	UState();
+
+	FOnStateTransition OnStateTransition;
+
 protected:
-	virtual void Init(UStateMachine* stateMachine);
-	
+	void Init(UStateMachine* owningStateMachine);
 	virtual void Start();
 	virtual void Update();
 	virtual void Exit();
 
-	UStateMachine* stateMachine = nullptr;
-		
+	UStateMachine* stateMachine;
 };

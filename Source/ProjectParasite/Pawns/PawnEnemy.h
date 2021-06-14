@@ -10,7 +10,7 @@
 class ATargetPoint;
 class AAIController;
 class APawnParasite;
-class UWeapon;
+class UEnemyDebugComponent;
 UCLASS()
 class PROJECTPARASITE_API APawnEnemy : public APawnBase
 {
@@ -28,10 +28,15 @@ public:
 	USceneComponent* GetNapeComponent() { return napeComponent; }
 	TArray<ATargetPoint*> GetPatrolPoints() { return patrolPoints; }
 	AAIController* GetAIController() { return AIController; }
+	float GetDetectionRange() { return detectionRange; }
+	float GetDetectionAngle() { return detectionAngle; }
 	
 protected:
 	virtual void BeginPlay() override;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UEnemyDebugComponent* enemyDebugger = nullptr;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USceneComponent* napeComponent = nullptr;
 	
@@ -39,6 +44,12 @@ protected:
 	TArray<ATargetPoint*> patrolPoints;
 	
 	APawnParasite* playerRef = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Detection")
+	float detectionRange = 200;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Detection")
+	float detectionAngle = 60;
 
 private:
 	APawnParasite* FindPlayerInWorld();

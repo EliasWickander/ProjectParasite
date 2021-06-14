@@ -23,6 +23,8 @@ protected:
 	virtual void OnUnPossess() override;
 
 private:
+
+	void StartAIBehavior();
 	UPROPERTY(EditAnywhere)
 	UBehaviorTree* behaviorTree = nullptr;
 

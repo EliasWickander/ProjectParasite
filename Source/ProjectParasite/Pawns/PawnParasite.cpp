@@ -14,31 +14,28 @@
 APawnParasite::APawnParasite()
 {
 	parasiteDebugger = CreateDefaultSubobject<UParasiteDebugComponent>(TEXT("Debug Component"));
-}
 
-void APawnParasite::BeginPlay()
-{
-	Super::BeginPlay();
-
-	stateMachine = NewObject<UStateMachine>();
+	stateMachine = CreateDefaultSubobject<UStateMachine>(TEXT("State Machine"));
+	stateMachine->SetupAttachment(RootComponent);
 	stateMachine->SetOwner(this);
-	
-	idleState = NewObject<UPlayer_State_Idle>();
-	dashState = NewObject<UPlayer_State_Dash>();
-	possessState = NewObject<UPlayer_State_Possess>();
-	
+
+	idleState = CreateDefaultSubobject<UPlayer_State_Idle>(TEXT("State_Idle"));
+	dashState = CreateDefaultSubobject<UPlayer_State_Dash>(TEXT("State_Dash"));
+	possessState = CreateDefaultSubobject<UPlayer_State_Possess>(TEXT("State_Possess"));
+
 	stateMachine->AddState(TEXT("State_Idle"), idleState);
 	stateMachine->AddState(TEXT("State_Dash"), dashState);
 	stateMachine->AddState(TEXT("State_Possess"), possessState);
 }
 
+void APawnParasite::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 void APawnParasite::Tick(float DeltaTime)
 {	
 	Super::Tick(DeltaTime);
-
-	stateMachine->Update();
-	
-	//UE_LOG(LogTemp, Warning, TEXT("%s"), *GetController()->GetName())
 }
 
 void APawnParasite::Dash()
