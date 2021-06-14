@@ -25,6 +25,13 @@ struct SConeVertices
 	FVector botRightFrontEnd;
 };
 
+struct SCube
+{
+	FVector center;
+	FVector extents;
+	FQuat rotation;
+};
+
 class APawnEnemy;
 UCLASS()
 class PROJECTPARASITE_API UEnemyDebugComponent : public UActorComponent
@@ -42,17 +49,19 @@ public:
 	AActor* debugObject = nullptr;
 
 	FColor coneColor = FColor::Blue;
+	FColor boxColor = FColor::Yellow;
 
 private:
 	APawnEnemy* enemyRef = nullptr;
 
-	void DrawVisionCone();
+	void OverlapCone(SCone cone);
 
-	void DrawCone(SCone data);
+	void DrawCone(SCone cone);
 	void DrawConeFromVertices(SConeVertices vertices);
 
-	SConeVertices GetConeVerticesFromData(SCone data);
-	void DrawBoxContainingCone(SCone cone);
+	SConeVertices GetConeVerticesFromData(SCone cone);
+	SCube GetCubeContainingCone(SCone cone);
+	void DrawCubeContainingCone(SCone cone);
 	
 	FVector AngleVector(float deg);
 

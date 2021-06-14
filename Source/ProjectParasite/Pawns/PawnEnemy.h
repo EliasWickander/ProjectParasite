@@ -18,6 +18,8 @@ class PROJECTPARASITE_API APawnEnemy : public APawnBase
 
 public:
 
+	friend class UEnemyDebugComponent;
+	
 	APawnEnemy();
 
 	virtual void Tick(float DeltaTime) override;
