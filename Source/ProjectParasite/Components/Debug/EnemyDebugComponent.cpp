@@ -49,52 +49,38 @@ void UEnemyDebugComponent::DrawVisionCone()
 
 	SCone coneData {
 		enemyColBounds.Origin,
+		enemyRef->GetActorRotation().Quaternion(),
 		enemyRef->GetDetectionAngle(),
 		enemyColBounds.BoxExtent.Z * 2,
 		enemyRef->GetDetectionRange()
 	};
 	
-	DrawCone(coneData, enemyRef);
+	DrawCone(coneData);
 	DrawBoxContainingCone(coneData);
 }
 
-void UEnemyDebugComponent::DrawCone(SCone data, AActor* actorRelative)
+void UEnemyDebugComponent::DrawCone(SCone data)
 {
-	float halfAngle = data.angle * 0.5f;
-	float halfHeight = data.height * 0.5f;
-	
-	float originAngle = 0;
-
-	if(actorRelative != nullptr)
-	{
-		originAngle = FVector::DotProduct(FVector::ForwardVector, actorRelative->GetActorForwardVector());
-
-		originAngle = FMath::RadiansToDegrees(FMath::Acos(originAngle));
-
-		FVector cross = FVector::CrossProduct(FVector::ForwardVector, actorRelative->GetActorForwardVector());
-
-		if(cross.Z < 0)
-			originAngle = -originAngle;
-	}
-
-	SConeVertices vertices = GetConeVerticesFromData(data, originAngle);
+	SConeVertices vertices = GetConeVerticesFromData(data);
 	DrawConeFromVertices(vertices);
 }
 
-SConeVertices UEnemyDebugComponent::GetConeVerticesFromData(SCone data, float originAngle)
+SConeVertices UEnemyDebugComponent::GetConeVerticesFromData(SCone data)
 {
 	SConeVertices verticesStruct;
 
 	float halfHeight = data.height * 0.5f;
 	float halfAngle = data.angle * 0.5f;
+
+	FTransform rotatedTransform(data.rotation);
 	
 	verticesStruct.originTopPoint = data.originPoint + FVector(0, 0, halfHeight);
 	verticesStruct.originBotPoint = data.originPoint - FVector(0, 0, halfHeight);
 	
-	verticesStruct.topRightFrontEnd = verticesStruct.originTopPoint + AngleVector(originAngle + halfAngle) * data.range;
-	verticesStruct.topLeftFrontEnd = verticesStruct.originTopPoint + AngleVector(originAngle - halfAngle) * data.range;
-	verticesStruct.botRightFrontEnd = verticesStruct.originBotPoint + AngleVector(originAngle + halfAngle) * data.range;
-	verticesStruct.botLeftFrontEnd = verticesStruct.originBotPoint + AngleVector(originAngle - halfAngle) * data.range;
+	verticesStruct.topRightFrontEnd = verticesStruct.originTopPoint + rotatedTransform.TransformPosition(AngleVector(halfAngle)) * data.range;
+	verticesStruct.topLeftFrontEnd = verticesStruct.originTopPoint + rotatedTransform.TransformPosition(AngleVector(-halfAngle)) * data.range;
+	verticesStruct.botRightFrontEnd = verticesStruct.originBotPoint + rotatedTransform.TransformPosition(AngleVector(halfAngle)) * data.range;
+	verticesStruct.botLeftFrontEnd = verticesStruct.originBotPoint + rotatedTransform.TransformPosition(AngleVector(-halfAngle)) * data.range;
 
 	return verticesStruct;
 	
@@ -130,7 +116,7 @@ void UEnemyDebugComponent::DrawBoxContainingCone(SCone cone)
 	
 	FVector extents(coneDepth / 2, coneWidth / 2,  coneHeight / 2);
 	
-	DrawDebugBox(GetWorld(), centerPoint, extents, FColor::Yellow);
+	DrawDebugBox(GetWorld(), centerPoint, extents, cone.rotation, FColor::Yellow);
 }
 
 FVector UEnemyDebugComponent::AngleVector(float deg)

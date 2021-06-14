@@ -17,6 +17,11 @@ void APlayerControllerBase::BeginPlay()
 	EnableInput(this);
 }
 
+void APlayerControllerBase::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+}
+
 void APlayerControllerBase::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
@@ -58,12 +63,12 @@ void APlayerControllerBase::SetupGeneralActions()
 
 void APlayerControllerBase::SetupParasiteActions()
 {
-	InputComponent->BindAction("Dash", EInputEvent::IE_Pressed, this, &APlayerControllerBase::DashInternal);
+	InputComponent->BindAction("Possess", EInputEvent::IE_Pressed, this, &APlayerControllerBase::DashInternal);
 }
 
 void APlayerControllerBase::SetupEnemyActions()
 {
-	InputComponent->BindAction("Possess", IE_Pressed, this, &APlayerControllerBase::UnpossessInternal);
+	InputComponent->BindAction("Unpossess", IE_Pressed, this, &APlayerControllerBase::UnpossessInternal);
 	InputComponent->BindAction("Fire", IE_Pressed, this, &APlayerControllerBase::AttackInternal);
 }
 
@@ -80,8 +85,11 @@ void APlayerControllerBase::MoveVerticalInternal(float axis)
 void APlayerControllerBase::DashInternal()
 {
 	APawnParasite* controlledParasite = Cast<APawnParasite>(controlledPawn);
-
-	controlledParasite->Dash();
+	
+	if(controlledParasite->GetDashTimer() <= 0)
+	{
+		controlledParasite->Dash();
+	}
 }
 
 void APlayerControllerBase::UnpossessInternal()

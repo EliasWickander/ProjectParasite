@@ -9,6 +9,7 @@
 struct SCone
 {
 	FVector originPoint;
+	FQuat rotation;
 	float angle;
 	float height;
 	float range;
@@ -47,10 +48,10 @@ private:
 
 	void DrawVisionCone();
 
-	void DrawCone(SCone data, AActor* actorRelative = nullptr);
+	void DrawCone(SCone data);
 	void DrawConeFromVertices(SConeVertices vertices);
 
-	SConeVertices GetConeVerticesFromData(SCone data, float originAngle = 0);
+	SConeVertices GetConeVerticesFromData(SCone data);
 	void DrawBoxContainingCone(SCone cone);
 	
 	FVector AngleVector(float deg);

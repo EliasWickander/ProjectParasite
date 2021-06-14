@@ -36,6 +36,8 @@ void APawnParasite::BeginPlay()
 void APawnParasite::Tick(float DeltaTime)
 {	
 	Super::Tick(DeltaTime);
+
+	dashTimer = FMath::Clamp<float>(dashTimer - DeltaTime, 0, dashCooldown);
 }
 
 void APawnParasite::Dash()
@@ -73,4 +75,19 @@ APawnEnemy* APawnParasite::GetPossessedEnemy()
 float APawnParasite::GetPossessRadius()
 {
 	return possessRadius;
+}
+
+float APawnParasite::GetDashCooldown()
+{
+	return dashCooldown;
+}
+
+float APawnParasite::GetDashTimer()
+{
+	return dashTimer;
+}
+
+void APawnParasite::SetDashTimer(float value)
+{
+	dashTimer = value;
 }
