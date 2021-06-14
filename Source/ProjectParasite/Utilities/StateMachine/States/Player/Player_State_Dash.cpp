@@ -22,6 +22,7 @@ void UPlayer_State_Dash::Start()
 
 	//Prevent player from moving during dash
 	controller->SetCanMove(false);
+
 	controller->SetMoveSpeed(controller->dashSpeed);
 }
 

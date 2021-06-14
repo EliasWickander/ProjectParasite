@@ -108,6 +108,7 @@ void APawnBase::SetMoveSpeed(float speed)
 {
 	moveSpeed = speed;
 	floatingPawnMovement->MaxSpeed = moveSpeed;
+	UE_LOG(LogTemp, Warning, TEXT("%f"), floatingPawnMovement->MaxSpeed);
 }
 
 float APawnBase::GetMoveSpeed()
