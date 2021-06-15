@@ -32,14 +32,14 @@ void UPlayer_State_Dash::Update()
 	if(timer < controller->dashTime)
 	{
 		timer += controller->GetWorld()->DeltaTimeSeconds;
-		
+
 		controller->AddMovementInput(dashDir);	
 
 		//if there are enemies close enough, possess
 		controller->PossessClosestEnemyInRadius();
 	}
 	else
-	{
+	{	
 		//When been in this state for more than certain amount of time, transition back to idle
 		stateMachine->SetState("State_Idle");
 	}
@@ -50,4 +50,5 @@ void UPlayer_State_Dash::Exit()
 	//Reset move speed to what it was before dash
 	controller->SetMoveSpeed(prevMoveSpeed);
 	controller->SetCanMove(true);
+	controller->SetDashTimer(controller->GetDashCooldown());
 }

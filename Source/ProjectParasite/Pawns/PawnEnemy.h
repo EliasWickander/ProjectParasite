@@ -18,6 +18,9 @@ class PROJECTPARASITE_API APawnEnemy : public APawnBase
 
 public:
 
+	friend class UEnemyDebugComponent;
+	friend class UBTTask_PatrolBetweenWaypoints;
+	
 	APawnEnemy();
 
 	virtual void Tick(float DeltaTime) override;

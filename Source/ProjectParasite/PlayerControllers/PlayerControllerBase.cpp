@@ -15,6 +15,20 @@ void APlayerControllerBase::BeginPlay()
 	SetShowMouseCursor(true);
 
 	EnableInput(this);
+
+	controlledPawn = Cast<APawnBase>(GetPawn());
+
+	if(controlledPawn == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s is possessing %s that doesn't seem to be derived from APawnBase"), *GetName(), *GetPawn()->GetName())
+	}
+
+	SetupInputBindings();
+}
+
+void APlayerControllerBase::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
 }
 
 void APlayerControllerBase::OnPossess(APawn* InPawn)
@@ -27,27 +41,16 @@ void APlayerControllerBase::OnPossess(APawn* InPawn)
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s is possessing %s that doesn't seem to be derived from APawnBase"), *GetName(), *InPawn->GetName())
 	}
-
-	SetupInputBindings();
 }
 
 void APlayerControllerBase::SetupInputBindings()
 {
 	//Clear all bindings so that we can set completely new bindings every time we possess a pawn
-	InputComponent->ClearActionBindings();
+	//InputComponent->ClearActionBindings();
 
 	SetupGeneralActions();
-	
-	if(Cast<APawnParasite>(controlledPawn) != nullptr)
-	{
-		//If controlled pawn is parasite
-		SetupParasiteActions();
-	}
-	else if(Cast<APawnEnemy>(controlledPawn) != nullptr)
-	{
-		//If controlled pawn is enemy
-		SetupEnemyActions();
-	}
+	SetupParasiteActions();
+	SetupEnemyActions();
 }
 
 void APlayerControllerBase::SetupGeneralActions()
@@ -58,12 +61,12 @@ void APlayerControllerBase::SetupGeneralActions()
 
 void APlayerControllerBase::SetupParasiteActions()
 {
-	InputComponent->BindAction("Dash", EInputEvent::IE_Pressed, this, &APlayerControllerBase::DashInternal);
+	InputComponent->BindAction("Possess", EInputEvent::IE_Pressed, this, &APlayerControllerBase::DashInternal);
 }
 
 void APlayerControllerBase::SetupEnemyActions()
 {
-	InputComponent->BindAction("Possess", IE_Pressed, this, &APlayerControllerBase::UnpossessInternal);
+	InputComponent->BindAction("Unpossess", IE_Pressed, this, &APlayerControllerBase::UnpossessInternal);
 	InputComponent->BindAction("Fire", IE_Pressed, this, &APlayerControllerBase::AttackInternal);
 }
 
@@ -81,19 +84,31 @@ void APlayerControllerBase::DashInternal()
 {
 	APawnParasite* controlledParasite = Cast<APawnParasite>(controlledPawn);
 
-	controlledParasite->Dash();
+	if(controlledParasite != nullptr)
+	{
+		if(controlledParasite->GetDashTimer() <= 0)
+		{
+			controlledParasite->Dash();
+		}	
+	}
 }
 
 void APlayerControllerBase::UnpossessInternal()
 {
 	APawnEnemy* controlledEnemy = Cast<APawnEnemy>(controlledPawn);
-	
-	controlledEnemy->SetPossessed(false);
+
+	if(controlledEnemy != nullptr)
+	{
+		controlledEnemy->SetPossessed(false);	
+	}
 }
 
 void APlayerControllerBase::AttackInternal()
 {
 	APawnEnemy* controlledEnemy = Cast<APawnEnemy>(controlledPawn);
-	
-	controlledEnemy->Attack();
+
+	if(controlledEnemy != nullptr)
+	{
+		controlledEnemy->Attack();	
+	}
 }

@@ -31,6 +31,10 @@ public:
 	APawnEnemy* GetPossessedEnemy();
 	float GetPossessRadius();
 
+	float GetDashCooldown();
+	float GetDashTimer();
+	void SetDashTimer(float value);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -55,8 +59,13 @@ private:
 	float dashTime = 2;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash", meta = (AllowPrivateAccess = "true"))
+	float dashCooldown = 0.5f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash", meta = (AllowPrivateAccess = "true"))
 	float dashSpeed = 500;
 
+	float dashTimer = 0;
+	
 	UPlayer_State_Idle* idleState;
 	UPlayer_State_Dash* dashState;
 	UPlayer_State_Possess* possessState;

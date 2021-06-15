@@ -18,18 +18,22 @@ EBTNodeResult::Type UBTTask_PatrolBetweenWaypoints::ExecuteTask(UBehaviorTreeCom
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
-	ownerEnemy = OwnerComp.GetAIOwner()->GetPawn<APawnEnemy>();
+	BTTaskPatrolBetweenWaypointsMemory* memory = reinterpret_cast<BTTaskPatrolBetweenWaypointsMemory*>(NodeMemory);
 
-	for(ATargetPoint* point : ownerEnemy->GetPatrolPoints())
+	memory->currentWaypoint = FVector::ZeroVector;
+	memory->patrolPointQueue = new TQueue<FVector>();
+	memory->ownerEnemy = OwnerComp.GetAIOwner()->GetPawn<APawnEnemy>();
+
+	for(ATargetPoint* point : memory->ownerEnemy->GetPatrolPoints())
 	{
 		FVector tempLocation = point->GetActorLocation();
-		tempLocation.Z = ownerEnemy->GetActorLocation().Z;
+		tempLocation.Z = memory->ownerEnemy->GetActorLocation().Z;
 		
-		patrolPointQueue.Enqueue(tempLocation);
+		memory->patrolPointQueue->Enqueue(tempLocation);
 	}
 
-	InitNextWaypoint();
-	
+	InitNextWaypoint(NodeMemory);
+
 	return EBTNodeResult::InProgress;
 }
 
@@ -37,31 +41,40 @@ void UBTTask_PatrolBetweenWaypoints::TickTask(UBehaviorTreeComponent& OwnerComp,
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-	if(patrolPointQueue.IsEmpty())
+	BTTaskPatrolBetweenWaypointsMemory* memory = reinterpret_cast<BTTaskPatrolBetweenWaypointsMemory*>(NodeMemory);
+	
+	if(memory->patrolPointQueue->IsEmpty())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s has no patrol points assigned. Cannot move."), *ownerEnemy->GetName());
+		UE_LOG(LogTemp, Warning, TEXT("%s has no patrol points assigned. Cannot move."), *memory->ownerEnemy->GetName());
 		return;	
 	}
 
-	currentWaypoint.Z = ownerEnemy->GetActorLocation().Z;
+	memory->currentWaypoint.Z = memory->ownerEnemy->GetActorLocation().Z;
 
-	if(FVector::Dist(ownerEnemy->GetActorLocation(), currentWaypoint) < 20)
+	if(FVector::Dist(memory->ownerEnemy->GetActorLocation(), memory->currentWaypoint) < 20)
 	{
-		patrolPointQueue.Enqueue(currentWaypoint);
-		InitNextWaypoint();
+		memory->patrolPointQueue->Enqueue(memory->currentWaypoint);
+		InitNextWaypoint(NodeMemory);
 	}
 }
 
-void UBTTask_PatrolBetweenWaypoints::InitNextWaypoint()
+void UBTTask_PatrolBetweenWaypoints::InitNextWaypoint(uint8* NodeMemory)
 {
-	patrolPointQueue.Dequeue(currentWaypoint);
+	BTTaskPatrolBetweenWaypointsMemory* memory = reinterpret_cast<BTTaskPatrolBetweenWaypointsMemory*>(NodeMemory);
 
-	ownerEnemy->GetAIController()->SetFocalPoint(currentWaypoint);
-	ownerEnemy->GetAIController()->MoveToLocation(currentWaypoint, 1, false);
+	memory->patrolPointQueue->Dequeue(memory->currentWaypoint);
+
+	memory->ownerEnemy->GetAIController()->SetFocalPoint(memory->currentWaypoint);
+	memory->ownerEnemy->GetAIController()->MoveToLocation(memory->currentWaypoint, 1, false);
+}
+
+uint16 UBTTask_PatrolBetweenWaypoints::GetInstanceMemorySize() const
+{
+	return sizeof(BTTaskPatrolBetweenWaypointsMemory);
 }
 
 void UBTTask_PatrolBetweenWaypoints::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,
-	EBTNodeResult::Type TaskResult)
+                                                    EBTNodeResult::Type TaskResult)
 {
 	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
 }

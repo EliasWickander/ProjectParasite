@@ -9,6 +9,7 @@
 struct SCone
 {
 	FVector originPoint;
+	FQuat rotation;
 	float angle;
 	float height;
 	float range;
@@ -22,6 +23,13 @@ struct SConeVertices
 	FVector topRightFrontEnd;
 	FVector botLeftFrontEnd;
 	FVector botRightFrontEnd;
+};
+
+struct SCube
+{
+	FVector center;
+	FVector extents;
+	FQuat rotation;
 };
 
 class APawnEnemy;
@@ -41,17 +49,19 @@ public:
 	AActor* debugObject = nullptr;
 
 	FColor coneColor = FColor::Blue;
+	FColor boxColor = FColor::Yellow;
 
 private:
 	APawnEnemy* enemyRef = nullptr;
 
-	void DrawVisionCone();
+	void OverlapCone(SCone cone);
 
-	void DrawCone(SCone data, AActor* actorRelative = nullptr);
+	void DrawCone(SCone cone);
 	void DrawConeFromVertices(SConeVertices vertices);
 
-	SConeVertices GetConeVerticesFromData(SCone data, float originAngle = 0);
-	void DrawBoxContainingCone(SCone cone);
+	SConeVertices GetConeVerticesFromData(SCone cone);
+	SCube GetCubeContainingCone(SCone cone);
+	void DrawCubeContainingCone(SCone cone);
 	
 	FVector AngleVector(float deg);
 

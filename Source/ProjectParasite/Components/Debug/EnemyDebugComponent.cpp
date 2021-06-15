@@ -7,6 +7,7 @@
 #include "DrawDebugHelpers.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "ProjectParasite/Pawns/PawnParasite.h"
 
 
 UEnemyDebugComponent::UEnemyDebugComponent()
@@ -40,61 +41,78 @@ void UEnemyDebugComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		}
 	}
 	
-	DrawVisionCone();
-}
-
-void UEnemyDebugComponent::DrawVisionCone()
-{
 	FBoxSphereBounds enemyColBounds = enemyRef->GetCollider()->Bounds;
 
 	SCone coneData {
 		enemyColBounds.Origin,
+		enemyRef->GetActorRotation().Quaternion(),
 		enemyRef->GetDetectionAngle(),
 		enemyColBounds.BoxExtent.Z * 2,
 		enemyRef->GetDetectionRange()
 	};
+
+	OverlapCone(coneData);
+	DrawCone(coneData);
+	DrawCubeContainingCone(coneData);
 	
-	DrawCone(coneData, enemyRef);
-	DrawBoxContainingCone(coneData);
 }
 
-void UEnemyDebugComponent::DrawCone(SCone data, AActor* actorRelative)
+void UEnemyDebugComponent::OverlapCone(SCone cone)
 {
-	float halfAngle = data.angle * 0.5f;
-	float halfHeight = data.height * 0.5f;
+	SCube cubeData = GetCubeContainingCone(cone);
+
+	const TArray<TEnumAsByte<EObjectTypeQuery>> objectTypes;
+	const TArray<AActor*> actorsToIgnore { };
+	UClass* classFilter = Cast<UClass>(enemyRef->playerRef);
+	TArray<AActor*> outActors;
 	
-	float originAngle = 0;
+	bool overlapped = UKismetSystemLibrary::BoxOverlapActors(
+		GetWorld(),
+		cubeData.center,
+		cubeData.extents,
+		objectTypes,
+		classFilter,
+		actorsToIgnore,
+		outActors
+		);
 
-	if(actorRelative != nullptr)
+	// for(AActor* actor : outActors)
+	// {
+	// 	UE_LOG(LogTemp, Warning, TEXT("Overlapped %s"), *actor->GetName());
+	// }
+	if(overlapped)
 	{
-		originAngle = FVector::DotProduct(FVector::ForwardVector, actorRelative->GetActorForwardVector());
-
-		originAngle = FMath::RadiansToDegrees(FMath::Acos(originAngle));
-
-		FVector cross = FVector::CrossProduct(FVector::ForwardVector, actorRelative->GetActorForwardVector());
-
-		if(cross.Z < 0)
-			originAngle = -originAngle;
+		boxColor = FColor::Green;
 	}
+	else
+	{
+		boxColor = FColor::Yellow;
+	}
+	
+}
 
-	SConeVertices vertices = GetConeVerticesFromData(data, originAngle);
+void UEnemyDebugComponent::DrawCone(SCone cone)
+{
+	SConeVertices vertices = GetConeVerticesFromData(cone);
 	DrawConeFromVertices(vertices);
 }
 
-SConeVertices UEnemyDebugComponent::GetConeVerticesFromData(SCone data, float originAngle)
+SConeVertices UEnemyDebugComponent::GetConeVerticesFromData(SCone cone)
 {
 	SConeVertices verticesStruct;
 
-	float halfHeight = data.height * 0.5f;
-	float halfAngle = data.angle * 0.5f;
+	float halfHeight = cone.height * 0.5f;
+	float halfAngle = cone.angle * 0.5f;
+
+	FTransform rotatedTransform(cone.rotation);
 	
-	verticesStruct.originTopPoint = data.originPoint + FVector(0, 0, halfHeight);
-	verticesStruct.originBotPoint = data.originPoint - FVector(0, 0, halfHeight);
+	verticesStruct.originTopPoint = cone.originPoint + FVector(0, 0, halfHeight);
+	verticesStruct.originBotPoint = cone.originPoint - FVector(0, 0, halfHeight);
 	
-	verticesStruct.topRightFrontEnd = verticesStruct.originTopPoint + AngleVector(originAngle + halfAngle) * data.range;
-	verticesStruct.topLeftFrontEnd = verticesStruct.originTopPoint + AngleVector(originAngle - halfAngle) * data.range;
-	verticesStruct.botRightFrontEnd = verticesStruct.originBotPoint + AngleVector(originAngle + halfAngle) * data.range;
-	verticesStruct.botLeftFrontEnd = verticesStruct.originBotPoint + AngleVector(originAngle - halfAngle) * data.range;
+	verticesStruct.topRightFrontEnd = verticesStruct.originTopPoint + rotatedTransform.TransformPosition(AngleVector(halfAngle)) * cone.range;
+	verticesStruct.topLeftFrontEnd = verticesStruct.originTopPoint + rotatedTransform.TransformPosition(AngleVector(-halfAngle)) * cone.range;
+	verticesStruct.botRightFrontEnd = verticesStruct.originBotPoint + rotatedTransform.TransformPosition(AngleVector(halfAngle)) * cone.range;
+	verticesStruct.botLeftFrontEnd = verticesStruct.originBotPoint + rotatedTransform.TransformPosition(AngleVector(-halfAngle)) * cone.range;
 
 	return verticesStruct;
 	
@@ -115,7 +133,7 @@ void UEnemyDebugComponent::DrawConeFromVertices(SConeVertices vertices)
 	DrawDebugLine(GetWorld(), vertices.botLeftFrontEnd, vertices.botRightFrontEnd, coneColor);
 }
 
-void UEnemyDebugComponent::DrawBoxContainingCone(SCone cone)
+SCube UEnemyDebugComponent::GetCubeContainingCone(SCone cone)
 {
 	SConeVertices coneVertices = GetConeVerticesFromData(cone);
 	
@@ -129,8 +147,15 @@ void UEnemyDebugComponent::DrawBoxContainingCone(SCone cone)
 	float coneHeight = (coneVertices.topLeftFrontEnd - coneVertices.botLeftFrontEnd).Size();
 	
 	FVector extents(coneDepth / 2, coneWidth / 2,  coneHeight / 2);
+
+	return SCube {centerPoint, extents, cone.rotation};
+}
+
+void UEnemyDebugComponent::DrawCubeContainingCone(SCone cone)
+{
+	SCube cubeData = GetCubeContainingCone(cone);
 	
-	DrawDebugBox(GetWorld(), centerPoint, extents, FColor::Yellow);
+	DrawDebugBox(GetWorld(), cubeData.center, cubeData.extents, cubeData.rotation, boxColor);
 }
 
 FVector UEnemyDebugComponent::AngleVector(float deg)
