@@ -15,6 +15,15 @@ void APlayerControllerBase::BeginPlay()
 	SetShowMouseCursor(true);
 
 	EnableInput(this);
+
+	controlledPawn = Cast<APawnBase>(GetPawn());
+
+	if(controlledPawn == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s is possessing %s that doesn't seem to be derived from APawnBase"), *GetName(), *GetPawn()->GetName())
+	}
+
+	SetupInputBindings();
 }
 
 void APlayerControllerBase::Tick(float DeltaSeconds)
@@ -32,27 +41,16 @@ void APlayerControllerBase::OnPossess(APawn* InPawn)
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s is possessing %s that doesn't seem to be derived from APawnBase"), *GetName(), *InPawn->GetName())
 	}
-
-	SetupInputBindings();
 }
 
 void APlayerControllerBase::SetupInputBindings()
 {
 	//Clear all bindings so that we can set completely new bindings every time we possess a pawn
-	InputComponent->ClearActionBindings();
+	//InputComponent->ClearActionBindings();
 
 	SetupGeneralActions();
-	
-	if(Cast<APawnParasite>(controlledPawn) != nullptr)
-	{
-		//If controlled pawn is parasite
-		SetupParasiteActions();
-	}
-	else if(Cast<APawnEnemy>(controlledPawn) != nullptr)
-	{
-		//If controlled pawn is enemy
-		SetupEnemyActions();
-	}
+	SetupParasiteActions();
+	SetupEnemyActions();
 }
 
 void APlayerControllerBase::SetupGeneralActions()
@@ -85,23 +83,32 @@ void APlayerControllerBase::MoveVerticalInternal(float axis)
 void APlayerControllerBase::DashInternal()
 {
 	APawnParasite* controlledParasite = Cast<APawnParasite>(controlledPawn);
-	
-	if(controlledParasite->GetDashTimer() <= 0)
+
+	if(controlledParasite != nullptr)
 	{
-		controlledParasite->Dash();
+		if(controlledParasite->GetDashTimer() <= 0)
+		{
+			controlledParasite->Dash();
+		}	
 	}
 }
 
 void APlayerControllerBase::UnpossessInternal()
 {
 	APawnEnemy* controlledEnemy = Cast<APawnEnemy>(controlledPawn);
-	
-	controlledEnemy->SetPossessed(false);
+
+	if(controlledEnemy != nullptr)
+	{
+		controlledEnemy->SetPossessed(false);	
+	}
 }
 
 void APlayerControllerBase::AttackInternal()
 {
 	APawnEnemy* controlledEnemy = Cast<APawnEnemy>(controlledPawn);
-	
-	controlledEnemy->Attack();
+
+	if(controlledEnemy != nullptr)
+	{
+		controlledEnemy->Attack();	
+	}
 }
