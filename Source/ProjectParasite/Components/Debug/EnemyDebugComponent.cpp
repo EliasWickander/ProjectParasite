@@ -4,10 +4,11 @@
 #include "EnemyDebugComponent.h"
 
 #include "ProjectParasite/Pawns/PawnEnemy.h"
-#include "DrawDebugHelpers.h"
+#include "ProjectParasite/Utilities/DrawDebugHelpersExtended.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
+#include "ProjectParasite/Utilities/DevUtils.h"
 
 
 UEnemyDebugComponent::UEnemyDebugComponent()
@@ -22,24 +23,6 @@ void UEnemyDebugComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	//TODO: Do an overlap box as represented by cone
-	//TODO: If player is overlapping box, check its angle to see if within cone
-	if(debugObject != nullptr)
-	{
-		FVector objectPos = debugObject->GetActorLocation();
-
-		FVector dirToObject = objectPos - GetOwner()->GetActorLocation();
-		
-		if(dirToObject.Size() <= enemyRef->GetDetectionRange())
-		{
-			coneColor = FColor::Green;
-		}
-		else
-		{
-			coneColor = FColor::Blue;
-		}
-	}
 	
 	FBoxSphereBounds enemyColBounds = enemyRef->GetCollider()->Bounds;
 
@@ -51,116 +34,58 @@ void UEnemyDebugComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		enemyRef->GetDetectionRange()
 	};
 
-	OverlapCone(coneData);
-	DrawCone(coneData);
-	DrawCubeContainingCone(coneData);
-	
-}
-
-void UEnemyDebugComponent::OverlapCone(SCone cone)
-{
-	SCube cubeData = GetCubeContainingCone(cone);
-
 	const TArray<TEnumAsByte<EObjectTypeQuery>> objectTypes;
 	const TArray<AActor*> actorsToIgnore { };
-	UClass* classFilter = Cast<UClass>(enemyRef->playerRef);
+	UClass* classFilter = APawnParasite::StaticClass();
 	TArray<AActor*> outActors;
+
+	if(OverlapCone(coneData, objectTypes, classFilter, actorsToIgnore, outActors))
+	{
+		coneColor = FColor::Green;
+	}
+	else
+	{
+		coneColor = FColor::Blue;
+	}
 	
-	bool overlapped = UKismetSystemLibrary::BoxOverlapActors(
+	DrawCone(coneData, GetWorld(), coneColor);
+}
+
+bool UEnemyDebugComponent::OverlapCone(SCone cone, const TArray<TEnumAsByte<EObjectTypeQuery>>& objectTypes, UClass* actorClassFilter, const TArray<AActor*>& actorsToIgnore, TArray<AActor*>& outActors)
+{
+	outActors.Empty();
+	
+	SCube cubeData = GetCubeContainingCone(cone);
+
+	//Check if box is overlapping player
+	TArray<AActor*> overlappedActors;
+	
+	UKismetSystemLibrary::BoxOverlapActors(
 		GetWorld(),
 		cubeData.center,
 		cubeData.extents,
 		objectTypes,
-		classFilter,
+		actorClassFilter,
 		actorsToIgnore,
-		outActors
+		overlappedActors
 		);
 
-	// for(AActor* actor : outActors)
-	// {
-	// 	UE_LOG(LogTemp, Warning, TEXT("Overlapped %s"), *actor->GetName());
-	// }
-	if(overlapped)
+	//Find the angle to each overlapped actors position
+	for(AActor* overlappedActor : overlappedActors)
 	{
-		boxColor = FColor::Green;
+		FVector dirToActor = overlappedActor->GetActorLocation() - cone.originPoint;
+		dirToActor.Z = 0;
+		dirToActor.Normalize();
+
+		float angle = AngleBetweenVectors(enemyRef->GetActorForwardVector(), dirToActor);
+
+		//If players angle matches the cone's angle, it is considered inside of the cone
+		if(angle <= cone.angle * 0.5f)
+		{
+			outActors.Push(overlappedActor);
+		}
 	}
-	else
-	{
-		boxColor = FColor::Yellow;
-	}
-	
-}
 
-void UEnemyDebugComponent::DrawCone(SCone cone)
-{
-	SConeVertices vertices = GetConeVerticesFromData(cone);
-	DrawConeFromVertices(vertices);
-}
-
-SConeVertices UEnemyDebugComponent::GetConeVerticesFromData(SCone cone)
-{
-	SConeVertices verticesStruct;
-
-	float halfHeight = cone.height * 0.5f;
-	float halfAngle = cone.angle * 0.5f;
-
-	FTransform rotatedTransform(cone.rotation);
-	
-	verticesStruct.originTopPoint = cone.originPoint + FVector(0, 0, halfHeight);
-	verticesStruct.originBotPoint = cone.originPoint - FVector(0, 0, halfHeight);
-	
-	verticesStruct.topRightFrontEnd = verticesStruct.originTopPoint + rotatedTransform.TransformPosition(AngleVector(halfAngle)) * cone.range;
-	verticesStruct.topLeftFrontEnd = verticesStruct.originTopPoint + rotatedTransform.TransformPosition(AngleVector(-halfAngle)) * cone.range;
-	verticesStruct.botRightFrontEnd = verticesStruct.originBotPoint + rotatedTransform.TransformPosition(AngleVector(halfAngle)) * cone.range;
-	verticesStruct.botLeftFrontEnd = verticesStruct.originBotPoint + rotatedTransform.TransformPosition(AngleVector(-halfAngle)) * cone.range;
-
-	return verticesStruct;
-	
-}
-
-void UEnemyDebugComponent::DrawConeFromVertices(SConeVertices vertices)
-{
-	//Draw the four lines making up the cone's shape
-	DrawDebugLine(GetWorld(), vertices.originTopPoint, vertices.topRightFrontEnd, coneColor);
-	DrawDebugLine(GetWorld(), vertices.originTopPoint, vertices.topLeftFrontEnd, coneColor);
-	DrawDebugLine(GetWorld(), vertices.originBotPoint, vertices.botRightFrontEnd, coneColor);
-	DrawDebugLine(GetWorld(), vertices.originBotPoint, vertices.botLeftFrontEnd, coneColor);
-
-	//Draw the four lines connecting the four above
-	DrawDebugLine(GetWorld(), vertices.botRightFrontEnd, vertices.topRightFrontEnd, coneColor);
-	DrawDebugLine(GetWorld(), vertices.botLeftFrontEnd, vertices.topLeftFrontEnd, coneColor);
-	DrawDebugLine(GetWorld(), vertices.topLeftFrontEnd, vertices.topRightFrontEnd, coneColor);
-	DrawDebugLine(GetWorld(), vertices.botLeftFrontEnd, vertices.botRightFrontEnd, coneColor);
-}
-
-SCube UEnemyDebugComponent::GetCubeContainingCone(SCone cone)
-{
-	SConeVertices coneVertices = GetConeVerticesFromData(cone);
-	
-	FVector topFrontCenter = (coneVertices.topRightFrontEnd + coneVertices.topLeftFrontEnd) / 2;
-	
-	FVector centerPoint = (topFrontCenter + coneVertices.originTopPoint) / 2;
-	centerPoint.Z = enemyRef->GetActorLocation().Z;
-	
-	float coneDepth = (topFrontCenter - coneVertices.originTopPoint).Size();
-	float coneWidth = (coneVertices.topLeftFrontEnd - coneVertices.topRightFrontEnd).Size();
-	float coneHeight = (coneVertices.topLeftFrontEnd - coneVertices.botLeftFrontEnd).Size();
-	
-	FVector extents(coneDepth / 2, coneWidth / 2,  coneHeight / 2);
-
-	return SCube {centerPoint, extents, cone.rotation};
-}
-
-void UEnemyDebugComponent::DrawCubeContainingCone(SCone cone)
-{
-	SCube cubeData = GetCubeContainingCone(cone);
-	
-	DrawDebugBox(GetWorld(), cubeData.center, cubeData.extents, cubeData.rotation, boxColor);
-}
-
-FVector UEnemyDebugComponent::AngleVector(float deg)
-{
-	float angleInRad = FMath::DegreesToRadians(deg);
-
-	return FVector(FMath::Cos(angleInRad), FMath::Sin(angleInRad), 0);
+	//Returns true if cone overlaps at least one actor
+	return outActors.Num() > 0;
 }
