@@ -26,6 +26,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SetPossessed(bool enabled);
+
 	virtual void Attack();
 	
 	USceneComponent* GetNapeComponent() { return napeComponent; }
