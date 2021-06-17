@@ -25,6 +25,8 @@ protected:
 private:
 
 	void StartAIBehavior();
+	void Detect();
+	
 	UPROPERTY(EditAnywhere)
 	UBehaviorTree* behaviorTree = nullptr;
 

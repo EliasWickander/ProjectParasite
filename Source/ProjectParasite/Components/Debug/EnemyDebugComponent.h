@@ -6,8 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "EnemyDebugComponent.generated.h"
 
-struct SCone;
-
 class APawnEnemy;
 UCLASS()
 class PROJECTPARASITE_API UEnemyDebugComponent : public UActorComponent
@@ -25,7 +23,5 @@ public:
 
 private:
 	APawnEnemy* enemyRef = nullptr;
-
-	bool OverlapCone(SCone cone, const TArray<TEnumAsByte<EObjectTypeQuery>>& objectTypes, UClass* actorClassFilter, const TArray<AActor*>& actorsToIgnore, TArray<AActor*>& outActors);
 
 };
