@@ -25,3 +25,6 @@ struct SCube
 	FVector extents;
 	FQuat rotation;
 };
+
+SConeVertices GetConeVerticesFromData(SCone cone);
+SCube GetCubeContainingCone(SCone cone);

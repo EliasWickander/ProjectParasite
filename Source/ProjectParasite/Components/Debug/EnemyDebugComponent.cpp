@@ -39,7 +39,7 @@ void UEnemyDebugComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	UClass* classFilter = APawnParasite::StaticClass();
 	TArray<AActor*> outActors;
 
-	if(OverlapCone(coneData, objectTypes, classFilter, actorsToIgnore, outActors))
+	if(OverlapCone(coneData, GetWorld(), objectTypes, classFilter, actorsToIgnore, outActors))
 	{
 		coneColor = FColor::Green;
 	}
@@ -49,43 +49,4 @@ void UEnemyDebugComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	}
 	
 	DrawCone(coneData, GetWorld(), coneColor);
-}
-
-bool UEnemyDebugComponent::OverlapCone(SCone cone, const TArray<TEnumAsByte<EObjectTypeQuery>>& objectTypes, UClass* actorClassFilter, const TArray<AActor*>& actorsToIgnore, TArray<AActor*>& outActors)
-{
-	outActors.Empty();
-	
-	SCube cubeData = GetCubeContainingCone(cone);
-
-	//Check if box is overlapping player
-	TArray<AActor*> overlappedActors;
-	
-	UKismetSystemLibrary::BoxOverlapActors(
-		GetWorld(),
-		cubeData.center,
-		cubeData.extents,
-		objectTypes,
-		actorClassFilter,
-		actorsToIgnore,
-		overlappedActors
-		);
-
-	//Find the angle to each overlapped actors position
-	for(AActor* overlappedActor : overlappedActors)
-	{
-		FVector dirToActor = overlappedActor->GetActorLocation() - cone.originPoint;
-		dirToActor.Z = 0;
-		dirToActor.Normalize();
-
-		float angle = AngleBetweenVectors(enemyRef->GetActorForwardVector(), dirToActor);
-
-		//If players angle matches the cone's angle, it is considered inside of the cone
-		if(angle <= cone.angle * 0.5f)
-		{
-			outActors.Push(overlappedActor);
-		}
-	}
-
-	//Returns true if cone overlaps at least one actor
-	return outActors.Num() > 0;
 }

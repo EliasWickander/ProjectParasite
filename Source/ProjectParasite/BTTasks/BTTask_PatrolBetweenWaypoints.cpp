@@ -4,7 +4,7 @@
 #include "BTTask_PatrolBetweenWaypoints.h"
 
 #include "AIController.h"
-#include "Pawns/PawnEnemy.h"
+#include "ProjectParasite/Pawns/PawnEnemy.h"
 #include "Engine/TargetPoint.h"
 
 UBTTask_PatrolBetweenWaypoints::UBTTask_PatrolBetweenWaypoints()
