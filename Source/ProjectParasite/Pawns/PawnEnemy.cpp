@@ -7,8 +7,9 @@
 #include "ProjectParasite/Pawns/PawnParasite.h"
 #include "ProjectParasite/Components/Debug/EnemyDebugComponent.h"
 #include "AIController.h"
-#include "Engine/TargetPoint.h"
+#include "ProjectParasite/Utilities/DevUtils.h"
 #include "EngineUtils.h"
+#include "Components/CapsuleComponent.h"
 
 APawnEnemy::APawnEnemy()
 {

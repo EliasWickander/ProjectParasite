@@ -12,9 +12,7 @@ struct BTTaskPatrolBetweenWaypointsMemory
 	FVector currentWaypoint = FVector::ZeroVector;
 	class APawnEnemy* ownerEnemy = nullptr;
 };
-/**
- * 
- */
+
 UCLASS()
 class PROJECTPARASITE_API UBTTask_PatrolBetweenWaypoints : public UBTTaskNode
 {

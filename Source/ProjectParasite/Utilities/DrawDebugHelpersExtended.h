@@ -10,7 +10,4 @@
 
 void DrawCone(SCone cone, const UWorld* inWorld, FColor color);
 
-SConeVertices GetConeVerticesFromData(SCone cone);
-SCube GetCubeContainingCone(SCone cone);
-
 #endif
