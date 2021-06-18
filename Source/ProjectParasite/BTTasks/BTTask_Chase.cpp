@@ -23,6 +23,13 @@ EBTNodeResult::Type UBTTask_Chase::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
+	AAIController* AIController = OwnerComp.GetAIOwner();
+
+	UObject* keyValue = OwnerComp.GetBlackboardComponent()->GetValue<UBlackboardKeyType_Object>(BlackboardKey.GetSelectedKeyID());
+	AActor* targetActor = Cast<AActor>(keyValue);
+	
+	AIController->SetFocus(targetActor);
+	
 	return EBTNodeResult::InProgress;
 }
 
