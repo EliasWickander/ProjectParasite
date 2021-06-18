@@ -10,22 +10,37 @@ class ATargetPoint;
 class APawnParasite;
 class APawnShooter;
 
+UENUM(BlueprintType)
+enum class ShooterStates : uint8
+{
+	State_Idle UMETA(DisplayName = "Idle"),
+	State_Patrol UMETA(DisplayName = "Patrol"),
+	State_Chase UMETA(DisplayName = "Chase"),
+	State_Stunned UMETA(DisplayName = "Stunned")
+};
+
 UCLASS()
 class PROJECTPARASITE_API AShooterAIController : public AAIController
 {
 	GENERATED_BODY()
 
 public:
+
 	virtual void Tick(float DeltaSeconds) override;
+
+	ShooterStates GetStatesEnum() { return states; }
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnUnPossess() override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ShooterStates states;
+
 private:
 
 	void StartAIBehavior();
-	void Detect();
+	
 	
 	UPROPERTY(EditAnywhere)
 	UBehaviorTree* behaviorTree = nullptr;
