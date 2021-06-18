@@ -1,5 +1,6 @@
 ﻿#include "DevUtils.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "BehaviorTree/BehaviorTree.h"
 
 FVector AngleVector(float deg)
 {
@@ -55,4 +56,30 @@ bool OverlapCone(SCone cone, const UObject* worldContextObject,
 
 	//Returns true if cone overlaps at least one actor
 	return outActors.Num() > 0;
+}
+
+TArray<UBTTaskNode*> FindAllTasksInBehaviorTree(UBehaviorTree* tree)
+{
+	TArray<UBTTaskNode*> taskNodes = FindAllTaskChildrenOfNode(tree->RootNode);
+
+	return taskNodes;
+}
+
+TArray<UBTTaskNode*> FindAllTaskChildrenOfNode(UBTCompositeNode* node)
+{
+	TArray<UBTTaskNode*> taskNodes;
+	
+	for(FBTCompositeChild child : node->Children)
+	{
+		if(child.ChildTask)
+		{
+			taskNodes.Push(child.ChildTask);
+		}
+		else
+		{
+			taskNodes.Append(FindAllTaskChildrenOfNode(child.ChildComposite));
+		}
+	}
+
+	return taskNodes;
 }

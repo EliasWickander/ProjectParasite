@@ -9,6 +9,8 @@
 class ATargetPoint;
 class APawnParasite;
 class APawnShooter;
+class UBTTaskNode;
+class UBTCompositeNode;
 
 UENUM(BlueprintType)
 enum class ShooterStates : uint8
@@ -40,6 +42,7 @@ protected:
 private:
 
 	void StartAIBehavior();
+	
 	
 	
 	UPROPERTY(EditAnywhere)
