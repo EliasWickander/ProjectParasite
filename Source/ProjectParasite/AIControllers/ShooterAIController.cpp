@@ -18,13 +18,16 @@ void AShooterAIController::BeginPlay()
 
 	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	shooterRef = Cast<APawnShooter>(GetPawn());
+
+	//TODO: Find a way to set acceptance radius of chase task through code
+	blackboard->SetValueAsEnum("CurrentState", (uint8)ShooterStates::State_Patrol);
 }
 
 void AShooterAIController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	Detect();
+	blackboard->SetValueAsObject("PlayerRef", playerRef);
 }
 
 void AShooterAIController::OnPossess(APawn* InPawn)
@@ -53,52 +56,5 @@ void AShooterAIController::StartAIBehavior()
 	{
 		RunBehaviorTree(behaviorTree);
 		blackboard = GetBlackboardComponent();
-	}
-}
-
-void AShooterAIController::Detect()
-{
-	FBoxSphereBounds enemyColBounds = shooterRef->GetCollider()->Bounds;
-
-	SCone coneData {
-		enemyColBounds.Origin,
-		shooterRef->GetActorRotation().Quaternion(),
-		shooterRef->GetDetectionAngle(),
-		enemyColBounds.BoxExtent.Z * 2,
-		shooterRef->GetDetectionRange()
-	};
-
-	const TArray<TEnumAsByte<EObjectTypeQuery>> objectTypes;
-	const TArray<AActor*> actorsToIgnore { };
-	UClass* classFilter = APawnParasite::StaticClass();
-	TArray<AActor*> outActors;
-	
-	if(OverlapCone(coneData, GetWorld(), objectTypes, classFilter, actorsToIgnore, outActors))
-	{
-		FHitResult hitResult;
-		FCollisionQueryParams params;
-		params.AddIgnoredActor(shooterRef);
-
-		if(GetWorld()->LineTraceSingleByChannel(hitResult,shooterRef->GetActorLocation(),outActors[0]->GetActorLocation(), ECC_Visibility, params))
-		{
-			if(hitResult.GetActor() == playerRef)
-			{
-				blackboard->SetValueAsVector("PlayerLocation", outActors[0]->GetActorLocation());
-				SetFocus(outActors[0]);		
-			}
-			else
-			{
-				//Vision obstructed by something in player's path
-				blackboard->ClearValue("PlayerLocation");
-			}
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Didn't hit"));
-		}
-	}
-	else
-	{
-		blackboard->ClearValue("PlayerLocation");
 	}
 }

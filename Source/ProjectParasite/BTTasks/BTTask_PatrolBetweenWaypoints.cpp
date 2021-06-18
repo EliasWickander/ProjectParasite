@@ -12,6 +12,7 @@ UBTTask_PatrolBetweenWaypoints::UBTTask_PatrolBetweenWaypoints()
 	NodeName = TEXT("Patrol Between Waypoints");
 
 	bNotifyTick = true;
+	bNotifyTaskFinished = true;
 }
 
 EBTNodeResult::Type UBTTask_PatrolBetweenWaypoints::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -77,4 +78,8 @@ void UBTTask_PatrolBetweenWaypoints::OnTaskFinished(UBehaviorTreeComponent& Owne
                                                     EBTNodeResult::Type TaskResult)
 {
 	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
+
+	BTTaskPatrolBetweenWaypointsMemory* memory = reinterpret_cast<BTTaskPatrolBetweenWaypointsMemory*>(NodeMemory);
+
+	memory->ownerEnemy->GetAIController()->StopMovement();
 }

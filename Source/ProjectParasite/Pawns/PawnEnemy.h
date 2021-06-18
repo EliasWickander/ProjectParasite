@@ -54,6 +54,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Detection")
 	float detectionAngle = 60;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+    float attackRange = 300;
 
 private:
 	APawnParasite* FindPlayerInWorld();
