@@ -6,6 +6,11 @@
 #include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
 #include "BTTask_Chase.generated.h"
 
+struct BTTaskChaseMemory
+{
+	class APawnEnemy* ownerEnemy = nullptr;
+};
+
 UCLASS()
 class PROJECTPARASITE_API UBTTask_Chase : public UBTTask_BlackboardBase
 {
@@ -18,10 +23,6 @@ public:
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 	virtual void OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult) override;
 
-	UPROPERTY(EditAnywhere)
-	float acceptanceRadius = 200;
-
 private:
 	virtual uint16 GetInstanceMemorySize() const override;
-
 };

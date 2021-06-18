@@ -11,6 +11,7 @@ class ATargetPoint;
 class AAIController;
 class APawnParasite;
 class UEnemyDebugComponent;
+
 UCLASS()
 class PROJECTPARASITE_API APawnEnemy : public APawnBase
 {
@@ -28,10 +29,12 @@ public:
 	void SetPossessed(bool enabled);
 
 	virtual void Attack();
-	
+
 	USceneComponent* GetNapeComponent() { return napeComponent; }
 	TArray<ATargetPoint*> GetPatrolPoints() { return patrolPoints; }
 	AAIController* GetAIController() { return AIController; }
+
+	float GetAttackRange() { return attackRange; }
 	float GetDetectionRange() { return detectionRange; }
 	float GetDetectionAngle() { return detectionAngle; }
 	

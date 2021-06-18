@@ -3,13 +3,13 @@
 
 #include "ShooterAIController.h"
 
+#include "BehaviorTree/BehaviorTree.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
 #include "ProjectParasite/Pawns/PawnShooter.h"
 #include "Kismet/GameplayStatics.h"
-#include "ProjectParasite/Utilities/DevUtils.h"
-#include "Components/CapsuleComponent.h"
 
 #include "BehaviorTree/BlackboardComponent.h"
+#include "ProjectParasite/BTTasks/BTTask_Chase.h"
 
 
 void AShooterAIController::BeginPlay()
@@ -18,15 +18,14 @@ void AShooterAIController::BeginPlay()
 
 	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	shooterRef = Cast<APawnShooter>(GetPawn());
-
-	//TODO: Find a way to set acceptance radius of chase task through code
+	
 	blackboard->SetValueAsEnum("CurrentState", (uint8)ShooterStates::State_Patrol);
 }
 
 void AShooterAIController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
+	
 	blackboard->SetValueAsObject("PlayerRef", playerRef);
 }
 
@@ -55,6 +54,6 @@ void AShooterAIController::StartAIBehavior()
 	if(behaviorTree != nullptr)
 	{
 		RunBehaviorTree(behaviorTree);
-		blackboard = GetBlackboardComponent();
+	    blackboard = GetBlackboardComponent();
 	}
 }
