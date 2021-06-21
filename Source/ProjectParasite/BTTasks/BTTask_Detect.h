@@ -30,4 +30,8 @@ private:
 	virtual uint16 GetInstanceMemorySize() const override;
 
 	class APawnParasite* playerRef = nullptr;
+
+	bool hasDetected = false;
+
+	float reactionTimer = 0;
 };

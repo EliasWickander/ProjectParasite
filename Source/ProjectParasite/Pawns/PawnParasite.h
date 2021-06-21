@@ -34,6 +34,7 @@ public:
 
 	float GetDashCooldown();
 	float GetDashTimer();
+	float GetBaseMoveSpeed() { return baseMoveSpeed; }
 	void SetDashTimer(float value);
 
 protected:
@@ -46,6 +47,9 @@ private:
 
 	UPROPERTY()
 	UStateMachine* stateMachine = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float baseMoveSpeed = 300;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Possession", meta = (AllowPrivateAccess = "true"))
 	float possessRadius = 100;

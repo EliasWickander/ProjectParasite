@@ -33,7 +33,8 @@ EBTNodeResult::Type UBTTask_Chase::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 	AActor* targetActor = Cast<AActor>(keyValue);
 	
 	AIController->SetFocus(targetActor);
-	
+
+	memory->ownerEnemy->SetMoveSpeed(memory->ownerEnemy->GetChaseSpeed());
 	return EBTNodeResult::InProgress;
 }
 

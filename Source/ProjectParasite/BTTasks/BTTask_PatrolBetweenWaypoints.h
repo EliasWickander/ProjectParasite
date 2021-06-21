@@ -29,4 +29,6 @@ private:
 	void InitNextWaypoint(uint8* NodeMemory);
 
 	virtual uint16 GetInstanceMemorySize() const override;
+
+	float timer = 0;
 };

@@ -37,7 +37,22 @@ void UBTTask_Detect::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
+	BTTaskDetectMemory* memory = reinterpret_cast<BTTaskDetectMemory*>(NodeMemory);
+	
 	Detect(NodeMemory);
+
+	if(hasDetected)
+	{
+		if(reactionTimer > memory->ownerEnemy->GetSightReactionTime())
+		{
+			hasDetected = false;
+			memory->blackboard->SetValueAsEnum("CurrentState", (uint8)ShooterStates::State_Chase);
+		}
+		else
+		{
+			reactionTimer += GetWorld()->GetDeltaSeconds();
+		}
+	}
 }
 
 void UBTTask_Detect::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,
@@ -75,7 +90,9 @@ void UBTTask_Detect::Detect(uint8* nodeMemory)
 		{
 			if(hitResult.GetActor() == playerRef)
 			{
-				memory->blackboard->SetValueAsEnum("CurrentState", (uint8)ShooterStates::State_Chase);	
+				memory->ownerEnemy->GetAIController()->StopMovement();
+				
+				hasDetected = true;
 			}
 			else
 			{

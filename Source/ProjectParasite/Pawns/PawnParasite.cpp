@@ -31,6 +31,8 @@ APawnParasite::APawnParasite()
 void APawnParasite::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SetMoveSpeed(baseMoveSpeed);
 }
 
 void APawnParasite::Tick(float DeltaTime)

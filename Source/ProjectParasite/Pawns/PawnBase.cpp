@@ -41,7 +41,6 @@ void APawnBase::BeginPlay()
 	Super::BeginPlay();
 
 	floatingPawnMovement = FindComponentByClass<UFloatingPawnMovement>();
-	floatingPawnMovement->MaxSpeed = moveSpeed;
 
 	playerControllerRef = Cast<APlayerControllerBase>(GetWorld()->GetFirstPlayerController());
 	OnTakeAnyDamage.AddDynamic(this, &APawnBase::OnTakeDamage);
@@ -106,13 +105,13 @@ bool APawnBase::RaycastToMouseCursor(FHitResult& hitResult)
 
 void APawnBase::SetMoveSpeed(float speed)
 {
-	moveSpeed = speed;
-	floatingPawnMovement->MaxSpeed = moveSpeed;
+	currentMoveSpeed = speed;
+	floatingPawnMovement->MaxSpeed = currentMoveSpeed;
 }
 
 float APawnBase::GetMoveSpeed()
 {
-	return moveSpeed;
+	return currentMoveSpeed;
 }
 
 void APawnBase::SetCanMove(bool enabled)

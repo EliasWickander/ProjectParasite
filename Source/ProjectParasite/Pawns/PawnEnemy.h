@@ -34,9 +34,13 @@ public:
 	TArray<ATargetPoint*> GetPatrolPoints() { return patrolPoints; }
 	AAIController* GetAIController() { return AIController; }
 
+	float GetPatrolSpeed() { return patrolSpeed; }
+	float GetChaseSpeed() { return chaseSpeed; }
+
 	float GetAttackRange() { return attackRange; }
 	float GetDetectionRange() { return detectionRange; }
 	float GetDetectionAngle() { return detectionAngle; }
+	float GetSightReactionTime() { return sightReactionTime; }
 	
 protected:
 	virtual void BeginPlay() override;
@@ -52,6 +56,12 @@ protected:
 	
 	APawnParasite* playerRef = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float patrolSpeed = 200;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float chaseSpeed = 200;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Detection")
 	float detectionRange = 200;
 
@@ -60,6 +70,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
     float attackRange = 300;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Detection")
+	float sightReactionTime = 0.2f;
 
 private:
 	APawnParasite* FindPlayerInWorld();

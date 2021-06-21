@@ -25,6 +25,8 @@ EBTNodeResult::Type UBTTask_PatrolBetweenWaypoints::ExecuteTask(UBehaviorTreeCom
 	memory->patrolPointQueue = new TQueue<FVector>();
 	memory->ownerEnemy = OwnerComp.GetAIOwner()->GetPawn<APawnEnemy>();
 
+	memory->ownerEnemy->SetMoveSpeed(memory->ownerEnemy->GetPatrolSpeed());
+
 	for(ATargetPoint* point : memory->ownerEnemy->GetPatrolPoints())
 	{
 		FVector tempLocation = point->GetActorLocation();
