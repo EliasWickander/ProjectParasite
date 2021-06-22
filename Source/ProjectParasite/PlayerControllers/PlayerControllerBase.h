@@ -14,6 +14,9 @@ class PROJECTPARASITE_API APlayerControllerBase : public APlayerController
 {
 	GENERATED_BODY()
 
+public:
+	APawnParasite* GetPlayer() { return player; }
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;

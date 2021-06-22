@@ -16,16 +16,15 @@ class PROJECTPARASITE_API AWeaponBase : public AActor
 public:
 
 	friend class APawnEnemy;
-	// Sets default values for this actor's properties
+
 	AWeaponBase();
 
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void Trigger();
 
 protected:
-	// Called when the game starts or when spawned
+
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
@@ -34,9 +33,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	USphereComponent* pickupTrigger = nullptr;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Pickup")
-	bool isPickedUp = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
+	bool isEquipped = false;
 
 	APawnParasite* playerRef = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float attackRate = 2;
+	float attackTimer = 0;
 };

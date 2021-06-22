@@ -3,34 +3,40 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
-#include "BTTask_Chase.generated.h"
+#include "BehaviorTree/BTTaskNode.h"
+#include "BTTask_Attack.generated.h"
 
 class APawnEnemy;
 class APawnParasite;
 
-struct BTTaskChaseMemory
+struct BTTaskAttackMemory
 {
-	APawnEnemy* ownerEnemy = nullptr;
-	UBlackboardComponent* blackboard = nullptr;
-};
 
+};
+/**
+ * 
+ */
 UCLASS()
-class PROJECTPARASITE_API UBTTask_Chase : public UBTTask_BlackboardBase
+class PROJECTPARASITE_API UBTTask_Attack : public UBTTaskNode
 {
 	GENERATED_BODY()
 
 public:
-	UBTTask_Chase();
-
+	UBTTask_Attack();
+	
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 	virtual void OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult) override;
 
 private:
 	virtual uint16 GetInstanceMemorySize() const override;
-	void SetTarget(uint8* NodeMemory, AActor* target);
-	
+	void SetTarget(AActor* target);
+
+	UFUNCTION()
+	void OnTargetDestroyed(AActor* destroyedActor);
+
+	UBlackboardComponent* blackboard = nullptr;
+	APawnEnemy* ownerEnemy = nullptr;
 	APawnParasite* playerRef = nullptr;
 	AActor* targetActor = nullptr;
 };

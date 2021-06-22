@@ -9,7 +9,10 @@
 #include "AIController.h"
 #include "ProjectParasite/Utilities/DevUtils.h"
 #include "EngineUtils.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "ProjectParasite/Actors/Weapons/WeaponBase.h"
+#include "Kismet/GameplayStatics.h"
+#include "ProjectParasite/AIControllers/ShooterAIController.h"
 
 APawnEnemy::APawnEnemy()
 {
@@ -39,25 +42,35 @@ void APawnEnemy::BeginPlay()
 		UE_LOG(LogTemp, Error, TEXT("%s has no weapon type set."), *GetName());
 	}
 	
-	playerRef = FindPlayerInWorld();
+	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	
 	AIController = Cast<AAIController>(GetController());
+
+	
 }
 
-void APawnEnemy::Tick(float DeltaTime)
+void APawnEnemy::UpdatePawnBehavior(float deltaSeconds)
 {
-	Super::Tick(DeltaTime);
-
+	Super::UpdatePawnBehavior(deltaSeconds);
+	
 	if(IsPlayerControlled())
 		RotateToMouseCursor();
+}
 
+void APawnEnemy::OnStartDeath(AActor* pawnBeingDestroyed)
+{
+	Super::OnStartDeath(pawnBeingDestroyed);
+
+	APawnEnemy* enemyDying = Cast<APawnEnemy>(pawnBeingDestroyed);
+
+	enemyDying->GetAIController()->GetBlackboardComponent()->SetValueAsEnum("CurrentState", (uint8)ShooterStates::State_Idle);
 }
 
 void APawnEnemy::SetWeapon(AWeaponBase* newWeapon)
 {
 	if(equippedWeapon)
 	{
-		equippedWeapon->isPickedUp = false;
+		equippedWeapon->isEquipped = false;
 		equippedWeapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	}
 
@@ -65,7 +78,7 @@ void APawnEnemy::SetWeapon(AWeaponBase* newWeapon)
 	newWeapon->SetActorRotation(weaponSocket->GetComponentRotation());
 	newWeapon->AttachToComponent(weaponSocket, FAttachmentTransformRules::KeepWorldTransform);
 	
-	newWeapon->isPickedUp = true;
+	newWeapon->isEquipped = true;
 	
 	equippedWeapon = newWeapon;
 }
@@ -87,32 +100,7 @@ void APawnEnemy::Attack()
 {
 	if(equippedWeapon == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s has no weapon attached. Cannot attack."), *GetName());
+		UE_LOG(LogTemp, Error, TEXT("%s has no weapon attached. Cannot attack."), *GetName());
 		return;
 	}
-}
-
-APawnParasite* APawnEnemy::FindPlayerInWorld()
-{
-	//Find all parasites in world (should only be one)
-	TArray<APawnParasite*> playersInWorld;
-	
-	for (TActorIterator<APawnParasite> p(GetWorld()); p; ++p)
-	{
-		APawnParasite* parasiteFound = *p;
-		playersInWorld.Add(parasiteFound);
-	}
-
-	if(playersInWorld.Num() > 1)
-	{
-		UE_LOG(LogTemp, Error, TEXT("More than one parasite found in world."))
-	}
-
-	//Crash game if no parasite is in world since that would break enemy behaviour
-	if(playersInWorld.Num() <= 0)
-	{
-		UE_LOG(LogTemp, Fatal, TEXT("No parasite found in world."))
-	}
-
-	return playersInWorld[0];
 }

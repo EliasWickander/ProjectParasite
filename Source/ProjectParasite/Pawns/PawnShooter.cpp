@@ -11,7 +11,10 @@ void APawnShooter::BeginPlay()
 	Super::BeginPlay();
 }
 
-void APawnShooter::Tick(float DeltaTime)
+void APawnShooter::UpdatePawnBehavior(float deltaSeconds)
 {
-	Super::Tick(DeltaTime);
+	if(isPendingDeath)
+		return;
+	
+	Super::UpdatePawnBehavior(deltaSeconds);
 }

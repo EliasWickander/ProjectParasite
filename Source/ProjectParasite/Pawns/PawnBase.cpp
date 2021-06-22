@@ -10,6 +10,7 @@
 #include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "GameFramework/DefaultPawn.h"
+#include "ProjectParasite/Pawns/PawnEnemy.h"
 
 APawnBase::APawnBase()
 {
@@ -124,15 +125,58 @@ bool APawnBase::GetCanMove()
 	return canMove;
 }
 
+void APawnBase::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if(isPendingDeath)
+	{
+		HandleDeath();
+	}
+	
+	UpdatePawnBehavior(DeltaSeconds);
+}
+
+void APawnBase::UpdatePawnBehavior(float deltaSeconds)
+{
+
+}
+
+
+
+void APawnBase::HandleDeath()
+{
+	if(deathTimer < deathTime)
+	{
+		deathTimer += GetWorld()->DeltaTimeSeconds;
+	}
+	else
+	{
+			
+		//Die
+		Destroy();		
+	}
+}
+
 void APawnBase::OnTakeDamage(AActor* damagedActor, float damage, const UDamageType* damageType, AController* causerController,
-	AActor* causerActor)
+                             AActor* causerActor)
 {
 	currentHealth -= damage;
 
 	UE_LOG(LogTemp, Warning, TEXT("Took %f damage"), damage);
 	if(currentHealth <= 0)
 	{
-		//Die
-		Destroy();
+		if(playerControllerRef->GetPlayer()->GetPossessedEnemy() == this)
+		{
+			playerControllerRef->Possess(playerControllerRef->GetPlayer());
+		}
+
+		isPendingDeath = true;
+		OnStartDeath(this);
 	}
+}
+
+void APawnBase::OnStartDeath(AActor* pawnBeingDestroyed)
+{
+	
 }

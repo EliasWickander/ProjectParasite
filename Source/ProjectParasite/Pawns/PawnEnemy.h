@@ -25,8 +25,7 @@ public:
 	
 	APawnEnemy();
 
-	virtual void Tick(float DeltaTime) override;
-
+	virtual void UpdatePawnBehavior(float deltaSeconds) override;
 	void SetPossessed(bool enabled);
 
 	virtual void Attack();
@@ -34,9 +33,12 @@ public:
 	USceneComponent* GetNapeComponent() { return napeComponent; }
 	TArray<ATargetPoint*> GetPatrolPoints() { return patrolPoints; }
 	AAIController* GetAIController() { return AIController; }
+	APawnParasite* GetPlayerRef() { return playerRef; }
 
 	float GetPatrolSpeed() { return patrolSpeed; }
 	float GetChaseSpeed() { return chaseSpeed; }
+
+	virtual void OnStartDeath(AActor* pawnBeingDestroyed) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	virtual void SetWeapon(AWeaponBase* newWeapon);
@@ -87,7 +89,5 @@ protected:
 	float sightReactionTime = 0.2f;
 
 private:
-	APawnParasite* FindPlayerInWorld();
-
 	AAIController* AIController = nullptr;
 };

@@ -28,9 +28,6 @@ void ARangedWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//Handle attack timer
-	attackTimer = FMath::Clamp<float>(attackTimer - DeltaTime, 0, fireRate);
-
 }
 
 void ARangedWeapon::Trigger()
@@ -52,7 +49,7 @@ void ARangedWeapon::Trigger()
 			spawnedProjectile->SetOwner(this);
 	
 			//Reset attack timer
-			attackTimer = fireRate;
+			attackTimer = attackRate;
 		}
 	}
 	else

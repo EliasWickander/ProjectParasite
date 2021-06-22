@@ -5,7 +5,6 @@
 #include "WeaponBase.h"
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
 #include "RangedWeapon.generated.h"
 
 class AProjectile;
@@ -33,9 +32,4 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AProjectile> projectile = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float fireRate = 2;
-
-	float attackTimer = 0;
 };

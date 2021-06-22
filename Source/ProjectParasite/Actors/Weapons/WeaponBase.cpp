@@ -4,8 +4,8 @@
 #include "WeaponBase.h"
 
 #include "Components/SphereComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AWeaponBase::AWeaponBase()
@@ -18,7 +18,6 @@ AWeaponBase::AWeaponBase()
 
 	pickupTrigger = CreateDefaultSubobject<USphereComponent>(TEXT("Pickup Trigger"));
 	pickupTrigger->SetupAttachment(RootComponent);
-
 }
 
 // Called when the game starts or when spawned
@@ -27,12 +26,6 @@ void AWeaponBase::BeginPlay()
 	Super::BeginPlay();
 
 	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-	
-	if(isPickedUp)
-	{
-		pickupTrigger->UnregisterComponent();
-	}
-	
 }
 
 // Called every frame
@@ -40,6 +33,8 @@ void AWeaponBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//Handle attack timer
+	attackTimer = FMath::Clamp<float>(attackTimer - DeltaTime, 0, attackRate);
 }
 
 void AWeaponBase::Trigger()

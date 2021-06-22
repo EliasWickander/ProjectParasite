@@ -8,7 +8,7 @@
 
 void AKnife::Tick(float DeltaSeconds)
 {
-
+	Super::Tick(DeltaSeconds);
 }
 
 void AKnife::Trigger()

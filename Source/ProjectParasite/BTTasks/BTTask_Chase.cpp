@@ -6,7 +6,9 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
+#include "ProjectParasite/AIControllers/ShooterAIController.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
+#include "ProjectParasite/Pawns/PawnParasite.h"
 
 UBTTask_Chase::UBTTask_Chase()
 {
@@ -26,13 +28,18 @@ EBTNodeResult::Type UBTTask_Chase::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 	BTTaskChaseMemory* memory = reinterpret_cast<BTTaskChaseMemory*>(NodeMemory);
 	
 	memory->ownerEnemy = OwnerComp.GetAIOwner()->GetPawn<APawnEnemy>();
-	
-	AAIController* AIController = OwnerComp.GetAIOwner();
+	memory->blackboard = OwnerComp.GetBlackboardComponent();
 
-	UObject* keyValue = OwnerComp.GetBlackboardComponent()->GetValue<UBlackboardKeyType_Object>(BlackboardKey.GetSelectedKeyID());
-	AActor* targetActor = Cast<AActor>(keyValue);
+	playerRef = memory->ownerEnemy->GetPlayerRef();
 	
-	AIController->SetFocus(targetActor);
+	if(playerRef->GetPossessedEnemy() != nullptr)
+	{
+		SetTarget(NodeMemory, playerRef->GetPossessedEnemy());
+	}
+	else
+	{
+		SetTarget(NodeMemory, playerRef);
+	}
 
 	memory->ownerEnemy->SetMoveSpeed(memory->ownerEnemy->GetChaseSpeed());
 	return EBTNodeResult::InProgress;
@@ -46,14 +53,13 @@ void UBTTask_Chase::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
 	
 	AAIController* AIController = OwnerComp.GetAIOwner();
 
-	if (BlackboardKey.SelectedKeyType == UBlackboardKeyType_Object::StaticClass())
+	if(targetActor != nullptr)
 	{
-		UObject* keyValue = OwnerComp.GetBlackboardComponent()->GetValue<UBlackboardKeyType_Object>(BlackboardKey.GetSelectedKeyID());
-		AActor* targetActor = Cast<AActor>(keyValue);
-		
-		if(targetActor != nullptr)
+		AIController->MoveToActor(targetActor, memory->ownerEnemy->GetAttackRange());
+
+		if(AIController->GetPathFollowingComponent()->DidMoveReachGoal())
 		{
-			AIController->MoveToActor(targetActor, memory->ownerEnemy->GetAttackRange());
+			memory->blackboard->SetValueAsEnum("CurrentState", (uint8)ShooterStates::State_Attack);
 		}
 	}
 }
@@ -70,4 +76,12 @@ void UBTTask_Chase::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 uint16 UBTTask_Chase::GetInstanceMemorySize() const
 {
 	return sizeof(BTTaskChaseMemory);
+}
+
+void UBTTask_Chase::SetTarget(uint8* NodeMemory, AActor* target)
+{
+	BTTaskChaseMemory* instanceMemory = reinterpret_cast<BTTaskChaseMemory*>(NodeMemory);
+	instanceMemory->ownerEnemy->GetAIController()->SetFocus(target);
+
+	targetActor = target;
 }

@@ -14,6 +14,7 @@ class UCapsuleComponent;
 class UMovementComponent;
 class UFloatingPawnMovement;
 class APlayerControllerBase;
+
 UCLASS()
 class PROJECTPARASITE_API APawnBase : public APawn
 {
@@ -32,9 +33,16 @@ public:
 	void SetCanMove(bool enabled);
 	bool GetCanMove();
 
+	virtual void Tick(float DeltaSeconds) override;
+
+	virtual void UpdatePawnBehavior(float deltaSeconds);
+
+	virtual void HandleDeath();
+
 	UFUNCTION()
 	void OnTakeDamage(AActor* damagedActor, float damage, const UDamageType* damageType, AController* causerController, AActor* causerActor);
 
+	virtual void OnStartDeath(AActor* pawnBeingDestroyed);
 	void MoveHorizontal(float axis);
 	void MoveVertical(float axis);
 	
@@ -55,6 +63,8 @@ protected:
 	
 	float horizontalAxis = 0;
 	float verticalAxis = 0;
+	
+	bool isPendingDeath = false;
 
 private:
 	
@@ -78,4 +88,8 @@ private:
 	UPawnMovementComponent* movementComponent = nullptr;
 	
 	UFloatingPawnMovement* floatingPawnMovement = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health", meta = (AllowPrivateAccess = "true"))
+	float deathTime = 1;
+	float deathTimer = 0;
 };

@@ -26,9 +26,9 @@ EBTNodeResult::Type UBTTask_Detect::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	BTTaskDetectMemory* memory = reinterpret_cast<BTTaskDetectMemory*>(NodeMemory);
 	
 	memory->ownerEnemy = OwnerComp.GetAIOwner()->GetPawn<APawnEnemy>();
-
-	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	memory->blackboard = OwnerComp.GetBlackboardComponent();
+	
+	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	
 	return EBTNodeResult::InProgress;
 }
@@ -88,26 +88,28 @@ void UBTTask_Detect::Detect(uint8* nodeMemory)
 
 		if(GetWorld()->LineTraceSingleByChannel(hitResult,memory->ownerEnemy->GetActorLocation(),outActors[0]->GetActorLocation(), ECC_Visibility, params))
 		{
-			if(hitResult.GetActor() == playerRef)
+			AActor* actorToDetect;
+
+			if(playerRef->GetPossessedEnemy() != nullptr)
+			{
+				actorToDetect = playerRef->GetPossessedEnemy();	
+			}
+			else
+			{
+				actorToDetect = playerRef;
+			}
+			
+			if(hitResult.GetActor() == actorToDetect)
 			{
 				memory->ownerEnemy->GetAIController()->StopMovement();
 				
 				hasDetected = true;
-			}
-			else
-			{
-				//Vision obstructed by something in player's path
-				//blackboard->ClearValue("PlayerLocation");
 			}
 		}
 		else
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Didn't hit"));
 		}
-	}
-	else
-	{
-		//blackboard->ClearValue("PlayerLocation");
 	}
 }
 
