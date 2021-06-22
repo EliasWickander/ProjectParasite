@@ -6,7 +6,7 @@
 #include "PawnEnemy.h"
 #include "PawnEnemyRanged.generated.h"
 
-class AWeapon;
+class AWeaponBase;
 class AProjectile;
 class UWeaponComponent;
 
@@ -26,6 +26,4 @@ public:
 protected:
 
 	virtual void BeginPlay() override;
-
-	AWeapon* weapon = nullptr;
 };

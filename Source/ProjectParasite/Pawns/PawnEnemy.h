@@ -11,6 +11,7 @@ class ATargetPoint;
 class AAIController;
 class APawnParasite;
 class UEnemyDebugComponent;
+class AWeaponBase;
 
 UCLASS()
 class PROJECTPARASITE_API APawnEnemy : public APawnBase
@@ -37,6 +38,9 @@ public:
 	float GetPatrolSpeed() { return patrolSpeed; }
 	float GetChaseSpeed() { return chaseSpeed; }
 
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	virtual void SetWeapon(AWeaponBase* newWeapon);
+	
 	float GetAttackRange() { return attackRange; }
 	float GetDetectionRange() { return detectionRange; }
 	float GetDetectionAngle() { return detectionAngle; }
@@ -50,6 +54,14 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USceneComponent* napeComponent = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+	TSubclassOf<AWeaponBase> weaponType;
+	
+	AWeaponBase* equippedWeapon = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USceneComponent* weaponSocket = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
 	TArray<ATargetPoint*> patrolPoints;

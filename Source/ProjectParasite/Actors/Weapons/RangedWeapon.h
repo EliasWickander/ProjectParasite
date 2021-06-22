@@ -2,32 +2,31 @@
 
 #pragma once
 
+#include "WeaponBase.h"
+
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Weapon.generated.h"
+#include "RangedWeapon.generated.h"
 
 class AProjectile;
 
 UCLASS()
-class PROJECTPARASITE_API AWeapon : public AActor
+class PROJECTPARASITE_API ARangedWeapon : public AWeaponBase
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AWeapon();
+	ARangedWeapon();
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void Fire();
+	virtual void Trigger() override;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-	UStaticMeshComponent* baseMesh = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	USceneComponent* weaponSocket = nullptr;

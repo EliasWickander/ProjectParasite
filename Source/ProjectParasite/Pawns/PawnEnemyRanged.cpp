@@ -3,7 +3,7 @@
 
 #include "PawnEnemyRanged.h"
 
-#include "ProjectParasite/Actors/Weapon.h"
+#include "ProjectParasite/Actors/Weapons/WeaponBase.h"
 
 APawnEnemyRanged::APawnEnemyRanged()
 {
@@ -13,16 +13,6 @@ APawnEnemyRanged::APawnEnemyRanged()
 void APawnEnemyRanged::BeginPlay()
 {
 	Super::BeginPlay();
-
-	TArray<AActor*> childActors;
-
-	GetAllChildActors(childActors);
-
-	for(AActor* actor : childActors)
-	{
-		if(Cast<AWeapon>(actor) != nullptr)
-			weapon = Cast<AWeapon>(actor);
-	}
 }
 
 void APawnEnemyRanged::Tick(float DeltaSeconds)
@@ -34,9 +24,9 @@ void APawnEnemyRanged::Attack()
 {
 	Super::Attack();
 
-	if(weapon)
+	if(equippedWeapon)
 	{
-		weapon->Fire();	
+		equippedWeapon->Trigger();	
 	}
 	else
 	{

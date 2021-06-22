@@ -49,7 +49,7 @@ void AProjectile::OnHit(UPrimitiveComponent* hitComp, AActor* otherActor, UPrimi
 		//Apply damage if hit actor is a pawn
 		if(hitPawn != nullptr)
 		{
-			UGameplayStatics::ApplyDamage(hitPawn, damage, hitPawn->Controller, this, damageType);
+			UGameplayStatics::ApplyDamage(hitPawn, damage, UGameplayStatics::GetPlayerController(GetWorld(), 0), this, damageType);
 		}
 
 		//Destroy bullet on hit
