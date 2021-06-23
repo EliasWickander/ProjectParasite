@@ -6,6 +6,9 @@
 #include "BehaviorTree/BTTaskNode.h"
 #include "BTTask_Detect.generated.h"
 
+class APawnParasite;
+class AShooterAIController;
+
 struct BTTaskDetectMemory
 {
 	class APawnEnemy* ownerEnemy = nullptr;
@@ -29,7 +32,8 @@ private:
 	
 	virtual uint16 GetInstanceMemorySize() const override;
 
-	class APawnParasite* playerRef = nullptr;
+	APawnParasite* playerRef = nullptr;
+	AShooterAIController* shooterAIController = nullptr;
 
 	bool hasDetected = false;
 

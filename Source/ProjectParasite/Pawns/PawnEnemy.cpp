@@ -77,23 +77,11 @@ void APawnEnemy::SetWeapon(AWeaponBase* newWeapon)
 	newWeapon->SetActorLocation(weaponSocket->GetComponentLocation());
 	newWeapon->SetActorRotation(weaponSocket->GetComponentRotation());
 	newWeapon->AttachToComponent(weaponSocket, FAttachmentTransformRules::KeepWorldTransform);
-	
+
+	newWeapon->shooterRef = this;
 	newWeapon->isEquipped = true;
 	
 	equippedWeapon = newWeapon;
-}
-
-void APawnEnemy::SetPossessed(bool enabled)
-{
-	if(enabled)
-	{
-		playerControllerRef->Possess(this);
-	}
-	else
-	{
-		AIController->Possess(this);
-		playerControllerRef->Possess(playerRef);
-	}
 }
 
 void APawnEnemy::Attack()

@@ -15,7 +15,7 @@ class PROJECTPARASITE_API APlayerControllerBase : public APlayerController
 	GENERATED_BODY()
 
 public:
-	APawnParasite* GetPlayer() { return player; }
+	APawnParasite* GetPlayer() { return playerRef; }
 	
 protected:
 	virtual void BeginPlay() override;
@@ -34,6 +34,6 @@ protected:
 	void AttackInternal();
 	void DashInternal();
 
-	APawnParasite* player = nullptr;
+	APawnParasite* playerRef = nullptr;
 	APawnBase* controlledPawn = nullptr;
 };

@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "WeaponBase.generated.h"
 
-class APawnParasite;
+class APawnEnemy;
 class USphereComponent;
 UCLASS()
 class PROJECTPARASITE_API AWeaponBase : public AActor
@@ -36,9 +36,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
 	bool isEquipped = false;
 
-	APawnParasite* playerRef = nullptr;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float attackRate = 2;
 	float attackTimer = 0;
+	
+	APawnEnemy* shooterRef = nullptr;
 };

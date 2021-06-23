@@ -4,7 +4,6 @@
 #include "Knife.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
-#include "ProjectParasite/Pawns/PawnParasite.h"
 
 void AKnife::Tick(float DeltaSeconds)
 {
@@ -15,12 +14,14 @@ void AKnife::Trigger()
 {
 	Super::Trigger();
 
+	//Get all actors overlapping the knife
 	TArray<AActor*> overlappingActors;
 	
 	GetOverlappingActors(overlappingActors, APawnEnemy::StaticClass());
 
 	for(AActor* actor : overlappingActors)
 	{
+		//Find the first enemy overlapped and apply damage to it
 		APawnEnemy* hitEnemy = Cast<APawnEnemy>(actor);
 
 		APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);

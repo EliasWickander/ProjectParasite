@@ -8,12 +8,15 @@
 
 #include "PawnBase.generated.h"
 
+class APawnBase;
 class UCameraComponent;
 class USpringArmComponent;
 class UCapsuleComponent;
 class UMovementComponent;
 class UFloatingPawnMovement;
 class APlayerControllerBase;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStartDeathEvent, APawnBase*, pawnBeingDestroyed);
 
 UCLASS()
 class PROJECTPARASITE_API APawnBase : public APawn
@@ -43,12 +46,16 @@ public:
 	void OnTakeDamage(AActor* damagedActor, float damage, const UDamageType* damageType, AController* causerController, AActor* causerActor);
 
 	virtual void OnStartDeath(AActor* pawnBeingDestroyed);
+	
 	void MoveHorizontal(float axis);
 	void MoveVertical(float axis);
+	bool GetIsPendingDeath() { return isPendingDeath; }
 	
 	UCapsuleComponent* GetCollider() { return capsuleCollider; }
     
     APlayerControllerBase* playerControllerRef = nullptr;
+
+	FOnStartDeathEvent onStartDeathEvent;
     	
 protected:
 	virtual void BeginPlay() override;

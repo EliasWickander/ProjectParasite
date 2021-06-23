@@ -22,11 +22,11 @@ public:
 
 	friend class UEnemyDebugComponent;
 	friend class UBTTask_PatrolBetweenWaypoints;
+	friend class AWeaponBase;
 	
 	APawnEnemy();
 
 	virtual void UpdatePawnBehavior(float deltaSeconds) override;
-	void SetPossessed(bool enabled);
 
 	virtual void Attack();
 

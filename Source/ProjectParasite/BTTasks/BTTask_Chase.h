@@ -8,6 +8,7 @@
 
 class APawnEnemy;
 class APawnParasite;
+class AShooterAIController;
 
 struct BTTaskChaseMemory
 {
@@ -32,5 +33,6 @@ private:
 	void SetTarget(uint8* NodeMemory, AActor* target);
 	
 	APawnParasite* playerRef = nullptr;
+	AShooterAIController* shooterAIController = nullptr;
 	AActor* targetActor = nullptr;
 };

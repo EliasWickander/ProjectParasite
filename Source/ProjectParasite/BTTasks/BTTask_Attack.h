@@ -8,14 +8,19 @@
 
 class APawnEnemy;
 class APawnParasite;
+class AShooterAIController;
+class APawnBase;
 
 struct BTTaskAttackMemory
 {
-
+	UBlackboardComponent* blackboard = nullptr;
+	APawnEnemy* ownerEnemy = nullptr;
+	AShooterAIController* shooterAIController = nullptr;
+	
+	APawnParasite* playerRef = nullptr;
+	APawnBase* targetActor = nullptr;
 };
-/**
- * 
- */
+
 UCLASS()
 class PROJECTPARASITE_API UBTTask_Attack : public UBTTaskNode
 {
@@ -30,13 +35,12 @@ public:
 
 private:
 	virtual uint16 GetInstanceMemorySize() const override;
-	void SetTarget(AActor* target);
+	void SetTarget(APawnBase* target);
 
 	UFUNCTION()
-	void OnTargetDestroyed(AActor* destroyedActor);
+	void OnTargetDeath(AActor* destroyedActor);
 
-	UBlackboardComponent* blackboard = nullptr;
-	APawnEnemy* ownerEnemy = nullptr;
-	APawnParasite* playerRef = nullptr;
-	AActor* targetActor = nullptr;
+	bool IsInRange(BTTaskAttackMemory* instanceMemory);
+
+	UBehaviorTreeComponent* behaviorTreeComponent = nullptr;
 };

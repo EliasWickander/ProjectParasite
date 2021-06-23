@@ -166,12 +166,8 @@ void APawnBase::OnTakeDamage(AActor* damagedActor, float damage, const UDamageTy
 	UE_LOG(LogTemp, Warning, TEXT("Took %f damage"), damage);
 	if(currentHealth <= 0)
 	{
-		if(playerControllerRef->GetPlayer()->GetPossessedEnemy() == this)
-		{
-			playerControllerRef->Possess(playerControllerRef->GetPlayer());
-		}
-
 		isPendingDeath = true;
+		onStartDeathEvent.Broadcast(this);
 		OnStartDeath(this);
 	}
 }

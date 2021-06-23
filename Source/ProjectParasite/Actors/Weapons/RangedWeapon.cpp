@@ -37,16 +37,17 @@ void ARangedWeapon::Trigger()
 	//Only attack if projectile type is set
 	if(projectile)
 	{
-		//If pawn can attack
+		//If pawn can fire
 		if(attackTimer == 0)
 		{
+			//Fire from weapon socket
 			FVector spawnPos = weaponSocket->GetComponentLocation();
 			FRotator spawnRot = weaponSocket->GetComponentRotation();
 
 			AProjectile* spawnedProjectile = GetWorld()->SpawnActor<AProjectile>(projectile, spawnPos, spawnRot);
 
-			//Set projectile's owner to this pawn (used in projectile as a reference to this pawn)
-			spawnedProjectile->SetOwner(this);
+			//Set reference to this weapon
+			spawnedProjectile->weaponRef = this;
 	
 			//Reset attack timer
 			attackTimer = attackRate;

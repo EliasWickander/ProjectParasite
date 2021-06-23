@@ -4,7 +4,6 @@
 #include "BTTask_Chase.h"
 
 #include "AIController.h"
-#include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
 #include "ProjectParasite/AIControllers/ShooterAIController.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
@@ -25,13 +24,21 @@ EBTNodeResult::Type UBTTask_Chase::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
-	BTTaskChaseMemory* memory = reinterpret_cast<BTTaskChaseMemory*>(NodeMemory);
+	BTTaskChaseMemory* instanceMemory = reinterpret_cast<BTTaskChaseMemory*>(NodeMemory);
 	
-	memory->ownerEnemy = OwnerComp.GetAIOwner()->GetPawn<APawnEnemy>();
-	memory->blackboard = OwnerComp.GetBlackboardComponent();
+	instanceMemory->ownerEnemy = OwnerComp.GetAIOwner()->GetPawn<APawnEnemy>();
+	instanceMemory->blackboard = OwnerComp.GetBlackboardComponent();
 
-	playerRef = memory->ownerEnemy->GetPlayerRef();
-	
+	playerRef = instanceMemory->ownerEnemy->GetPlayerRef();
+	shooterAIController = Cast<AShooterAIController>(OwnerComp.GetAIOwner());
+
+	if(shooterAIController == nullptr)
+	{
+		//Enemy executing this task isn't of a shooter type
+		UE_LOG(LogTemp, Error, TEXT("Enemy %s executing this task isn't of a shooter type"), *instanceMemory->ownerEnemy->GetName())
+		return EBTNodeResult::Failed;
+	}
+
 	if(playerRef->GetPossessedEnemy() != nullptr)
 	{
 		SetTarget(NodeMemory, playerRef->GetPossessedEnemy());
@@ -41,7 +48,7 @@ EBTNodeResult::Type UBTTask_Chase::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 		SetTarget(NodeMemory, playerRef);
 	}
 
-	memory->ownerEnemy->SetMoveSpeed(memory->ownerEnemy->GetChaseSpeed());
+	instanceMemory->ownerEnemy->SetMoveSpeed(instanceMemory->ownerEnemy->GetChaseSpeed());
 	return EBTNodeResult::InProgress;
 }
 
@@ -49,19 +56,17 @@ void UBTTask_Chase::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-	BTTaskChaseMemory* memory = reinterpret_cast<BTTaskChaseMemory*>(NodeMemory);
+	BTTaskChaseMemory* instanceMemory = reinterpret_cast<BTTaskChaseMemory*>(NodeMemory);
 	
-	AAIController* AIController = OwnerComp.GetAIOwner();
-
 	if(targetActor != nullptr)
 	{
-		AIController->MoveToActor(targetActor, memory->ownerEnemy->GetAttackRange());
+		shooterAIController->MoveToActor(targetActor, instanceMemory->ownerEnemy->GetAttackRange());
 
-		if(AIController->GetPathFollowingComponent()->DidMoveReachGoal())
+		if(shooterAIController->GetPathFollowingComponent()->DidMoveReachGoal())
 		{
-			memory->blackboard->SetValueAsEnum("CurrentState", (uint8)ShooterStates::State_Attack);
+			shooterAIController->SetCurrentState(ShooterStates::State_Attack);
 		}
-	}
+	}	
 }
 
 void UBTTask_Chase::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)

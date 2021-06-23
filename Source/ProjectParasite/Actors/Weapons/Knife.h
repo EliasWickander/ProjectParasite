@@ -6,9 +6,6 @@
 #include "MeleeWeapon.h"
 #include "Knife.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class PROJECTPARASITE_API AKnife : public AMeleeWeapon
 {

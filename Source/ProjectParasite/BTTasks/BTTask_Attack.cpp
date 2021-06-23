@@ -21,22 +21,32 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
+	behaviorTreeComponent = &OwnerComp;
+	
 	BTTaskAttackMemory* instanceMemory = reinterpret_cast<BTTaskAttackMemory*>(NodeMemory);
 	
-	ownerEnemy = OwnerComp.GetAIOwner()->GetPawn<APawnEnemy>();
-	playerRef = ownerEnemy->GetPlayerRef();
-	blackboard = OwnerComp.GetBlackboardComponent();
-	
-	if(playerRef->GetPossessedEnemy() != nullptr)
+	instanceMemory->ownerEnemy = OwnerComp.GetAIOwner()->GetPawn<APawnEnemy>();
+	instanceMemory->playerRef = instanceMemory->ownerEnemy->GetPlayerRef();
+	instanceMemory->blackboard = OwnerComp.GetBlackboardComponent();
+	instanceMemory->shooterAIController = Cast<AShooterAIController>(OwnerComp.GetAIOwner());
+
+	if(instanceMemory->shooterAIController == nullptr)
 	{
-		SetTarget(playerRef->GetPossessedEnemy());
+		//Enemy executing this task isn't of a shooter type
+		UE_LOG(LogTemp, Error, TEXT("Enemy %s executing this task isn't of a shooter type"), *instanceMemory->ownerEnemy->GetName())
+		return EBTNodeResult::Failed;
+	}
+
+	//If player is possessing an enemy, we want this unit to attack the possessed enemy
+	if(instanceMemory->playerRef->GetPossessedEnemy() != nullptr)
+	{
+		SetTarget(instanceMemory->playerRef->GetPossessedEnemy());
 	}
 	else
 	{
-		SetTarget(playerRef);
+		SetTarget(instanceMemory->playerRef);
 	}
 
-	targetActor->OnDestroyed.AddDynamic(this, &UBTTask_Attack::OnTargetDestroyed);
 	return EBTNodeResult::InProgress;
 }
 
@@ -46,17 +56,21 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 
 	BTTaskAttackMemory* instanceMemory = reinterpret_cast<BTTaskAttackMemory*>(NodeMemory);
 
-	UPathFollowingComponent* pathFollowingComponent = ownerEnemy->GetAIController()->GetPathFollowingComponent();
-
-	bool isInRange = pathFollowingComponent->HasReached(*targetActor, EPathFollowingReachMode::OverlapAgentAndGoal, ownerEnemy->GetAttackRange(), true);
-
-	if(isInRange)
+	//If target actor is dying, trigger event method
+	if(instanceMemory->targetActor->GetIsPendingDeath())
 	{
-		ownerEnemy->Attack();
+		OnTargetDeath(instanceMemory->targetActor);
+	}
+
+	//If enemy is in attack range, attack
+	if(IsInRange(instanceMemory))
+	{
+		instanceMemory->ownerEnemy->Attack();
 	}
 	else
 	{
-		blackboard->SetValueAsEnum("CurrentState", (uint8)ShooterStates::State_Chase);
+		//If not, transition back to chase state
+		instanceMemory->shooterAIController->SetCurrentState(ShooterStates::State_Chase);	
 	}
 }
 
@@ -64,6 +78,8 @@ void UBTTask_Attack::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* No
 	EBTNodeResult::Type TaskResult)
 {
 	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
+
+	BTTaskAttackMemory* instanceMemory = reinterpret_cast<BTTaskAttackMemory*>(NodeMemory);
 }
 
 uint16 UBTTask_Attack::GetInstanceMemorySize() const
@@ -71,17 +87,32 @@ uint16 UBTTask_Attack::GetInstanceMemorySize() const
 	return sizeof(BTTaskAttackMemory);
 }
 
-void UBTTask_Attack::SetTarget(AActor* target)
+void UBTTask_Attack::SetTarget(APawnBase* target)
 {
-	ownerEnemy->GetAIController()->SetFocus(target);
+	uint8* nodeMemory = behaviorTreeComponent->GetNodeMemory(this, behaviorTreeComponent->GetActiveInstanceIdx());
 
-	targetActor = target;
+	BTTaskAttackMemory* instanceMemory = reinterpret_cast<BTTaskAttackMemory*>(nodeMemory);
+	
+	instanceMemory->ownerEnemy->GetAIController()->SetFocus(target);
+
+	instanceMemory->targetActor = target;
 }
 
-void UBTTask_Attack::OnTargetDestroyed(AActor* destroyedActor)
+void UBTTask_Attack::OnTargetDeath(AActor* destroyedActor)
 {
+	uint8* nodeMemory = behaviorTreeComponent->GetNodeMemory(this, behaviorTreeComponent->GetActiveInstanceIdx());
+
+	BTTaskAttackMemory* instanceMemory = reinterpret_cast<BTTaskAttackMemory*>(nodeMemory);
+	
 	if(Cast<APawnEnemy>(destroyedActor))
 	{
-		SetTarget(playerRef);
+		SetTarget(instanceMemory->playerRef);
 	}
+}
+
+bool UBTTask_Attack::IsInRange(BTTaskAttackMemory* instanceMemory)
+{
+	UPathFollowingComponent* pathFollowingComponent = instanceMemory->ownerEnemy->GetAIController()->GetPathFollowingComponent();
+
+	return pathFollowingComponent->HasReached(*instanceMemory->targetActor, EPathFollowingReachMode::OverlapAgentAndGoal, instanceMemory->ownerEnemy->GetAttackRange(), true);;
 }

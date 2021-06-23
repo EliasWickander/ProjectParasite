@@ -6,7 +6,6 @@
 #include "AIController.h"
 #include "ShooterAIController.generated.h"
 
-class ATargetPoint;
 class APawnParasite;
 class APawnShooter;
 class UBTTaskNode;
@@ -31,20 +30,20 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
-	ShooterStates GetStatesEnum() { return states; }
+	void SetCurrentState(ShooterStates state);
+	ShooterStates GetCurrentState() { return currentState; }
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnUnPossess() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ShooterStates states;
+	ShooterStates currentState;
 
 private:
 
 	void StartAIBehavior();
-	
-	
 	
 	UPROPERTY(EditAnywhere)
 	UBehaviorTree* behaviorTree = nullptr;

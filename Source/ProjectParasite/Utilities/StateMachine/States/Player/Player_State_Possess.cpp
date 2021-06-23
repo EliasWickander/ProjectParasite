@@ -12,16 +12,16 @@
 
 void UPlayer_State_Possess::Start()
 {
-	controller = Cast<APawnParasite>(stateMachine->GetOwner());
+	playerRef = Cast<APawnParasite>(stateMachine->GetOwner());
 	
 	UE_LOG(LogTemp, Warning, TEXT("Start Possess"));
 
-	possessedEnemy = controller->GetPossessedEnemy();
+	possessedEnemy = playerRef->GetPossessedEnemy();
 
 	//While player is attached, remove its collision
-	controller->GetCollider()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+	playerRef->GetCollider()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 
-	controller->SetCanMove(false);
+	playerRef->SetCanMove(false);
 	
 	possessedEnemy->GetAIController()->UnPossess();
 	
@@ -37,12 +37,12 @@ void UPlayer_State_Possess::Exit()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Exit Possess"));
 
-	controller->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	playerRef->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	
-	controller->SetActorLocation(possessedEnemy->GetActorLocation() + -possessedEnemy->GetActorForwardVector() * 200);
+	playerRef->SetActorLocation(possessedEnemy->GetActorLocation() + -possessedEnemy->GetActorForwardVector() * 200);
 
-	controller->GetCollider()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-	controller->SetCanMove(true);
+	playerRef->GetCollider()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+	playerRef->SetCanMove(true);
 }
 
 void UPlayer_State_Possess::HandlePossessionLoop()
@@ -53,19 +53,19 @@ void UPlayer_State_Possess::HandlePossessionLoop()
 		{
 			FVector napeLocation = possessedEnemy->GetNapeComponent()->GetComponentLocation();
 	
-			if(FVector::Dist(controller->GetActorLocation(), napeLocation) > 1)
+			if(FVector::Dist(playerRef->GetActorLocation(), napeLocation) > 1)
 			{
 				MoveToEnemyNape();
 			}
 			else
 			{
-				controller->SetActorLocation(napeLocation);
-				controller->SetActorRotation(possessedEnemy->GetActorForwardVector().Rotation());
+				playerRef->SetActorLocation(napeLocation);
+				playerRef->SetActorRotation(possessedEnemy->GetActorForwardVector().Rotation());
 
 				//Parent nape to player to make sure player follows possessed enemy
-				controller->AttachToComponent(possessedEnemy->GetNapeComponent(), FAttachmentTransformRules::KeepWorldTransform);
+				playerRef->AttachToComponent(possessedEnemy->GetNapeComponent(), FAttachmentTransformRules::KeepWorldTransform);
 		
-				controller->playerControllerRef->Possess(possessedEnemy);
+				playerRef->SetPossessed(possessedEnemy);
 				currentState = PossessState::Possess;
 			}
 			break;
@@ -74,7 +74,7 @@ void UPlayer_State_Possess::HandlePossessionLoop()
 		{
 			//If player has control of parasite again, that means enemy is unpossessed. Get back to idle
 			//TODO: Find better solution to this
-			if(controller->IsPlayerControlled())
+			if(playerRef->IsPlayerControlled())
 			{
 				currentState = PossessState::PostPossess;
 			}
@@ -94,11 +94,11 @@ void UPlayer_State_Possess::MoveToEnemyNape()
 	FVector napeLocation = possessedEnemy->GetNapeComponent()->GetComponentLocation();
 
 	//TODO: Use linear interpolation instead of exponential
-	FVector lerpedPos = FMath::Lerp(controller->GetActorLocation(), napeLocation, controller->attachLocationLerpSpeed * controller->GetWorld()->DeltaTimeSeconds);
+	FVector lerpedPos = FMath::Lerp(playerRef->GetActorLocation(), napeLocation, playerRef->attachLocationLerpSpeed * playerRef->GetWorld()->DeltaTimeSeconds);
 
-	FRotator lerpedRot = FMath::Lerp(controller->GetActorRotation(), possessedEnemy->GetActorForwardVector().Rotation(), controller->attachRotationLerpSpeed * controller->GetWorld()->DeltaTimeSeconds);
+	FRotator lerpedRot = FMath::Lerp(playerRef->GetActorRotation(), possessedEnemy->GetActorForwardVector().Rotation(), playerRef->attachRotationLerpSpeed * playerRef->GetWorld()->DeltaTimeSeconds);
 			
-	controller->SetActorLocation(lerpedPos);
-	controller->SetActorRotation(lerpedRot);
+	playerRef->SetActorLocation(lerpedPos);
+	playerRef->SetActorRotation(lerpedRot);
 	
 }

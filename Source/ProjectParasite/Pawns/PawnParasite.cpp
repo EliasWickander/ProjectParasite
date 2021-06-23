@@ -3,6 +3,7 @@
 
 #include "PawnParasite.h"
 
+#include "AIController.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 #include "EngineUtils.h"
 #include "ProjectParasite/Components/Debug/ParasiteDebugComponent.h"
@@ -10,6 +11,8 @@
 #include "ProjectParasite/Utilities/StateMachine/States/Player/Player_State_Idle.h"
 #include "ProjectParasite/Utilities/StateMachine/States/Player/Player_State_Dash.h"
 #include "ProjectParasite/Utilities/StateMachine/States/Player/Player_State_Possess.h"
+
+#include "ProjectParasite/PlayerControllers/PlayerControllerBase.h"
 
 APawnParasite::APawnParasite()
 {
@@ -92,4 +95,31 @@ float APawnParasite::GetDashTimer()
 void APawnParasite::SetDashTimer(float value)
 {
 	dashTimer = value;
+}
+
+void APawnParasite::SetPossessed(APawnEnemy* actorToPossess)
+{
+	if(GetPossessedEnemy() != nullptr)
+	{
+		GetPossessedEnemy()->GetAIController()->Possess(GetPossessedEnemy());
+		GetPossessedEnemy()->onStartDeathEvent.RemoveDynamic(this, &APawnParasite::OnPossessedEnemyDeath);
+	}
+	
+	if(actorToPossess != nullptr)
+	{
+		playerControllerRef->Possess(actorToPossess);
+
+		actorToPossess->onStartDeathEvent.AddDynamic(this, &APawnParasite::OnPossessedEnemyDeath);
+	}
+	else
+	{
+		playerControllerRef->Possess(this);
+	}
+	
+	possessedEnemy = actorToPossess;
+}
+
+void APawnParasite::OnPossessedEnemyDeath(APawnBase* enemy)
+{
+	SetPossessed(nullptr);
 }
