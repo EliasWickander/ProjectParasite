@@ -8,8 +8,6 @@
 
 class APawnParasite;
 class APawnShooter;
-class UBTTaskNode;
-class UBTCompositeNode;
 
 UENUM(BlueprintType)
 enum class ShooterStates : uint8
@@ -36,7 +34,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
-	virtual void OnUnPossess() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ShooterStates currentState;

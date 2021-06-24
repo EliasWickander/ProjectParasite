@@ -39,20 +39,7 @@ void AShooterAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	SetFocus(playerRef);
 	StartAIBehavior();
-	
-}
-
-void AShooterAIController::OnUnPossess()
-{
-	Super::OnUnPossess();
-
-    //Isn't called it seems
-	UE_LOG(LogTemp, Warning, TEXT("Unpossess"));
-	StopMovement();
-
-	ClearFocus(EAIFocusPriority::Gameplay);
 }
 
 void AShooterAIController::StartAIBehavior()
