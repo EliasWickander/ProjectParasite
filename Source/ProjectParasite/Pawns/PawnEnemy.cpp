@@ -22,8 +22,6 @@ APawnEnemy::APawnEnemy()
 	weaponSocket = CreateDefaultSubobject<UChildActorComponent>(TEXT("Weapon"));
 	weaponSocket->SetupAttachment(baseMesh);
 
-	//cant move this for some reason
-	
 	enemyDebugger = CreateDefaultSubobject<UEnemyDebugComponent>(TEXT("Debug Component"));
 }
 
