@@ -27,9 +27,9 @@ EBTNodeResult::Type UBTTask_Detect::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	
 	instanceMemory->ownerEnemy = OwnerComp.GetAIOwner()->GetPawn<APawnEnemy>();
 	instanceMemory->blackboard = OwnerComp.GetBlackboardComponent();
-	shooterAIController = Cast<AShooterAIController>(OwnerComp.GetAIOwner());
+	instanceMemory->shooterAIController = Cast<AShooterAIController>(OwnerComp.GetAIOwner());
 
-	if(shooterAIController == nullptr)
+	if(instanceMemory->shooterAIController == nullptr)
 	{
 		//Enemy executing this task isn't of a shooter type
 		UE_LOG(LogTemp, Error, TEXT("Enemy %s executing this task isn't of a shooter type"), *instanceMemory->ownerEnemy->GetName())
@@ -55,7 +55,7 @@ void UBTTask_Detect::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		{
 			hasDetected = false;
 			
-			shooterAIController->SetCurrentState(ShooterStates::State_Chase);
+			instanceMemory->shooterAIController->SetCurrentState(ShooterStates::State_Chase);
 		}
 		else
 		{

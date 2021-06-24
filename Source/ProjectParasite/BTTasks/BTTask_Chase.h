@@ -14,6 +14,8 @@ struct BTTaskChaseMemory
 {
 	APawnEnemy* ownerEnemy = nullptr;
 	UBlackboardComponent* blackboard = nullptr;
+	AShooterAIController* shooterAIController = nullptr;
+	AActor* targetActor = nullptr;
 };
 
 UCLASS()
@@ -33,6 +35,4 @@ private:
 	void SetTarget(uint8* NodeMemory, AActor* target);
 	
 	APawnParasite* playerRef = nullptr;
-	AShooterAIController* shooterAIController = nullptr;
-	AActor* targetActor = nullptr;
 };
