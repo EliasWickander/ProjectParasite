@@ -5,6 +5,7 @@
 
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "ProjectParasite/Actors/Weapons/WeaponBase.h"
 #include "ProjectParasite/AIControllers/ShooterAIController.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
@@ -61,10 +62,17 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 	{
 		OnTargetDeath(instanceMemory->targetActor);
 	}
-
+	
 	//If enemy is in attack range, attack
 	if(IsInRange(instanceMemory))
 	{
+		AWeaponBase* weapon = instanceMemory->ownerEnemy->GetWeapon();
+
+		//Rotates weapon towards target (will later be replaced by joint rotation logic)
+		FVector dirToTarget = instanceMemory->targetActor->GetActorLocation() - weapon->GetActorLocation();
+		
+		weapon->SetActorRotation(dirToTarget.Rotation());
+		
 		instanceMemory->ownerEnemy->Attack();
 	}
 	else

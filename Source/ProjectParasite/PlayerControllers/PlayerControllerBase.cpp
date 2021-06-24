@@ -63,12 +63,11 @@ void APlayerControllerBase::SetupGeneralActions()
 
 void APlayerControllerBase::SetupParasiteActions()
 {
-	InputComponent->BindAction("Possess", EInputEvent::IE_Pressed, this, &APlayerControllerBase::DashInternal);
+	InputComponent->BindAction("Possess", EInputEvent::IE_Pressed, this, &APlayerControllerBase::PossessInternal);
 }
 
 void APlayerControllerBase::SetupEnemyActions()
 {
-	InputComponent->BindAction("Unpossess", IE_Pressed, this, &APlayerControllerBase::UnpossessInternal);
 	InputComponent->BindAction("Fire", IE_Pressed, this, &APlayerControllerBase::AttackInternal);
 }
 
@@ -95,9 +94,16 @@ void APlayerControllerBase::DashInternal()
 	}
 }
 
-void APlayerControllerBase::UnpossessInternal()
+void APlayerControllerBase::PossessInternal()
 {
-	playerRef->SetPossessed(nullptr);
+	if(playerRef->GetPossessedEnemy())
+	{
+		playerRef->SetPossessed(nullptr);	
+	}
+	else
+	{
+		DashInternal();
+	}
 }
 
 void APlayerControllerBase::AttackInternal()

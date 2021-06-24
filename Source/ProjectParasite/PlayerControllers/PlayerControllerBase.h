@@ -30,7 +30,7 @@ protected:
 	
 	void MoveHorizontalInternal(float axis);
 	void MoveVerticalInternal(float axis);
-	void UnpossessInternal();
+	void PossessInternal();
 	void AttackInternal();
 	void DashInternal();
 

@@ -68,7 +68,8 @@ void APawnParasite::PossessClosestEnemyInRadius()
 		return;
 
 	//Save reference to enemy player is possessing
-	possessedEnemy = enemiesInRadius[0];
+
+	possessState->possessedEnemy = enemiesInRadius[0];
 	stateMachine->SetState("State_Possess");
 }
 
@@ -99,10 +100,14 @@ void APawnParasite::SetDashTimer(float value)
 
 void APawnParasite::SetPossessed(APawnEnemy* actorToPossess)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Is setting possess"))
 	if(GetPossessedEnemy() != nullptr)
 	{
 		GetPossessedEnemy()->GetAIController()->Possess(GetPossessedEnemy());
 		GetPossessedEnemy()->onStartDeathEvent.RemoveDynamic(this, &APawnParasite::OnPossessedEnemyDeath);
+
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *GetPossessedEnemy()->GetName());
+		GetPossessedEnemy()->Die();
 	}
 	
 	if(actorToPossess != nullptr)

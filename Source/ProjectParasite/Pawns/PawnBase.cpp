@@ -172,10 +172,15 @@ void APawnBase::OnTakeDamage(AActor* damagedActor, float damage, const UDamageTy
 	UE_LOG(LogTemp, Warning, TEXT("Took %f damage"), damage);
 	if(currentHealth <= 0)
 	{
-		isPendingDeath = true;
-		onStartDeathEvent.Broadcast(this);
-		OnStartDeath(this);
+		Die();
 	}
+}
+
+void APawnBase::Die()
+{
+	isPendingDeath = true;
+	onStartDeathEvent.Broadcast(this);
+	OnStartDeath(this);
 }
 
 void APawnBase::OnStartDeath(AActor* pawnBeingDestroyed)

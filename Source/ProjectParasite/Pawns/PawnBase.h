@@ -42,6 +42,8 @@ public:
 
 	virtual void HandleDeath();
 
+	void Die();
+	
 	UFUNCTION()
 	void OnTakeDamage(AActor* damagedActor, float damage, const UDamageType* damageType, AController* causerController, AActor* causerActor);
 

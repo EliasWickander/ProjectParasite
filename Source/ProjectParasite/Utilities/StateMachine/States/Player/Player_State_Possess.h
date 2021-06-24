@@ -15,6 +15,7 @@ class PROJECTPARASITE_API UPlayer_State_Possess : public UState
 	GENERATED_BODY()
 
 public:
+	friend class APawnParasite;
 	enum PossessState
 	{
 		PrePossess,

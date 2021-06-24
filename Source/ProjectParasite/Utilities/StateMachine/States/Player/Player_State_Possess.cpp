@@ -16,8 +16,6 @@ void UPlayer_State_Possess::Start()
 	
 	UE_LOG(LogTemp, Warning, TEXT("Start Possess"));
 
-	possessedEnemy = playerRef->GetPossessedEnemy();
-
 	//While player is attached, remove its collision
 	playerRef->GetCollider()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 
@@ -64,9 +62,8 @@ void UPlayer_State_Possess::HandlePossessionLoop()
 
 				//Parent nape to player to make sure player follows possessed enemy
 				playerRef->AttachToComponent(possessedEnemy->GetNapeComponent(), FAttachmentTransformRules::KeepWorldTransform);
-		
+
 				playerRef->SetPossessed(possessedEnemy);
-				
 				currentState = PossessState::Possess;
 			}
 			break;
