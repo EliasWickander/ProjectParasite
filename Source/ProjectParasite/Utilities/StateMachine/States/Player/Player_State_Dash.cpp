@@ -9,9 +9,6 @@
 void UPlayer_State_Dash::Start()
 {
 	controller = Cast<APawnParasite>(stateMachine->GetOwner());
-	UE_LOG(LogTemp, Warning, TEXT("Start Dash"));
-
-	UE_LOG(LogTemp, Warning, TEXT("%f"), controller->dashTime);
 	
 	timer = 0;
 	

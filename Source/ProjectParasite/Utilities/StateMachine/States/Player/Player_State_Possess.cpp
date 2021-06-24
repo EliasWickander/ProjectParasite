@@ -66,6 +66,7 @@ void UPlayer_State_Possess::HandlePossessionLoop()
 				playerRef->AttachToComponent(possessedEnemy->GetNapeComponent(), FAttachmentTransformRules::KeepWorldTransform);
 		
 				playerRef->SetPossessed(possessedEnemy);
+				
 				currentState = PossessState::Possess;
 			}
 			break;

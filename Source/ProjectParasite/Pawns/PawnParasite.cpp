@@ -108,6 +108,7 @@ void APawnParasite::SetPossessed(APawnEnemy* actorToPossess)
 	if(actorToPossess != nullptr)
 	{
 		playerControllerRef->Possess(actorToPossess);
+		actorToPossess->SetMoveSpeed(actorToPossess->GetChaseSpeed());
 
 		actorToPossess->onStartDeathEvent.AddDynamic(this, &APawnParasite::OnPossessedEnemyDeath);
 	}
