@@ -58,13 +58,13 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USceneComponent* napeComponent = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USceneComponent* weaponSocket = nullptr;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	TSubclassOf<AWeaponBase> weaponType;
 	
 	AWeaponBase* equippedWeapon = nullptr;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	USceneComponent* weaponSocket = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
 	TArray<ATargetPoint*> patrolPoints;

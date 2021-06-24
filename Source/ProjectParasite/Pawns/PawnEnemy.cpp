@@ -19,7 +19,7 @@ APawnEnemy::APawnEnemy()
 	napeComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Nape"));
 	napeComponent->SetupAttachment(baseMesh);
 
-	weaponSocket = CreateDefaultSubobject<UChildActorComponent>(TEXT("Weapon"));
+	weaponSocket = CreateDefaultSubobject<USceneComponent>(TEXT("Weapon Socket"));
 	weaponSocket->SetupAttachment(baseMesh);
 
 	enemyDebugger = CreateDefaultSubobject<UEnemyDebugComponent>(TEXT("Debug Component"));
