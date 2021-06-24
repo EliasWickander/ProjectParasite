@@ -40,7 +40,6 @@ public:
 
 	virtual void OnStartDeath(AActor* pawnBeingDestroyed) override;
 
-	UFUNCTION(BlueprintCallable, Category = "Combat")
 	virtual void SetWeapon(AWeaponBase* newWeapon);
 	AWeaponBase* GetWeapon() { return equippedWeapon; }
 	
@@ -63,7 +62,8 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	TSubclassOf<AWeaponBase> weaponType;
-	
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 	AWeaponBase* equippedWeapon = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
