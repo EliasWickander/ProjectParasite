@@ -10,7 +10,7 @@
 
 void APlayerControllerBase::BeginPlay()
 {	
-	player = Cast<APawnParasite>(GetPawn());
+	playerRef = Cast<APawnParasite>(GetPawn());
 
 	SetShowMouseCursor(true);
 
@@ -95,12 +95,7 @@ void APlayerControllerBase::DashInternal()
 
 void APlayerControllerBase::UnpossessInternal()
 {
-	APawnEnemy* controlledEnemy = Cast<APawnEnemy>(controlledPawn);
-
-	if(controlledEnemy != nullptr)
-	{
-		controlledEnemy->SetPossessed(false);	
-	}
+	playerRef->SetPossessed(nullptr);
 }
 
 void APlayerControllerBase::AttackInternal()

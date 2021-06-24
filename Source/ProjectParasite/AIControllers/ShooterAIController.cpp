@@ -19,7 +19,7 @@ void AShooterAIController::BeginPlay()
 	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	shooterRef = Cast<APawnShooter>(GetPawn());
 	
-	blackboard->SetValueAsEnum("CurrentState", (uint8)ShooterStates::State_Patrol);
+	SetCurrentState(ShooterStates::State_Patrol);
 }
 
 void AShooterAIController::Tick(float DeltaSeconds)
@@ -27,6 +27,12 @@ void AShooterAIController::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 	
 	blackboard->SetValueAsObject("PlayerRef", playerRef);
+}
+
+void AShooterAIController::SetCurrentState(ShooterStates state)
+{
+	blackboard->SetValueAsEnum("CurrentState", (uint8)state);
+	currentState = state;
 }
 
 void AShooterAIController::OnPossess(APawn* InPawn)

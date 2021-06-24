@@ -6,9 +6,16 @@
 #include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
 #include "BTTask_Chase.generated.h"
 
+class APawnEnemy;
+class APawnParasite;
+class AShooterAIController;
+
 struct BTTaskChaseMemory
 {
-	class APawnEnemy* ownerEnemy = nullptr;
+	APawnEnemy* ownerEnemy = nullptr;
+	UBlackboardComponent* blackboard = nullptr;
+	AShooterAIController* shooterAIController = nullptr;
+	AActor* targetActor = nullptr;
 };
 
 UCLASS()
@@ -25,4 +32,7 @@ public:
 
 private:
 	virtual uint16 GetInstanceMemorySize() const override;
+	void SetTarget(uint8* NodeMemory, AActor* target);
+	
+	APawnParasite* playerRef = nullptr;
 };

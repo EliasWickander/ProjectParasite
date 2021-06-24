@@ -4,38 +4,43 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "BTTask_Detect.generated.h"
+#include "BTTask_Attack.generated.h"
 
+class APawnEnemy;
 class APawnParasite;
 class AShooterAIController;
+class APawnBase;
 
-struct BTTaskDetectMemory
+struct BTTaskAttackMemory
 {
-	class APawnEnemy* ownerEnemy = nullptr;
 	UBlackboardComponent* blackboard = nullptr;
+	APawnEnemy* ownerEnemy = nullptr;
 	AShooterAIController* shooterAIController = nullptr;
+	
+	APawnParasite* playerRef = nullptr;
+	APawnBase* targetActor = nullptr;
 };
 
 UCLASS()
-class PROJECTPARASITE_API UBTTask_Detect : public UBTTaskNode
+class PROJECTPARASITE_API UBTTask_Attack : public UBTTaskNode
 {
 	GENERATED_BODY()
 
 public:
-	UBTTask_Detect();
-
+	UBTTask_Attack();
+	
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 	virtual void OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult) override;
 
 private:
-	void Detect(uint8* nodeMemory);
-	
 	virtual uint16 GetInstanceMemorySize() const override;
+	void SetTarget(APawnBase* target);
 
-	APawnParasite* playerRef = nullptr;
+	UFUNCTION()
+	void OnTargetDeath(AActor* destroyedActor);
 
-	bool hasDetected = false;
+	bool IsInRange(BTTaskAttackMemory* instanceMemory);
 
-	float reactionTimer = 0;
+	UBehaviorTreeComponent* behaviorTreeComponent = nullptr;
 };

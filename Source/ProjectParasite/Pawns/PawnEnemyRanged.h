@@ -6,7 +6,7 @@
 #include "PawnEnemy.h"
 #include "PawnEnemyRanged.generated.h"
 
-class AWeapon;
+class AWeaponBase;
 class AProjectile;
 class UWeaponComponent;
 
@@ -18,14 +18,12 @@ class PROJECTPARASITE_API APawnEnemyRanged : public APawnEnemy
 public:
 	APawnEnemyRanged();
 
-	virtual void Tick(float DeltaSeconds) override;
-
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	virtual void Attack() override;
+
+	virtual void UpdatePawnBehavior(float deltaSeconds) override;
 
 protected:
 
 	virtual void BeginPlay() override;
-
-	AWeapon* weapon = nullptr;
 };

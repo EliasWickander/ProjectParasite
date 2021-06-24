@@ -6,7 +6,6 @@
 #include "AIController.h"
 #include "ShooterAIController.generated.h"
 
-class ATargetPoint;
 class APawnParasite;
 class APawnShooter;
 class UBTTaskNode;
@@ -18,6 +17,7 @@ enum class ShooterStates : uint8
 	State_Idle UMETA(DisplayName = "Idle"),
 	State_Patrol UMETA(DisplayName = "Patrol"),
 	State_Chase UMETA(DisplayName = "Chase"),
+	State_Attack UMETA(DisplayName = "Attack"),
 	State_Stunned UMETA(DisplayName = "Stunned")
 };
 
@@ -30,20 +30,20 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
-	ShooterStates GetStatesEnum() { return states; }
+	void SetCurrentState(ShooterStates state);
+	ShooterStates GetCurrentState() { return currentState; }
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnUnPossess() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ShooterStates states;
+	ShooterStates currentState;
 
 private:
 
 	void StartAIBehavior();
-	
-	
 	
 	UPROPERTY(EditAnywhere)
 	UBehaviorTree* behaviorTree = nullptr;

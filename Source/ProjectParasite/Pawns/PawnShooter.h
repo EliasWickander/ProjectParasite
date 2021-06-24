@@ -16,7 +16,7 @@ public:
 
 	APawnShooter();
 
-	virtual void Tick(float DeltaTime) override;
+	virtual void UpdatePawnBehavior(float deltaSeconds) override;
 	
 protected:
 	virtual void BeginPlay() override;

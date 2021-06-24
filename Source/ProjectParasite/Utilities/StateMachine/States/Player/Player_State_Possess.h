@@ -36,6 +36,6 @@ private:
 	void MoveToEnemyNape();
 
 
-	APawnParasite* controller = nullptr;
+	APawnParasite* playerRef = nullptr;
 	APawnEnemy* possessedEnemy = nullptr;
 };

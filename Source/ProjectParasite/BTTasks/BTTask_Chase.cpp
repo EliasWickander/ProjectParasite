@@ -4,9 +4,10 @@
 #include "BTTask_Chase.h"
 
 #include "AIController.h"
-#include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
+#include "ProjectParasite/AIControllers/ShooterAIController.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
+#include "ProjectParasite/Pawns/PawnParasite.h"
 
 UBTTask_Chase::UBTTask_Chase()
 {
@@ -23,18 +24,32 @@ EBTNodeResult::Type UBTTask_Chase::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
-	BTTaskChaseMemory* memory = reinterpret_cast<BTTaskChaseMemory*>(NodeMemory);
+	BTTaskChaseMemory* instanceMemory = reinterpret_cast<BTTaskChaseMemory*>(NodeMemory);
 	
-	memory->ownerEnemy = OwnerComp.GetAIOwner()->GetPawn<APawnEnemy>();
-	
-	AAIController* AIController = OwnerComp.GetAIOwner();
+	instanceMemory->ownerEnemy = OwnerComp.GetAIOwner()->GetPawn<APawnEnemy>();
 
-	UObject* keyValue = OwnerComp.GetBlackboardComponent()->GetValue<UBlackboardKeyType_Object>(BlackboardKey.GetSelectedKeyID());
-	AActor* targetActor = Cast<AActor>(keyValue);
-	
-	AIController->SetFocus(targetActor);
+	instanceMemory->blackboard = OwnerComp.GetBlackboardComponent();
 
-	memory->ownerEnemy->SetMoveSpeed(memory->ownerEnemy->GetChaseSpeed());
+	playerRef = instanceMemory->ownerEnemy->GetPlayerRef();
+	instanceMemory->shooterAIController = Cast<AShooterAIController>(instanceMemory->ownerEnemy->GetAIController());
+
+	if(instanceMemory->shooterAIController == nullptr)
+	{
+		//Enemy executing this task isn't of a shooter type
+		UE_LOG(LogTemp, Error, TEXT("Enemy %s executing this task isn't of a shooter type"), *instanceMemory->ownerEnemy->GetName())
+		return EBTNodeResult::Failed;
+	}
+
+	if(playerRef->GetPossessedEnemy() != nullptr)
+	{
+		SetTarget(NodeMemory, playerRef->GetPossessedEnemy());
+	}
+	else
+	{
+		SetTarget(NodeMemory, playerRef);
+	}
+	
+	instanceMemory->ownerEnemy->SetMoveSpeed(instanceMemory->ownerEnemy->GetChaseSpeed());
 	return EBTNodeResult::InProgress;
 }
 
@@ -42,25 +57,28 @@ void UBTTask_Chase::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-	BTTaskChaseMemory* memory = reinterpret_cast<BTTaskChaseMemory*>(NodeMemory);
-	
-	AAIController* AIController = OwnerComp.GetAIOwner();
+	BTTaskChaseMemory* instanceMemory = reinterpret_cast<BTTaskChaseMemory*>(NodeMemory);
 
-	if (BlackboardKey.SelectedKeyType == UBlackboardKeyType_Object::StaticClass())
+	if(instanceMemory->targetActor != nullptr)
 	{
-		UObject* keyValue = OwnerComp.GetBlackboardComponent()->GetValue<UBlackboardKeyType_Object>(BlackboardKey.GetSelectedKeyID());
-		AActor* targetActor = Cast<AActor>(keyValue);
-		
-		if(targetActor != nullptr)
+		instanceMemory->shooterAIController->MoveToActor(instanceMemory->targetActor, instanceMemory->ownerEnemy->GetAttackRange());
+
+		if(instanceMemory->shooterAIController->GetPathFollowingComponent()->DidMoveReachGoal())
 		{
-			AIController->MoveToActor(targetActor, memory->ownerEnemy->GetAttackRange());
+			instanceMemory->shooterAIController->SetCurrentState(ShooterStates::State_Attack);
 		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No target actor"));
 	}
 }
 
 void UBTTask_Chase::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)
 {
 
+	UE_LOG(LogTemp, Warning, TEXT("Exit Chase"));
+	
 	OwnerComp.GetAIOwner()->StopMovement();
 	OwnerComp.GetAIOwner()->ClearFocus(EAIFocusPriority::Gameplay);
 	
@@ -70,4 +88,12 @@ void UBTTask_Chase::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 uint16 UBTTask_Chase::GetInstanceMemorySize() const
 {
 	return sizeof(BTTaskChaseMemory);
+}
+
+void UBTTask_Chase::SetTarget(uint8* NodeMemory, AActor* target)
+{
+	BTTaskChaseMemory* instanceMemory = reinterpret_cast<BTTaskChaseMemory*>(NodeMemory);
+	instanceMemory->ownerEnemy->GetAIController()->SetFocus(target);
+
+	instanceMemory->targetActor = target;
 }

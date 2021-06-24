@@ -11,6 +11,7 @@ class ATargetPoint;
 class AAIController;
 class APawnParasite;
 class UEnemyDebugComponent;
+class AWeaponBase;
 
 UCLASS()
 class PROJECTPARASITE_API APawnEnemy : public APawnBase
@@ -21,22 +22,27 @@ public:
 
 	friend class UEnemyDebugComponent;
 	friend class UBTTask_PatrolBetweenWaypoints;
+	friend class AWeaponBase;
 	
 	APawnEnemy();
 
-	virtual void Tick(float DeltaTime) override;
-
-	void SetPossessed(bool enabled);
+	virtual void UpdatePawnBehavior(float deltaSeconds) override;
 
 	virtual void Attack();
 
 	USceneComponent* GetNapeComponent() { return napeComponent; }
 	TArray<ATargetPoint*> GetPatrolPoints() { return patrolPoints; }
 	AAIController* GetAIController() { return AIController; }
+	APawnParasite* GetPlayerRef() { return playerRef; }
 
 	float GetPatrolSpeed() { return patrolSpeed; }
 	float GetChaseSpeed() { return chaseSpeed; }
 
+	virtual void OnStartDeath(AActor* pawnBeingDestroyed) override;
+
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	virtual void SetWeapon(AWeaponBase* newWeapon);
+	
 	float GetAttackRange() { return attackRange; }
 	float GetDetectionRange() { return detectionRange; }
 	float GetDetectionAngle() { return detectionAngle; }
@@ -50,6 +56,14 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USceneComponent* napeComponent = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+	TSubclassOf<AWeaponBase> weaponType;
+	
+	AWeaponBase* equippedWeapon = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USceneComponent* weaponSocket = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
 	TArray<ATargetPoint*> patrolPoints;
@@ -75,7 +89,5 @@ protected:
 	float sightReactionTime = 0.2f;
 
 private:
-	APawnParasite* FindPlayerInWorld();
-
 	AAIController* AIController = nullptr;
 };

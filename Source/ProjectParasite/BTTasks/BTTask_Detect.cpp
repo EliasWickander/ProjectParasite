@@ -23,12 +23,20 @@ EBTNodeResult::Type UBTTask_Detect::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
-	BTTaskDetectMemory* memory = reinterpret_cast<BTTaskDetectMemory*>(NodeMemory);
+	BTTaskDetectMemory* instanceMemory = reinterpret_cast<BTTaskDetectMemory*>(NodeMemory);
 	
-	memory->ownerEnemy = OwnerComp.GetAIOwner()->GetPawn<APawnEnemy>();
+	instanceMemory->ownerEnemy = OwnerComp.GetAIOwner()->GetPawn<APawnEnemy>();
+	instanceMemory->blackboard = OwnerComp.GetBlackboardComponent();
+	instanceMemory->shooterAIController = Cast<AShooterAIController>(OwnerComp.GetAIOwner());
 
+	if(instanceMemory->shooterAIController == nullptr)
+	{
+		//Enemy executing this task isn't of a shooter type
+		UE_LOG(LogTemp, Error, TEXT("Enemy %s executing this task isn't of a shooter type"), *instanceMemory->ownerEnemy->GetName())
+		return EBTNodeResult::Failed;
+	}
+	
 	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-	memory->blackboard = OwnerComp.GetBlackboardComponent();
 	
 	return EBTNodeResult::InProgress;
 }
@@ -37,16 +45,17 @@ void UBTTask_Detect::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-	BTTaskDetectMemory* memory = reinterpret_cast<BTTaskDetectMemory*>(NodeMemory);
+	BTTaskDetectMemory* instanceMemory = reinterpret_cast<BTTaskDetectMemory*>(NodeMemory);
 	
 	Detect(NodeMemory);
 
 	if(hasDetected)
 	{
-		if(reactionTimer > memory->ownerEnemy->GetSightReactionTime())
+		if(reactionTimer > instanceMemory->ownerEnemy->GetSightReactionTime())
 		{
 			hasDetected = false;
-			memory->blackboard->SetValueAsEnum("CurrentState", (uint8)ShooterStates::State_Chase);
+			
+			instanceMemory->shooterAIController->SetCurrentState(ShooterStates::State_Chase);
 		}
 		else
 		{
@@ -88,26 +97,28 @@ void UBTTask_Detect::Detect(uint8* nodeMemory)
 
 		if(GetWorld()->LineTraceSingleByChannel(hitResult,memory->ownerEnemy->GetActorLocation(),outActors[0]->GetActorLocation(), ECC_Visibility, params))
 		{
-			if(hitResult.GetActor() == playerRef)
+			AActor* actorToDetect;
+
+			if(playerRef->GetPossessedEnemy() != nullptr)
+			{
+				actorToDetect = playerRef->GetPossessedEnemy();	
+			}
+			else
+			{
+				actorToDetect = playerRef;
+			}
+			
+			if(hitResult.GetActor() == actorToDetect)
 			{
 				memory->ownerEnemy->GetAIController()->StopMovement();
 				
 				hasDetected = true;
-			}
-			else
-			{
-				//Vision obstructed by something in player's path
-				//blackboard->ClearValue("PlayerLocation");
 			}
 		}
 		else
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Didn't hit"));
 		}
-	}
-	else
-	{
-		//blackboard->ClearValue("PlayerLocation");
 	}
 }
 

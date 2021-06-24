@@ -7,12 +7,15 @@
 #include "GameFramework/Actor.h"
 #include "Projectile.generated.h"
 
+class ARangedWeapon;
 UCLASS()
 class PROJECTPARASITE_API AProjectile : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
+public:
+	friend class ARangedWeapon;
+	
 	AProjectile();
 
 	virtual void Tick(float DeltaTime) override;
@@ -39,6 +42,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variables")
 	TSubclassOf<UDamageType> damageType;
+
+	ARangedWeapon* weaponRef = nullptr;
 
 	float timer = 0;
 };

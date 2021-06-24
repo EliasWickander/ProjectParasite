@@ -37,6 +37,8 @@ public:
 	float GetBaseMoveSpeed() { return baseMoveSpeed; }
 	void SetDashTimer(float value);
 
+	void SetPossessed(APawnEnemy* actorToPossess);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -47,6 +49,9 @@ private:
 
 	UPROPERTY()
 	UStateMachine* stateMachine = nullptr;
+
+	UFUNCTION()
+	void OnPossessedEnemyDeath(APawnBase* enemy);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float baseMoveSpeed = 300;
