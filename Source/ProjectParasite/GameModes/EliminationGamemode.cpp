@@ -1,19 +1,19 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "CustomGameMode.h"
+#include "EliminationGamemode.h"
 
 #include "ProjectParasite/Pawns/PawnParasite.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 #include "Kismet/GameplayStatics.h"
 
-void ACustomGameMode::BeginPlay()
+void AEliminationGamemode::BeginPlay()
 {
 	Super::BeginPlay();
 
 	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 
-	playerRef->onStartDeathEvent.AddDynamic(this, &ACustomGameMode::OnPlayerDeath);
+	playerRef->onStartDeathEvent.AddDynamic(this, &AEliminationGamemode::OnPlayerDeath);
 	
 	TArray<AActor*> allEnemiesInWorld;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APawnEnemy::StaticClass(), allEnemiesInWorld);
@@ -22,13 +22,13 @@ void ACustomGameMode::BeginPlay()
 	
 	for(AActor* enemy : allEnemiesInWorld)
 	{
-		Cast<APawnEnemy>(enemy)->onStartDeathEvent.AddDynamic(this, &ACustomGameMode::OnEnemyDeath);
+		Cast<APawnEnemy>(enemy)->onStartDeathEvent.AddDynamic(this, &AEliminationGamemode::OnEnemyDeath);
 	}
 }
 
-void ACustomGameMode::OnEnemyDeath(APawnBase* deadEnemy)
+void AEliminationGamemode::OnEnemyDeath(APawnBase* deadEnemy)
 {
-	Cast<APawnEnemy>(deadEnemy)->onStartDeathEvent.RemoveDynamic(this, &ACustomGameMode::OnEnemyDeath);
+	Cast<APawnEnemy>(deadEnemy)->onStartDeathEvent.RemoveDynamic(this, &AEliminationGamemode::OnEnemyDeath);
 	
 	amountEnemiesLeft--;
 
@@ -38,7 +38,7 @@ void ACustomGameMode::OnEnemyDeath(APawnBase* deadEnemy)
 	}
 }
 
-void ACustomGameMode::OnPlayerDeath(APawnBase* deadPlayer)
+void AEliminationGamemode::OnPlayerDeath(APawnBase* deadPlayer)
 {
 	OnGameLost();
 }

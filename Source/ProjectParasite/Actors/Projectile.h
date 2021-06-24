@@ -13,8 +13,9 @@ class PROJECTPARASITE_API AProjectile : public AActor
 {
 	GENERATED_BODY()
 	
+friend class ARangedWeapon;
+	
 public:
-	friend class ARangedWeapon;
 	
 	AProjectile();
 
@@ -31,19 +32,20 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UStaticMeshComponent* projectileMesh = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float lifeTime = 2;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float moveSpeed = 2;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
 	float damage = 10;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
 	TSubclassOf<UDamageType> damageType;
 
+	UPROPERTY(BlueprintReadOnly)
 	ARangedWeapon* weaponRef = nullptr;
 
-	float timer = 0;
+	float lifeTimer = 0;
 };

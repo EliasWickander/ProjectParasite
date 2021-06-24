@@ -29,28 +29,15 @@ void ARangedWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//Handle attack timer
-
+	//If enemy doesn't have to reload, handle attack timer
 	if(reloadTimer <= 0)
 	{
-		if(attackTimer > 0)
-		{
-			attackTimer -= DeltaTime;
-		}
-		else
-		{
-			attackTimer = 0;
-		}	
-	}
-
-	if(reloadTimer > 0)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Reloading"));
-		reloadTimer -= DeltaTime;
+		attackTimer = FMath::Clamp<float>(attackTimer - DeltaTime, 0, attackRate);
 	}
 	else
 	{
-		reloadTimer = 0;
+		//If enemy has to reload, handle reload timer
+		reloadTimer = FMath::Clamp<float>(reloadTimer - DeltaTime, 0, timeToReload);
 	}
 }
 
@@ -58,6 +45,7 @@ void ARangedWeapon::Trigger()
 {
 	Super::Trigger();
 
+	//If out of ammo, don't do anything
 	if(currentAmmo <= 0)
 	{
 		return;
@@ -66,8 +54,8 @@ void ARangedWeapon::Trigger()
 	//Only attack if projectile type is set
 	if(projectile)
 	{
-		//If pawn can fire
-		if(attackTimer == 0)
+		//If enemy can fire
+		if(attackTimer <= 0)
 		{
 			//Fire from weapon socket
 			FVector spawnPos = weaponSocket->GetComponentLocation();

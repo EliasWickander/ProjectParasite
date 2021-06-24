@@ -18,15 +18,16 @@ void AShooterAIController::BeginPlay()
 
 	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	shooterRef = Cast<APawnShooter>(GetPawn());
+
+	blackboard->SetValueAsObject("PlayerRef", playerRef);
 	
-	SetCurrentState(ShooterStates::State_Patrol);
+	SetCurrentState(currentState);
+	
 }
 
 void AShooterAIController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	
-	blackboard->SetValueAsObject("PlayerRef", playerRef);
 }
 
 void AShooterAIController::SetCurrentState(ShooterStates state)

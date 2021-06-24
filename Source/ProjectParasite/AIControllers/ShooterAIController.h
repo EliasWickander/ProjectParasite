@@ -35,14 +35,14 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Initialization")
 	ShooterStates currentState;
 
 private:
 
 	void StartAIBehavior();
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Initialization")
 	UBehaviorTree* behaviorTree = nullptr;
 
 	UBlackboardComponent* blackboard = nullptr;

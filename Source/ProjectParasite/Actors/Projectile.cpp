@@ -28,9 +28,9 @@ void AProjectile::Tick(float DeltaTime)
 	AddActorLocalOffset(FVector::ForwardVector * moveSpeed, true);
 
 	//Destroy projectile after life time
-	if(timer < lifeTime)
+	if(lifeTimer < lifeTime)
 	{
-		timer += DeltaTime;
+		lifeTimer += DeltaTime;
 	}
 	else
 	{

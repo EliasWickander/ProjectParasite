@@ -8,15 +8,15 @@
 
 class APawnEnemy;
 class USphereComponent;
+
 UCLASS()
 class PROJECTPARASITE_API AWeaponBase : public AActor
 {
 	GENERATED_BODY()
+
+friend class APawnEnemy;
 	
 public:
-
-	friend class APawnEnemy;
-
 	AWeaponBase();
 
 	virtual void Tick(float DeltaTime) override;

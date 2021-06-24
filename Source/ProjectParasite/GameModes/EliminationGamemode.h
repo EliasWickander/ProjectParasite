@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "CustomGameMode.generated.h"
+#include "EliminationGamemode.generated.h"
 
 class APawnBase;
 class APawnParasite;
 
 UCLASS()
-class PROJECTPARASITE_API ACustomGameMode : public AGameModeBase
+class PROJECTPARASITE_API AEliminationGamemode : public AGameModeBase
 {
 	GENERATED_BODY()
 

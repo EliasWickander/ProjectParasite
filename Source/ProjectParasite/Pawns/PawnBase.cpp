@@ -155,7 +155,7 @@ void APawnBase::HandleDeath()
 		//Die
 		if(Cast<APawnParasite>(this))
 		{
-
+			
 		}
 		else
 		{
