@@ -12,6 +12,6 @@ class PROJECTPARASITE_API AKnife : public AMeleeWeapon
 	GENERATED_BODY()
 
 public:
-	virtual void Tick(float DeltaSeconds) override;
+	virtual void Tick(float DeltaTime) override;
 	virtual void Trigger() override;
 };

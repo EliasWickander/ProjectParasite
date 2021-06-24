@@ -20,7 +20,8 @@ ARangedWeapon::ARangedWeapon()
 void ARangedWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	currentAmmo = maxAmmo;
 }
 
 // Called every frame
@@ -28,12 +29,40 @@ void ARangedWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//Handle attack timer
+
+	if(reloadTimer <= 0)
+	{
+		if(attackTimer > 0)
+		{
+			attackTimer -= DeltaTime;
+		}
+		else
+		{
+			attackTimer = 0;
+		}	
+	}
+
+	if(reloadTimer > 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Reloading"));
+		reloadTimer -= DeltaTime;
+	}
+	else
+	{
+		reloadTimer = 0;
+	}
 }
 
 void ARangedWeapon::Trigger()
 {
 	Super::Trigger();
 
+	if(currentAmmo <= 0)
+	{
+		return;
+	}
+	
 	//Only attack if projectile type is set
 	if(projectile)
 	{
@@ -51,6 +80,8 @@ void ARangedWeapon::Trigger()
 	
 			//Reset attack timer
 			attackTimer = attackRate;
+
+			currentAmmo--;
 		}
 	}
 	else
@@ -59,3 +90,8 @@ void ARangedWeapon::Trigger()
 	}
 }
 
+void ARangedWeapon::Reload()
+{
+	reloadTimer = timeToReload;
+	currentAmmo = maxAmmo;	
+}

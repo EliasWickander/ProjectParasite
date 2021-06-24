@@ -5,8 +5,10 @@
 
 #include "ProjectParasite/Pawns/PawnParasite.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
+#include "ProjectParasite/Actors/Weapons/WeaponBase.h"
 
 #include "EngineUtils.h"
+
 
 void APlayerControllerBase::BeginPlay()
 {	
@@ -104,6 +106,6 @@ void APlayerControllerBase::AttackInternal()
 
 	if(controlledEnemy != nullptr)
 	{
-		controlledEnemy->Attack();	
+		controlledEnemy->GetWeapon()->Trigger();	
 	}
 }

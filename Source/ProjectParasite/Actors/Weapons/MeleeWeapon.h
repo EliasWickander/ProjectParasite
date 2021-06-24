@@ -11,6 +11,9 @@ class PROJECTPARASITE_API AMeleeWeapon : public AWeaponBase
 {
 	GENERATED_BODY()
 
+public:
+	virtual void Tick(float DeltaTime) override;
+	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 	TSubclassOf<UDamageType> damageType;

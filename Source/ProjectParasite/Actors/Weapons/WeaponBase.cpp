@@ -31,8 +31,6 @@ void AWeaponBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//Handle attack timer
-	attackTimer = FMath::Clamp<float>(attackTimer - DeltaTime, 0, attackRate);
 }
 
 void AWeaponBase::Trigger()

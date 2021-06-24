@@ -5,9 +5,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 
-void AKnife::Tick(float DeltaSeconds)
+void AKnife::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaSeconds);
+	Super::Tick(DeltaTime);
 }
 
 void AKnife::Trigger()

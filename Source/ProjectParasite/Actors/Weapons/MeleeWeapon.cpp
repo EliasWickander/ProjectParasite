@@ -3,3 +3,10 @@
 
 #include "MeleeWeapon.h"
 
+void AMeleeWeapon::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	//Handle attack timer
+	attackTimer = FMath::Clamp<float>(attackTimer - DeltaTime, 0, attackRate);
+}

@@ -42,6 +42,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	virtual void SetWeapon(AWeaponBase* newWeapon);
+	AWeaponBase* GetWeapon() { return equippedWeapon; }
 	
 	float GetAttackRange() { return attackRange; }
 	float GetDetectionRange() { return detectionRange; }

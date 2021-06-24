@@ -3,6 +3,7 @@
 
 #include "PawnEnemyRanged.h"
 
+#include "ProjectParasite/Actors/Weapons/RangedWeapon.h"
 #include "ProjectParasite/Actors/Weapons/WeaponBase.h"
 
 APawnEnemyRanged::APawnEnemyRanged()
@@ -21,7 +22,21 @@ void APawnEnemyRanged::Attack()
 
 	if(equippedWeapon)
 	{
-		equippedWeapon->Trigger();	
+		ARangedWeapon* rangedWeapon = Cast<ARangedWeapon>(equippedWeapon);
+		
+		if(rangedWeapon)
+		{
+			equippedWeapon->Trigger();
+
+			if(rangedWeapon->GetCurrentAmmo() <= 0)
+			{
+				rangedWeapon->Reload();
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("%s has a non-ranged weapon regardless of being a ranged enemy"));
+		}
 	}
 	else
 	{

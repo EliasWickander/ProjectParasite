@@ -22,12 +22,27 @@ public:
 
 	virtual void Trigger() override;
 
+	virtual void Reload();
+
+	int GetCurrentAmmo() { return currentAmmo; }
+	int GetMaxAmmo() { return maxAmmo; }
+
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	USceneComponent* weaponSocket = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	TSubclassOf<AProjectile> projectile = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo")
+	int maxAmmo = 6;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ammo")
+	int currentAmmo = 0;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ammo")
+	float timeToReload = 1;
+	float reloadTimer = 0;
 };

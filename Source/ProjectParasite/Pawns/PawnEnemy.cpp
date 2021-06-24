@@ -59,6 +59,7 @@ void APawnEnemy::OnStartDeath(AActor* pawnBeingDestroyed)
 {
 	Super::OnStartDeath(pawnBeingDestroyed);
 
+	SetWeapon(nullptr);
 	APawnEnemy* enemyDying = Cast<APawnEnemy>(pawnBeingDestroyed);
 
 	enemyDying->GetAIController()->GetBlackboardComponent()->SetValueAsEnum("CurrentState", (uint8)ShooterStates::State_Idle);
@@ -72,12 +73,15 @@ void APawnEnemy::SetWeapon(AWeaponBase* newWeapon)
 		equippedWeapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	}
 
-	newWeapon->SetActorLocation(weaponSocket->GetComponentLocation());
-	newWeapon->SetActorRotation(weaponSocket->GetComponentRotation());
-	newWeapon->AttachToComponent(weaponSocket, FAttachmentTransformRules::KeepWorldTransform);
+	if(newWeapon)
+	{
+		newWeapon->SetActorLocation(weaponSocket->GetComponentLocation());
+		newWeapon->SetActorRotation(weaponSocket->GetComponentRotation());
+		newWeapon->AttachToComponent(weaponSocket, FAttachmentTransformRules::KeepWorldTransform);
 
-	newWeapon->shooterRef = this;
-	newWeapon->isEquipped = true;
+		newWeapon->shooterRef = this;
+		newWeapon->isEquipped = true;	
+	} 
 	
 	equippedWeapon = newWeapon;
 }
