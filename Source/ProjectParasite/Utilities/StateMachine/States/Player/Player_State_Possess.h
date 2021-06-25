@@ -13,9 +13,10 @@ UCLASS()
 class PROJECTPARASITE_API UPlayer_State_Possess : public UState
 {
 	GENERATED_BODY()
-
+	
+friend class APawnParasite;
+	
 public:
-	friend class APawnParasite;
 	enum PossessState
 	{
 		PrePossess,
@@ -35,7 +36,6 @@ private:
 
 	void HandlePossessionLoop();
 	void MoveToEnemyNape();
-
 
 	APawnParasite* playerRef = nullptr;
 	APawnEnemy* possessedEnemy = nullptr;

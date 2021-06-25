@@ -15,11 +15,11 @@ class PROJECTPARASITE_API APawnParasite : public APawnBase
 {
 	GENERATED_BODY()
 
+friend class UPlayer_State_Idle;
+friend class UPlayer_State_Dash;
+friend class UPlayer_State_Possess;
+	
 public:
-
-	friend class UPlayer_State_Idle;
-	friend class UPlayer_State_Dash;
-	friend class UPlayer_State_Possess;
 	
 	APawnParasite();
 
@@ -27,16 +27,18 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Possession")
 	void Dash();
+
+	UFUNCTION(BlueprintCallable, Category = "Possession")
 	void PossessClosestEnemyInRadius();
 
-	UFUNCTION(BlueprintCallable)
-	APawnEnemy* GetPossessedEnemy();
-	float GetPossessRadius();
+	UFUNCTION(BlueprintCallable, Category = "Possession")
+	APawnEnemy* GetPossessedEnemy() { return possessedEnemy; }
+	float GetPossessRadius() { return possessRadius; }
 
-	float GetDashCooldown();
-	float GetDashTimer();
+	float GetDashCooldown() { return dashCooldown; }
+	float GetDashTimer() { return dashTimer; }
 	float GetBaseMoveSpeed() { return baseMoveSpeed; }
-	void SetDashTimer(float value);
+	void SetDashTimer(float value) { dashTimer = value; }
 
 	void SetPossessed(APawnEnemy* actorToPossess);
 

@@ -14,7 +14,8 @@ void AEliminationGamemode::BeginPlay()
 	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 
 	playerRef->onStartDeathEvent.AddDynamic(this, &AEliminationGamemode::OnPlayerDeath);
-	
+
+	//When an enemy dies, call the OnEnemyDeath method
 	TArray<AActor*> allEnemiesInWorld;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APawnEnemy::StaticClass(), allEnemiesInWorld);
 
@@ -32,13 +33,17 @@ void AEliminationGamemode::OnEnemyDeath(APawnBase* deadEnemy)
 	
 	amountEnemiesLeft--;
 
-	if(amountEnemiesLeft <= 0)
+	//If there are no enemies left (excluding a possessed one), the game is won
+	int targetAmountEnemiesLeft = playerRef->GetPossessedEnemy() ? 1 : 0;
+	
+	if(amountEnemiesLeft <= targetAmountEnemiesLeft)
 	{
 		OnGameWon();
-	}
+	}	
 }
 
 void AEliminationGamemode::OnPlayerDeath(APawnBase* deadPlayer)
 {
+	//When player dies, game is lost
 	OnGameLost();
 }

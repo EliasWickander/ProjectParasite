@@ -18,10 +18,10 @@ class PROJECTPARASITE_API APawnEnemyRanged : public APawnEnemy
 public:
 	APawnEnemyRanged();
 
+	virtual void UpdatePawnBehavior(float deltaSeconds) override;
+	
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	virtual void Attack() override;
-
-	virtual void UpdatePawnBehavior(float deltaSeconds) override;
 
 protected:
 

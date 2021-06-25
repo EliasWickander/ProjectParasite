@@ -20,5 +20,5 @@ protected:
 	virtual void Exit() override;
 
 private:
-	APawnParasite* controller = nullptr;
+	APawnParasite* playerRef = nullptr;
 };

@@ -6,14 +6,13 @@
 
 void UPlayer_State_Idle::Start()
 {
-	controller = Cast<APawnParasite>(stateMachine->GetOwner());
-	UE_LOG(LogTemp, Warning, TEXT("Start Idle"));
+	playerRef = Cast<APawnParasite>(stateMachine->GetOwner());
 	
 }
 
 void UPlayer_State_Idle::Update()
 {
-	controller->RotateToMouseCursor();
+	playerRef->RotateToMouseCursor();
 }
 
 void UPlayer_State_Idle::Exit()

@@ -8,36 +8,38 @@
 
 void UPlayer_State_Dash::Start()
 {
-	controller = Cast<APawnParasite>(stateMachine->GetOwner());
+	playerRef = Cast<APawnParasite>(stateMachine->GetOwner());
 	
-	timer = 0;
-	
-	dashDir = controller->GetActorForwardVector();
+	dashTimer = 0;
+
+	//Set dash direction to go forward
+	dashDir = playerRef->GetActorForwardVector();
 	dashDir.Normalize();
 
-	prevMoveSpeed = controller->GetMoveSpeed();
+	//Store reference to move speed pre-dash
+	prevMoveSpeed = playerRef->GetMoveSpeed();
 
-	//Prevent player from moving during dash
-	controller->SetCanMove(false);
+	//Disable movement input during dash
+	playerRef->SetCanMove(false);
 
-	controller->SetMoveSpeed(controller->dashSpeed);
+	playerRef->SetMoveSpeed(playerRef->dashSpeed);
 }
 
 void UPlayer_State_Dash::Update()
 {
-	
-	if(timer < controller->dashTime)
+	//Dash in {dashTime} seconds
+	if(dashTimer < playerRef->dashTime)
 	{
-		timer += controller->GetWorld()->DeltaTimeSeconds;
+		dashTimer += playerRef->GetWorld()->DeltaTimeSeconds;
 
-		controller->AddMovementInput(dashDir);	
+		playerRef->AddMovementInput(dashDir);	
 
 		//if there are enemies close enough, possess
-		controller->PossessClosestEnemyInRadius();
+		playerRef->PossessClosestEnemyInRadius();
 	}
 	else
 	{	
-		//When been in this state for more than certain amount of time, transition back to idle
+		//When finished dashing, transition back to idle
 		stateMachine->SetState("State_Idle");
 	}
 }
@@ -45,7 +47,7 @@ void UPlayer_State_Dash::Update()
 void UPlayer_State_Dash::Exit()
 {
 	//Reset move speed to what it was before dash
-	controller->SetMoveSpeed(prevMoveSpeed);
-	controller->SetCanMove(true);
-	controller->SetDashTimer(controller->GetDashCooldown());
+	playerRef->SetMoveSpeed(prevMoveSpeed);
+	playerRef->SetCanMove(true);
+	playerRef->SetDashTimer(playerRef->GetDashCooldown());
 }

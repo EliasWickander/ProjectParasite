@@ -13,6 +13,7 @@ void APawnShooter::BeginPlay()
 
 void APawnShooter::UpdatePawnBehavior(float deltaSeconds)
 {
+	//Don't update pawn if it's dying
 	if(isPendingDeath)
 		return;
 	

@@ -21,10 +21,10 @@ protected:
 
 private:
 	
-	APawnParasite* controller = nullptr;
+	APawnParasite* playerRef = nullptr;
 
 	FVector dashDir = FVector::ZeroVector;
 	
-	float timer = 0;
+	float dashTimer = 0;
 	float prevMoveSpeed;
 };

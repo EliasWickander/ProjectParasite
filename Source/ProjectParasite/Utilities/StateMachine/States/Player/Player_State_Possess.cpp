@@ -14,8 +14,6 @@ void UPlayer_State_Possess::Start()
 {
 	playerRef = Cast<APawnParasite>(stateMachine->GetOwner());
 	
-	UE_LOG(LogTemp, Warning, TEXT("Start Possess"));
-
 	//While player is attached, remove its collision
 	playerRef->GetCollider()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 
@@ -33,8 +31,6 @@ void UPlayer_State_Possess::Update()
 
 void UPlayer_State_Possess::Exit()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Exit Possess"));
-
 	playerRef->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	
 	playerRef->SetActorLocation(possessedEnemy->GetActorLocation() + -possessedEnemy->GetActorForwardVector() * 200);

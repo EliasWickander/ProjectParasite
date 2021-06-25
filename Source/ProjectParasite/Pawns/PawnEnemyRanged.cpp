@@ -26,8 +26,10 @@ void APawnEnemyRanged::Attack()
 		
 		if(rangedWeapon)
 		{
+			//Fire weapon
 			equippedWeapon->Trigger();
 
+			//If no ammo, reload weapon
 			if(rangedWeapon->GetCurrentAmmo() <= 0)
 			{
 				rangedWeapon->Reload();

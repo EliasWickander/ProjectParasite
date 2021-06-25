@@ -73,52 +73,31 @@ void APawnParasite::PossessClosestEnemyInRadius()
 	stateMachine->SetState("State_Possess");
 }
 
-APawnEnemy* APawnParasite::GetPossessedEnemy()
-{
-	return possessedEnemy;
-}
-
-float APawnParasite::GetPossessRadius()
-{
-	return possessRadius;
-}
-
-float APawnParasite::GetDashCooldown()
-{
-	return dashCooldown;
-}
-
-float APawnParasite::GetDashTimer()
-{
-	return dashTimer;
-}
-
-void APawnParasite::SetDashTimer(float value)
-{
-	dashTimer = value;
-}
-
 void APawnParasite::SetPossessed(APawnEnemy* actorToPossess)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Is setting possess"))
+	//If player is already possessing enemy
 	if(GetPossessedEnemy() != nullptr)
 	{
+		//Give them AI behavior again
 		GetPossessedEnemy()->GetAIController()->Possess(GetPossessedEnemy());
+		
 		GetPossessedEnemy()->onStartDeathEvent.RemoveDynamic(this, &APawnParasite::OnPossessedEnemyDeath);
 
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *GetPossessedEnemy()->GetName());
 		GetPossessedEnemy()->Die();
 	}
 	
 	if(actorToPossess != nullptr)
 	{
 		playerControllerRef->Possess(actorToPossess);
+
+		//Set the move speed of possessed enemy to its chase speed
 		actorToPossess->SetMoveSpeed(actorToPossess->GetChaseSpeed());
 
 		actorToPossess->onStartDeathEvent.AddDynamic(this, &APawnParasite::OnPossessedEnemyDeath);
 	}
 	else
 	{
+		//If actorToPossess is null, that means we want to unpossess an enemy
 		playerControllerRef->Possess(this);
 	}
 	
@@ -127,5 +106,6 @@ void APawnParasite::SetPossessed(APawnEnemy* actorToPossess)
 
 void APawnParasite::OnPossessedEnemyDeath(APawnBase* enemy)
 {
+	//Unpossess enemy upon death
 	SetPossessed(nullptr);
 }

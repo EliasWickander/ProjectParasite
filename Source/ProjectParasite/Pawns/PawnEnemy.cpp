@@ -29,6 +29,7 @@ void APawnEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//Spawn weapon
 	if(weaponType)
 	{
 		AWeaponBase* weaponInstance = Cast<AWeaponBase>(GetWorld()->SpawnActor(weaponType));
@@ -43,8 +44,6 @@ void APawnEnemy::BeginPlay()
 	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	
 	AIController = Cast<AAIController>(GetController());
-
-	
 }
 
 void APawnEnemy::UpdatePawnBehavior(float deltaSeconds)
@@ -59,20 +58,24 @@ void APawnEnemy::OnDeath(APawnBase* deadPawn)
 {
 	Super::OnDeath(deadPawn);
 
+	//Drop weapon
 	SetWeapon(nullptr);
-	APawnEnemy* enemyDying = Cast<APawnEnemy>(deadPawn);
+	
+	APawnEnemy* deadEnemy = Cast<APawnEnemy>(deadPawn);
 
-	enemyDying->GetAIController()->GetBlackboardComponent()->SetValueAsEnum("CurrentState", (uint8)ShooterStates::State_Idle);
+	Cast<AShooterAIController>(deadEnemy->GetAIController())->SetCurrentState(ShooterStates::State_Idle);
 }
 
 void APawnEnemy::SetWeapon(AWeaponBase* newWeapon)
 {
+	//If there's an old weapon equipped
 	if(equippedWeapon)
 	{
 		equippedWeapon->isEquipped = false;
 		equippedWeapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	}
 
+	//If new weapon isn't null
 	if(newWeapon)
 	{
 		newWeapon->SetActorLocation(weaponSocket->GetComponentLocation());
@@ -91,6 +94,5 @@ void APawnEnemy::Attack()
 	if(equippedWeapon == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s has no weapon attached. Cannot attack."), *GetName());
-		return;
 	}
 }

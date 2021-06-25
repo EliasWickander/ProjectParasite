@@ -36,19 +36,27 @@ void APlayerControllerBase::Tick(float DeltaSeconds)
 void APlayerControllerBase::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-
+		
+	//InputComponent->ClearActionBindings();
+	
 	controlledPawn = Cast<APawnBase>(InPawn);
 
 	if(controlledPawn == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s is possessing %s that doesn't seem to be derived from APawnBase"), *GetName(), *InPawn->GetName())
 	}
+
+	//SetupInputBindings();
+}
+
+void APlayerControllerBase::OnUnPossess()
+{	
+	Super::OnUnPossess();
 }
 
 void APlayerControllerBase::SetupInputBindings()
 {
 	//Clear all bindings so that we can set completely new bindings every time we possess a pawn
-	//InputComponent->ClearActionBindings();
 
 	SetupGeneralActions();
 	SetupParasiteActions();
@@ -112,6 +120,6 @@ void APlayerControllerBase::AttackInternal()
 
 	if(controlledEnemy != nullptr)
 	{
-		controlledEnemy->GetWeapon()->Trigger();	
+		controlledEnemy->GetWeapon()->Trigger();		
 	}
 }

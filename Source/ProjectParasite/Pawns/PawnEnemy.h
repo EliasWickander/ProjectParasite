@@ -18,11 +18,11 @@ class PROJECTPARASITE_API APawnEnemy : public APawnBase
 {
 	GENERATED_BODY()
 
+friend class UEnemyDebugComponent;
+friend class UBTTask_PatrolBetweenWaypoints;
+friend class AWeaponBase;
+	
 public:
-
-	friend class UEnemyDebugComponent;
-	friend class UBTTask_PatrolBetweenWaypoints;
-	friend class AWeaponBase;
 	
 	APawnEnemy();
 
@@ -30,24 +30,25 @@ public:
 
 	virtual void Attack();
 
-	USceneComponent* GetNapeComponent() { return napeComponent; }
-	TArray<ATargetPoint*> GetPatrolPoints() { return patrolPoints; }
-	AAIController* GetAIController() { return AIController; }
-	APawnParasite* GetPlayerRef() { return playerRef; }
-
-	float GetPatrolSpeed() { return patrolSpeed; }
-	float GetChaseSpeed() { return chaseSpeed; }
-
 	virtual void OnDeath(APawnBase* deadPawn) override;
-
+	
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	virtual void SetWeapon(AWeaponBase* newWeapon);
 	AWeaponBase* GetWeapon() { return equippedWeapon; }
-	
+
 	float GetAttackRange() { return attackRange; }
 	float GetDetectionRange() { return detectionRange; }
 	float GetDetectionAngle() { return detectionAngle; }
 	float GetSightReactionTime() { return sightReactionTime; }
+
+	float GetPatrolSpeed() { return patrolSpeed; }
+	float GetChaseSpeed() { return chaseSpeed; }
+	
+	APawnParasite* GetPlayerRef() { return playerRef; }
+	AAIController* GetAIController() { return AIController; }
+	
+	USceneComponent* GetNapeComponent() { return napeComponent; }
+	TArray<ATargetPoint*> GetPatrolPoints() { return patrolPoints; }
 	
 protected:
 	virtual void BeginPlay() override;
@@ -69,8 +70,6 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
 	TArray<ATargetPoint*> patrolPoints;
-	
-	APawnParasite* playerRef = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float patrolSpeed = 200;
@@ -90,6 +89,6 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Detection")
 	float sightReactionTime = 0.2f;
 
-private:
+	APawnParasite* playerRef = nullptr;
 	AAIController* AIController = nullptr;
 };
