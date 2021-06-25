@@ -6,9 +6,6 @@
 #include "BehaviorTree/BTTaskNode.h"
 #include "BTTask_Idle.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class PROJECTPARASITE_API UBTTask_Idle : public UBTTaskNode
 {

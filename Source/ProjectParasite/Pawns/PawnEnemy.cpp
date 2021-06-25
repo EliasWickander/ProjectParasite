@@ -55,12 +55,12 @@ void APawnEnemy::UpdatePawnBehavior(float deltaSeconds)
 		RotateToMouseCursor();
 }
 
-void APawnEnemy::OnStartDeath(AActor* pawnBeingDestroyed)
+void APawnEnemy::OnDeath(APawnBase* deadPawn)
 {
-	Super::OnStartDeath(pawnBeingDestroyed);
+	Super::OnDeath(deadPawn);
 
 	SetWeapon(nullptr);
-	APawnEnemy* enemyDying = Cast<APawnEnemy>(pawnBeingDestroyed);
+	APawnEnemy* enemyDying = Cast<APawnEnemy>(deadPawn);
 
 	enemyDying->GetAIController()->GetBlackboardComponent()->SetValueAsEnum("CurrentState", (uint8)ShooterStates::State_Idle);
 }

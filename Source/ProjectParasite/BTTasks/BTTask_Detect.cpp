@@ -72,45 +72,53 @@ void UBTTask_Detect::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* No
 
 void UBTTask_Detect::Detect(uint8* nodeMemory)
 {
-	BTTaskDetectMemory* memory = reinterpret_cast<BTTaskDetectMemory*>(nodeMemory);
+	BTTaskDetectMemory* instanceMemory = reinterpret_cast<BTTaskDetectMemory*>(nodeMemory);
 	
-	FBoxSphereBounds enemyColBounds = memory->ownerEnemy->GetCollider()->Bounds;
+	FBoxSphereBounds enemyColBounds = instanceMemory->ownerEnemy->GetCollider()->Bounds;
 
+	//Define detection cone
 	SCone coneData {
 		enemyColBounds.Origin,
-		memory->ownerEnemy->GetActorRotation().Quaternion(),
-		memory->ownerEnemy->GetDetectionAngle(),
+		instanceMemory->ownerEnemy->GetActorRotation().Quaternion(),
+		instanceMemory->ownerEnemy->GetDetectionAngle(),
 		enemyColBounds.BoxExtent.Z * 2,
-		memory->ownerEnemy->GetDetectionRange()
+		instanceMemory->ownerEnemy->GetDetectionRange()
 	};
 
 	const TArray<TEnumAsByte<EObjectTypeQuery>> objectTypes;
 	const TArray<AActor*> actorsToIgnore { };
 	UClass* classFilter = APawnParasite::StaticClass();
 	TArray<AActor*> outActors;
-	
+
+	//If player is overlapping detection cone
 	if(OverlapCone(coneData, GetWorld(), objectTypes, classFilter, actorsToIgnore, outActors))
 	{
 		FHitResult hitResult;
 		FCollisionQueryParams params;
-		params.AddIgnoredActor(memory->ownerEnemy);
+		params.AddIgnoredActor(instanceMemory->ownerEnemy);
 
-		if(GetWorld()->LineTraceSingleByChannel(hitResult,memory->ownerEnemy->GetActorLocation(),outActors[0]->GetActorLocation(), ECC_Visibility, params))
+		APawnParasite* detectedPlayer = Cast<APawnParasite>(outActors[0]);
+
+		AActor* actorToDetect;
+
+		//If player is possessing enemy, that enemy is the new focus of detection
+		if(detectedPlayer->GetPossessedEnemy() != nullptr)
 		{
-			AActor* actorToDetect;
+			actorToDetect = detectedPlayer->GetPossessedEnemy();	
+		}
+		else
+		{
+			actorToDetect = detectedPlayer;
+		}
+		
+		//Check if something is obstructing the vision of actor
+		if(GetWorld()->LineTraceSingleByChannel(hitResult,instanceMemory->ownerEnemy->GetActorLocation(),actorToDetect->GetActorLocation(), ECC_Visibility, params))
+		{
 
-			if(playerRef->GetPossessedEnemy() != nullptr)
-			{
-				actorToDetect = playerRef->GetPossessedEnemy();	
-			}
-			else
-			{
-				actorToDetect = playerRef;
-			}
-			
+			//If nothing is obstructing the vision
 			if(hitResult.GetActor() == actorToDetect)
 			{
-				memory->ownerEnemy->GetAIController()->StopMovement();
+				instanceMemory->ownerEnemy->GetAIController()->StopMovement();
 				
 				hasDetected = true;
 			}

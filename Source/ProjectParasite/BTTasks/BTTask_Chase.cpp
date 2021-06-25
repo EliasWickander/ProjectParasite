@@ -15,9 +15,6 @@ UBTTask_Chase::UBTTask_Chase()
 
 	bNotifyTick = true;
 	bNotifyTaskFinished = true;
-
-	//Only accept actor blackboard key
-	BlackboardKey.AddObjectFilter(this, GET_MEMBER_NAME_CHECKED(UBTTask_Chase, BlackboardKey), AActor::StaticClass());
 }
 
 EBTNodeResult::Type UBTTask_Chase::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -25,14 +22,14 @@ EBTNodeResult::Type UBTTask_Chase::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
 	BTTaskChaseMemory* instanceMemory = reinterpret_cast<BTTaskChaseMemory*>(NodeMemory);
-	
-	instanceMemory->ownerEnemy = OwnerComp.GetAIOwner()->GetPawn<APawnEnemy>();
 
 	instanceMemory->blackboard = OwnerComp.GetBlackboardComponent();
-
-	playerRef = instanceMemory->ownerEnemy->GetPlayerRef();
+	instanceMemory->ownerEnemy = OwnerComp.GetAIOwner()->GetPawn<APawnEnemy>();
 	instanceMemory->shooterAIController = Cast<AShooterAIController>(instanceMemory->ownerEnemy->GetAIController());
 
+	behaviorTreeComponent = &OwnerComp;
+	playerRef = instanceMemory->ownerEnemy->GetPlayerRef();
+	
 	if(instanceMemory->shooterAIController == nullptr)
 	{
 		//Enemy executing this task isn't of a shooter type
@@ -40,13 +37,14 @@ EBTNodeResult::Type UBTTask_Chase::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 		return EBTNodeResult::Failed;
 	}
 
+	//If player is possessing an enemy, we want this unit to chase the possessed enemy
 	if(playerRef->GetPossessedEnemy() != nullptr)
 	{
-		SetTarget(NodeMemory, playerRef->GetPossessedEnemy());
+		SetTarget(playerRef->GetPossessedEnemy());
 	}
 	else
 	{
-		SetTarget(NodeMemory, playerRef);
+		SetTarget(playerRef);
 	}
 	
 	instanceMemory->ownerEnemy->SetMoveSpeed(instanceMemory->ownerEnemy->GetChaseSpeed());
@@ -61,8 +59,10 @@ void UBTTask_Chase::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
 
 	if(instanceMemory->targetActor != nullptr)
 	{
+		//Chase the player
 		instanceMemory->shooterAIController->MoveToActor(instanceMemory->targetActor, instanceMemory->ownerEnemy->GetAttackRange());
 
+		//If reached the attack range, transition to attack state
 		if(instanceMemory->shooterAIController->GetPathFollowingComponent()->DidMoveReachGoal())
 		{
 			instanceMemory->shooterAIController->SetCurrentState(ShooterStates::State_Attack);
@@ -85,15 +85,23 @@ void UBTTask_Chase::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
 }
 
-uint16 UBTTask_Chase::GetInstanceMemorySize() const
+void UBTTask_Chase::SetTarget(APawnBase* target)
 {
-	return sizeof(BTTaskChaseMemory);
-}
-
-void UBTTask_Chase::SetTarget(uint8* NodeMemory, AActor* target)
-{
-	BTTaskChaseMemory* instanceMemory = reinterpret_cast<BTTaskChaseMemory*>(NodeMemory);
+	BTTaskChaseMemory* instanceMemory = GetInstanceMemory();
+	
 	instanceMemory->ownerEnemy->GetAIController()->SetFocus(target);
 
 	instanceMemory->targetActor = target;
+}
+
+BTTaskChaseMemory* UBTTask_Chase::GetInstanceMemory()
+{
+	uint8* nodeMemory = behaviorTreeComponent->GetNodeMemory(this, behaviorTreeComponent->GetActiveInstanceIdx());
+
+	return reinterpret_cast<BTTaskChaseMemory*>(nodeMemory);
+}
+
+uint16 UBTTask_Chase::GetInstanceMemorySize() const
+{
+	return sizeof(BTTaskChaseMemory);
 }

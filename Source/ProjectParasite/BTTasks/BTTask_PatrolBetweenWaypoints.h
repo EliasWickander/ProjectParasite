@@ -6,11 +6,13 @@
 #include "BehaviorTree/BTTaskNode.h"
 #include "BTTask_PatrolBetweenWaypoints.generated.h"
 
+class APawnEnemy;
+
 struct BTTaskPatrolBetweenWaypointsMemory
 {
 	TQueue<FVector>* patrolPointQueue;
 	FVector currentWaypoint = FVector::ZeroVector;
-	class APawnEnemy* ownerEnemy = nullptr;
+	APawnEnemy* ownerEnemy = nullptr;
 };
 
 UCLASS()
@@ -26,9 +28,9 @@ public:
 	virtual void OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult) override;
 
 private:
-	void InitNextWaypoint(uint8* NodeMemory);
-
+	void SetupPatrolPoints(uint8* nodeMemory);
+	void InitNextWaypoint(uint8* nodeMemory);
+	
 	virtual uint16 GetInstanceMemorySize() const override;
-
 	float timer = 0;
 };

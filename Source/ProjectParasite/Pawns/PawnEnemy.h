@@ -38,7 +38,7 @@ public:
 	float GetPatrolSpeed() { return patrolSpeed; }
 	float GetChaseSpeed() { return chaseSpeed; }
 
-	virtual void OnStartDeath(AActor* pawnBeingDestroyed) override;
+	virtual void OnDeath(APawnBase* deadPawn) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	virtual void SetWeapon(AWeaponBase* newWeapon);

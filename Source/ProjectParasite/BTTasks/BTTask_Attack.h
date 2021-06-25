@@ -17,7 +17,6 @@ struct BTTaskAttackMemory
 	APawnEnemy* ownerEnemy = nullptr;
 	AShooterAIController* shooterAIController = nullptr;
 	
-	APawnParasite* playerRef = nullptr;
 	APawnBase* targetActor = nullptr;
 };
 
@@ -35,12 +34,17 @@ public:
 
 private:
 	virtual uint16 GetInstanceMemorySize() const override;
+	BTTaskAttackMemory* GetInstanceMemory();
+	
 	void SetTarget(APawnBase* target);
 
 	UFUNCTION()
-	void OnTargetDeath(AActor* destroyedActor);
+	void OnTargetDeath(AActor* deadActor);
 
-	bool IsInRange(BTTaskAttackMemory* instanceMemory);
+	bool IsInRange(uint8* nodeMemory);
+	void RotateWeaponToTarget();
 
 	UBehaviorTreeComponent* behaviorTreeComponent = nullptr;
+
+	APawnParasite* playerRef = nullptr;
 };

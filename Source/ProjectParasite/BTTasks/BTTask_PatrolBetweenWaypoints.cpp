@@ -19,22 +19,15 @@ EBTNodeResult::Type UBTTask_PatrolBetweenWaypoints::ExecuteTask(UBehaviorTreeCom
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
-	BTTaskPatrolBetweenWaypointsMemory* memory = reinterpret_cast<BTTaskPatrolBetweenWaypointsMemory*>(NodeMemory);
+	BTTaskPatrolBetweenWaypointsMemory* instanceMemory = reinterpret_cast<BTTaskPatrolBetweenWaypointsMemory*>(NodeMemory);
 
-	memory->currentWaypoint = FVector::ZeroVector;
-	memory->patrolPointQueue = new TQueue<FVector>();
-	memory->ownerEnemy = OwnerComp.GetAIOwner()->GetPawn<APawnEnemy>();
+	instanceMemory->currentWaypoint = FVector::ZeroVector;
+	instanceMemory->patrolPointQueue = new TQueue<FVector>();
+	instanceMemory->ownerEnemy = OwnerComp.GetAIOwner()->GetPawn<APawnEnemy>();
 
-	memory->ownerEnemy->SetMoveSpeed(memory->ownerEnemy->GetPatrolSpeed());
+	instanceMemory->ownerEnemy->SetMoveSpeed(instanceMemory->ownerEnemy->GetPatrolSpeed());
 
-	for(ATargetPoint* point : memory->ownerEnemy->GetPatrolPoints())
-	{
-		FVector tempLocation = point->GetActorLocation();
-		tempLocation.Z = memory->ownerEnemy->GetActorLocation().Z;
-		
-		memory->patrolPointQueue->Enqueue(tempLocation);
-	}
-
+	SetupPatrolPoints(NodeMemory);
 	InitNextWaypoint(NodeMemory);
 
 	return EBTNodeResult::InProgress;
@@ -44,36 +37,32 @@ void UBTTask_PatrolBetweenWaypoints::TickTask(UBehaviorTreeComponent& OwnerComp,
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-	BTTaskPatrolBetweenWaypointsMemory* memory = reinterpret_cast<BTTaskPatrolBetweenWaypointsMemory*>(NodeMemory);
+	BTTaskPatrolBetweenWaypointsMemory* instanceMemory = reinterpret_cast<BTTaskPatrolBetweenWaypointsMemory*>(NodeMemory);
 	
-	if(memory->patrolPointQueue->IsEmpty())
+	if(instanceMemory->patrolPointQueue->IsEmpty())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s has no patrol points assigned. Cannot move."), *memory->ownerEnemy->GetName());
+		UE_LOG(LogTemp, Warning, TEXT("%s has no patrol points assigned. Cannot move."), *instanceMemory->ownerEnemy->GetName());
 		return;	
 	}
 
-	memory->currentWaypoint.Z = memory->ownerEnemy->GetActorLocation().Z;
+	AAIController* AIController = instanceMemory->ownerEnemy->GetAIController();
 
-	if(FVector::Dist(memory->ownerEnemy->GetActorLocation(), memory->currentWaypoint) < 20)
+	//If enemy reached current waypoint, initialize next one in queue
+	if(AIController->GetPathFollowingComponent()->DidMoveReachGoal())
 	{
-		memory->patrolPointQueue->Enqueue(memory->currentWaypoint);
+		instanceMemory->patrolPointQueue->Enqueue(instanceMemory->currentWaypoint);
 		InitNextWaypoint(NodeMemory);
 	}
 }
 
-void UBTTask_PatrolBetweenWaypoints::InitNextWaypoint(uint8* NodeMemory)
+void UBTTask_PatrolBetweenWaypoints::InitNextWaypoint(uint8* nodeMemory)
 {
-	BTTaskPatrolBetweenWaypointsMemory* memory = reinterpret_cast<BTTaskPatrolBetweenWaypointsMemory*>(NodeMemory);
+	BTTaskPatrolBetweenWaypointsMemory* instanceMemory = reinterpret_cast<BTTaskPatrolBetweenWaypointsMemory*>(nodeMemory);
 
-	memory->patrolPointQueue->Dequeue(memory->currentWaypoint);
+	instanceMemory->patrolPointQueue->Dequeue(instanceMemory->currentWaypoint);
 
-	memory->ownerEnemy->GetAIController()->SetFocalPoint(memory->currentWaypoint);
-	memory->ownerEnemy->GetAIController()->MoveToLocation(memory->currentWaypoint, 1, false);
-}
-
-uint16 UBTTask_PatrolBetweenWaypoints::GetInstanceMemorySize() const
-{
-	return sizeof(BTTaskPatrolBetweenWaypointsMemory);
+	instanceMemory->ownerEnemy->GetAIController()->SetFocalPoint(instanceMemory->currentWaypoint);
+	instanceMemory->ownerEnemy->GetAIController()->MoveToLocation(instanceMemory->currentWaypoint, 20, false);
 }
 
 void UBTTask_PatrolBetweenWaypoints::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,
@@ -81,7 +70,26 @@ void UBTTask_PatrolBetweenWaypoints::OnTaskFinished(UBehaviorTreeComponent& Owne
 {
 	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
 
-	BTTaskPatrolBetweenWaypointsMemory* memory = reinterpret_cast<BTTaskPatrolBetweenWaypointsMemory*>(NodeMemory);
+	BTTaskPatrolBetweenWaypointsMemory* instanceMemory = reinterpret_cast<BTTaskPatrolBetweenWaypointsMemory*>(NodeMemory);
 
-	memory->ownerEnemy->GetAIController()->StopMovement();
+	instanceMemory->ownerEnemy->GetAIController()->StopMovement();
+}
+
+void UBTTask_PatrolBetweenWaypoints::SetupPatrolPoints(uint8* nodeMemory)
+{
+	BTTaskPatrolBetweenWaypointsMemory* instanceMemory = reinterpret_cast<BTTaskPatrolBetweenWaypointsMemory*>(nodeMemory);
+
+	//Set up queue for patrol points
+	for(ATargetPoint* point : instanceMemory->ownerEnemy->GetPatrolPoints())
+	{
+		FVector tempLocation = point->GetActorLocation();
+		tempLocation.Z = instanceMemory->ownerEnemy->GetActorLocation().Z;
+		
+		instanceMemory->patrolPointQueue->Enqueue(tempLocation);
+	}
+}
+
+uint16 UBTTask_PatrolBetweenWaypoints::GetInstanceMemorySize() const
+{
+	return sizeof(BTTaskPatrolBetweenWaypointsMemory);
 }

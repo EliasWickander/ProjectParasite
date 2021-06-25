@@ -8,15 +8,14 @@
 
 #include "PawnBase.generated.h"
 
-class APawnBase;
 class UCameraComponent;
 class USpringArmComponent;
 class UCapsuleComponent;
-class UMovementComponent;
 class UFloatingPawnMovement;
+class APawnBase;
 class APlayerControllerBase;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStartDeathEvent, APawnBase*, pawnBeingDestroyed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeathEvent, APawnBase*, deadPawn);
 
 UCLASS()
 class PROJECTPARASITE_API APawnBase : public APawn
@@ -26,38 +25,37 @@ class PROJECTPARASITE_API APawnBase : public APawn
 public:
 	APawnBase();
 
+	virtual void Tick(float DeltaSeconds) override;
+
+	virtual void UpdatePawnBehavior(float deltaSeconds);
+	
 	//Casts a ray to mouse cursor in world. Returns true if hit found
 	bool RaycastToMouseCursor(FHitResult& hitResult);
 	void RotateToMouseCursor();
 
-	void SetMoveSpeed(float speed);
-	float GetMoveSpeed();
+	UCapsuleComponent* GetCollider() { return capsuleCollider; }
 	
-	void SetCanMove(bool enabled);
-	bool GetCanMove();
+	void SetMoveSpeed(float speed);
+	float GetMoveSpeed() { return currentMoveSpeed; }
+	
+	void SetCanMove(bool enabled) { canMove = enabled; }
+	bool GetCanMove() { return canMove; }
 
-	virtual void Tick(float DeltaSeconds) override;
+	bool GetIsPendingDeath() { return isPendingDeath; }
 
-	virtual void UpdatePawnBehavior(float deltaSeconds);
-
-	virtual void HandleDeath();
-
+	virtual void HandlePendingDeath();
 	void Die();
+	virtual void OnDeath(APawnBase* deadPawn);
 	
 	UFUNCTION()
 	void OnTakeDamage(AActor* damagedActor, float damage, const UDamageType* damageType, AController* causerController, AActor* causerActor);
-
-	virtual void OnStartDeath(AActor* pawnBeingDestroyed);
 	
 	void MoveHorizontal(float axis);
 	void MoveVertical(float axis);
-	bool GetIsPendingDeath() { return isPendingDeath; }
-	
-	UCapsuleComponent* GetCollider() { return capsuleCollider; }
-    
-    APlayerControllerBase* playerControllerRef = nullptr;
 
-	FOnStartDeathEvent onStartDeathEvent;
+	FOnDeathEvent onStartDeathEvent;
+
+	APlayerControllerBase* playerControllerRef = nullptr;
     	
 protected:
 	virtual void BeginPlay() override;
@@ -83,22 +81,23 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* springArm = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health", meta = (AllowPrivateAccess = "true"))
-	float maxHealth = 100;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
-	float currentMoveSpeed = 0;
-	
-	float currentHealth;
-	
-	bool canMove = true;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UPawnMovementComponent* movementComponent = nullptr;
 	
-	UFloatingPawnMovement* floatingPawnMovement = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health", meta = (AllowPrivateAccess = "true"))
+	float maxHealth = 100;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health", meta = (AllowPrivateAccess = "true"))
+	float currentHealth;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float currentMoveSpeed = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health", meta = (AllowPrivateAccess = "true"))
 	float deathTime = 1;
 	float deathTimer = 0;
+	
+	bool canMove = true;
+	
+	UFloatingPawnMovement* floatingPawnMovement = nullptr;
 };

@@ -47,8 +47,23 @@ void APawnBase::BeginPlay()
 	OnTakeAnyDamage.AddDynamic(this, &APawnBase::OnTakeDamage);
 	
 	currentHealth = maxHealth;
+}
 
-	//UE_LOG(LogTemp, Warning, TEXT("%s"), *playerControllerRef->GetName())
+void APawnBase::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if(isPendingDeath)
+	{
+		HandlePendingDeath();
+	}
+	
+	UpdatePawnBehavior(DeltaSeconds);
+}
+
+void APawnBase::UpdatePawnBehavior(float deltaSeconds)
+{
+
 }
 
 void APawnBase::MoveVertical(float axis)
@@ -110,49 +125,16 @@ void APawnBase::SetMoveSpeed(float speed)
 	floatingPawnMovement->MaxSpeed = currentMoveSpeed;
 }
 
-float APawnBase::GetMoveSpeed()
+void APawnBase::HandlePendingDeath()
 {
-	return currentMoveSpeed;
-}
-
-void APawnBase::SetCanMove(bool enabled)
-{
-	canMove = enabled;
-}
-
-bool APawnBase::GetCanMove()
-{
-	return canMove;
-}
-
-void APawnBase::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
-
-	if(isPendingDeath)
-	{
-		HandleDeath();
-	}
-	
-	UpdatePawnBehavior(DeltaSeconds);
-}
-
-void APawnBase::UpdatePawnBehavior(float deltaSeconds)
-{
-
-}
-
-
-
-void APawnBase::HandleDeath()
-{
+	//Let body remain post-death for some time
 	if(deathTimer < deathTime)
 	{
 		deathTimer += GetWorld()->DeltaTimeSeconds;
 	}
 	else
 	{
-		//Die
+		//Destroy
 		if(Cast<APawnParasite>(this))
 		{
 			
@@ -180,10 +162,10 @@ void APawnBase::Die()
 {
 	isPendingDeath = true;
 	onStartDeathEvent.Broadcast(this);
-	OnStartDeath(this);
+	OnDeath(this);
 }
 
-void APawnBase::OnStartDeath(AActor* pawnBeingDestroyed)
+void APawnBase::OnDeath(APawnBase* deadPawn)
 {
 	
 }

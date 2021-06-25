@@ -3,9 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
+#include "BehaviorTree/BTTaskNode.h"
 #include "BTTask_Chase.generated.h"
 
+class APawnBase;
 class APawnEnemy;
 class APawnParasite;
 class AShooterAIController;
@@ -15,11 +16,11 @@ struct BTTaskChaseMemory
 	APawnEnemy* ownerEnemy = nullptr;
 	UBlackboardComponent* blackboard = nullptr;
 	AShooterAIController* shooterAIController = nullptr;
-	AActor* targetActor = nullptr;
+	APawnBase* targetActor = nullptr;
 };
 
 UCLASS()
-class PROJECTPARASITE_API UBTTask_Chase : public UBTTask_BlackboardBase
+class PROJECTPARASITE_API UBTTask_Chase : public UBTTaskNode
 {
 	GENERATED_BODY()
 
@@ -32,7 +33,10 @@ public:
 
 private:
 	virtual uint16 GetInstanceMemorySize() const override;
-	void SetTarget(uint8* NodeMemory, AActor* target);
+	BTTaskChaseMemory* GetInstanceMemory();
 	
+	void SetTarget(APawnBase* target);
+
+	UBehaviorTreeComponent* behaviorTreeComponent = nullptr;
 	APawnParasite* playerRef = nullptr;
 };
