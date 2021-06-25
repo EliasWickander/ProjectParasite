@@ -35,7 +35,7 @@ private:
 	virtual uint16 GetInstanceMemorySize() const override;
 	BTTaskChaseMemory* GetInstanceMemory();
 	
-	void SetTarget(APawnBase* target);
+	void SetTarget(APawnBase* target, BTTaskChaseMemory* instanceMemory);
 
 	UBehaviorTreeComponent* behaviorTreeComponent = nullptr;
 	APawnParasite* playerRef = nullptr;

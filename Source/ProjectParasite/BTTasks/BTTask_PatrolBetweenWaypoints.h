@@ -28,8 +28,8 @@ public:
 	virtual void OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult) override;
 
 private:
-	void SetupPatrolPoints(uint8* nodeMemory);
-	void InitNextWaypoint(uint8* nodeMemory);
+	void SetupPatrolPoints(BTTaskPatrolBetweenWaypointsMemory* instanceMemory);
+	void InitNextWaypoint(BTTaskPatrolBetweenWaypointsMemory* instanceMemory);
 	
 	virtual uint16 GetInstanceMemorySize() const override;
 	float timer = 0;

@@ -29,7 +29,7 @@ public:
 	virtual void OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult) override;
 
 private:
-	void Detect(uint8* nodeMemory);
+	void Detect(BTTaskDetectMemory* instanceMemory);
 	
 	virtual uint16 GetInstanceMemorySize() const override;
 

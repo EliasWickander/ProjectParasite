@@ -64,9 +64,9 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 	}
 	
 	//If enemy is in attack range, rotate weapon and attack
-	if(IsInRange(NodeMemory))
+	if(IsInRange(instanceMemory))
 	{
-		RotateWeaponToTarget();
+		RotateWeaponToTarget(instanceMemory);
 		
 		instanceMemory->ownerEnemy->Attack();
 	}
@@ -101,21 +101,17 @@ void UBTTask_Attack::OnTargetDeath(AActor* deadActor)
 	}
 }
 
-bool UBTTask_Attack::IsInRange(uint8* nodeMemory)
+bool UBTTask_Attack::IsInRange(BTTaskAttackMemory* instanceMemory)
 {
-	BTTaskAttackMemory* instanceMemory = reinterpret_cast<BTTaskAttackMemory*>(nodeMemory);
-	
 	UPathFollowingComponent* pathFollowingComponent = instanceMemory->ownerEnemy->GetAIController()->GetPathFollowingComponent();
 
 	return pathFollowingComponent->HasReached(*instanceMemory->targetActor, EPathFollowingReachMode::OverlapAgentAndGoal, instanceMemory->ownerEnemy->GetAttackRange(), true);;
 }
 
-void UBTTask_Attack::RotateWeaponToTarget()
+void UBTTask_Attack::RotateWeaponToTarget(BTTaskAttackMemory* instanceMemory)
 {
 	//Rotates weapon towards target (will later be replaced by joint rotation logic)
 	
-	BTTaskAttackMemory* instanceMemory = GetInstanceMemory();
-
 	AWeaponBase* weapon = instanceMemory->ownerEnemy->GetWeapon();
 	
 	FVector dirToTarget = instanceMemory->targetActor->GetActorLocation() - weapon->GetActorLocation();
@@ -123,6 +119,7 @@ void UBTTask_Attack::RotateWeaponToTarget()
 	weapon->SetActorRotation(dirToTarget.Rotation());
 }
 
+//Seems to be inconsistent
 BTTaskAttackMemory* UBTTask_Attack::GetInstanceMemory()
 {
 	uint8* nodeMemory = behaviorTreeComponent->GetNodeMemory(this, behaviorTreeComponent->GetActiveInstanceIdx());

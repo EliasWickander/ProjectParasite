@@ -47,7 +47,7 @@ void UBTTask_Detect::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 
 	BTTaskDetectMemory* instanceMemory = reinterpret_cast<BTTaskDetectMemory*>(NodeMemory);
 	
-	Detect(NodeMemory);
+	Detect(instanceMemory);
 
 	if(hasDetected)
 	{
@@ -70,10 +70,8 @@ void UBTTask_Detect::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* No
 	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
 }
 
-void UBTTask_Detect::Detect(uint8* nodeMemory)
+void UBTTask_Detect::Detect(BTTaskDetectMemory* instanceMemory)
 {
-	BTTaskDetectMemory* instanceMemory = reinterpret_cast<BTTaskDetectMemory*>(nodeMemory);
-	
 	FBoxSphereBounds enemyColBounds = instanceMemory->ownerEnemy->GetCollider()->Bounds;
 
 	//Define detection cone

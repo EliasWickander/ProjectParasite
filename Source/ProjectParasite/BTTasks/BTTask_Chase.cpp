@@ -40,11 +40,11 @@ EBTNodeResult::Type UBTTask_Chase::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 	//If player is possessing an enemy, we want this unit to chase the possessed enemy
 	if(playerRef->GetPossessedEnemy() != nullptr)
 	{
-		SetTarget(playerRef->GetPossessedEnemy());
+		SetTarget(playerRef->GetPossessedEnemy(), instanceMemory);
 	}
 	else
 	{
-		SetTarget(playerRef);
+		SetTarget(playerRef, instanceMemory);
 	}
 	
 	instanceMemory->ownerEnemy->SetMoveSpeed(instanceMemory->ownerEnemy->GetChaseSpeed());
@@ -85,10 +85,8 @@ void UBTTask_Chase::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
 }
 
-void UBTTask_Chase::SetTarget(APawnBase* target)
+void UBTTask_Chase::SetTarget(APawnBase* target, BTTaskChaseMemory* instanceMemory)
 {
-	BTTaskChaseMemory* instanceMemory = GetInstanceMemory();
-	
 	instanceMemory->ownerEnemy->GetAIController()->SetFocus(target);
 
 	instanceMemory->targetActor = target;

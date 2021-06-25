@@ -41,8 +41,8 @@ private:
 	UFUNCTION()
 	void OnTargetDeath(AActor* deadActor);
 
-	bool IsInRange(uint8* nodeMemory);
-	void RotateWeaponToTarget();
+	bool IsInRange(BTTaskAttackMemory* instanceMemory);
+	void RotateWeaponToTarget(BTTaskAttackMemory* instanceMemory);
 
 	UBehaviorTreeComponent* behaviorTreeComponent = nullptr;
 

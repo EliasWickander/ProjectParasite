@@ -27,8 +27,8 @@ EBTNodeResult::Type UBTTask_PatrolBetweenWaypoints::ExecuteTask(UBehaviorTreeCom
 
 	instanceMemory->ownerEnemy->SetMoveSpeed(instanceMemory->ownerEnemy->GetPatrolSpeed());
 
-	SetupPatrolPoints(NodeMemory);
-	InitNextWaypoint(NodeMemory);
+	SetupPatrolPoints(instanceMemory);
+	InitNextWaypoint(instanceMemory);
 
 	return EBTNodeResult::InProgress;
 }
@@ -51,14 +51,12 @@ void UBTTask_PatrolBetweenWaypoints::TickTask(UBehaviorTreeComponent& OwnerComp,
 	if(AIController->GetPathFollowingComponent()->DidMoveReachGoal())
 	{
 		instanceMemory->patrolPointQueue->Enqueue(instanceMemory->currentWaypoint);
-		InitNextWaypoint(NodeMemory);
+		InitNextWaypoint(instanceMemory);
 	}
 }
 
-void UBTTask_PatrolBetweenWaypoints::InitNextWaypoint(uint8* nodeMemory)
+void UBTTask_PatrolBetweenWaypoints::InitNextWaypoint(BTTaskPatrolBetweenWaypointsMemory* instanceMemory)
 {
-	BTTaskPatrolBetweenWaypointsMemory* instanceMemory = reinterpret_cast<BTTaskPatrolBetweenWaypointsMemory*>(nodeMemory);
-
 	instanceMemory->patrolPointQueue->Dequeue(instanceMemory->currentWaypoint);
 
 	instanceMemory->ownerEnemy->GetAIController()->SetFocalPoint(instanceMemory->currentWaypoint);
@@ -75,10 +73,8 @@ void UBTTask_PatrolBetweenWaypoints::OnTaskFinished(UBehaviorTreeComponent& Owne
 	instanceMemory->ownerEnemy->GetAIController()->StopMovement();
 }
 
-void UBTTask_PatrolBetweenWaypoints::SetupPatrolPoints(uint8* nodeMemory)
+void UBTTask_PatrolBetweenWaypoints::SetupPatrolPoints(BTTaskPatrolBetweenWaypointsMemory* instanceMemory)
 {
-	BTTaskPatrolBetweenWaypointsMemory* instanceMemory = reinterpret_cast<BTTaskPatrolBetweenWaypointsMemory*>(nodeMemory);
-
 	//Set up queue for patrol points
 	for(ATargetPoint* point : instanceMemory->ownerEnemy->GetPatrolPoints())
 	{
