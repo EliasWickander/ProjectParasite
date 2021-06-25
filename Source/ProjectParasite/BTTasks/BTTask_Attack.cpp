@@ -81,6 +81,13 @@ void UBTTask_Attack::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* No
 	EBTNodeResult::Type TaskResult)
 {
 	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
+
+	BTTaskAttackMemory* instanceMemory = reinterpret_cast<BTTaskAttackMemory*>(NodeMemory);
+	
+	AWeaponBase* weapon = instanceMemory->ownerEnemy->GetWeapon();
+
+	weapon->SetActorRotation(instanceMemory->ownerEnemy->GetActorForwardVector().Rotation());
+	
 }
 
 void UBTTask_Attack::SetTarget(APawnBase* target)
@@ -111,7 +118,7 @@ bool UBTTask_Attack::IsInRange(BTTaskAttackMemory* instanceMemory)
 void UBTTask_Attack::RotateWeaponToTarget(BTTaskAttackMemory* instanceMemory)
 {
 	//Rotates weapon towards target (will later be replaced by joint rotation logic)
-	
+
 	AWeaponBase* weapon = instanceMemory->ownerEnemy->GetWeapon();
 	
 	FVector dirToTarget = instanceMemory->targetActor->GetActorLocation() - weapon->GetActorLocation();
