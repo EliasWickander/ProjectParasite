@@ -29,6 +29,7 @@ public:
 	void Dash();
 	void PossessClosestEnemyInRadius();
 
+	UFUNCTION(BlueprintCallable)
 	APawnEnemy* GetPossessedEnemy();
 	float GetPossessRadius();
 
