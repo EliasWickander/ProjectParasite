@@ -29,6 +29,7 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	instanceMemory->shooterAIController = Cast<AShooterAIController>(OwnerComp.GetAIOwner());
 
 	behaviorTreeComponent = &OwnerComp;
+
 	playerRef = instanceMemory->ownerEnemy->GetPlayerRef();
 	
 	if(instanceMemory->shooterAIController == nullptr)
@@ -41,11 +42,11 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	//If player is possessing an enemy, we want this unit to attack the possessed enemy
 	if(playerRef->GetPossessedEnemy() != nullptr)
 	{
-		SetTarget(playerRef->GetPossessedEnemy());
+		SetTarget(playerRef->GetPossessedEnemy(), NodeMemory);
 	}
 	else
 	{
-		SetTarget(playerRef);
+		SetTarget(playerRef, NodeMemory);
 	}
 
 	return EBTNodeResult::InProgress;
@@ -60,15 +61,19 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 	//If target actor is dead, trigger event method
 	if(instanceMemory->targetActor->GetIsPendingDeath())
 	{
-		OnTargetDeath(instanceMemory->targetActor);
+		OnTargetDeath(instanceMemory->targetActor, NodeMemory);
 	}
+
+	bool rotatedToTarget = RotateBodyToTarget(instanceMemory->ownerEnemy->GetTurnRate(), 0.2f, NodeMemory);
 	
 	//If enemy is in attack range, rotate weapon and attack
-	if(IsInRange(instanceMemory))
+	if(IsInRange(NodeMemory))
 	{
-		RotateWeaponToTarget(instanceMemory);
-		
-		instanceMemory->ownerEnemy->Attack();
+		if(rotatedToTarget)
+		{
+			RotateWeaponToTarget(NodeMemory);	
+			instanceMemory->ownerEnemy->Attack();
+		}
 	}
 	else
 	{
@@ -90,48 +95,65 @@ void UBTTask_Attack::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* No
 	
 }
 
-void UBTTask_Attack::SetTarget(APawnBase* target)
+void UBTTask_Attack::SetTarget(APawnBase* target, uint8* nodeMemory)
 {
-	BTTaskAttackMemory* instanceMemory = GetInstanceMemory();
+	BTTaskAttackMemory* instanceMemory = reinterpret_cast<BTTaskAttackMemory*>(nodeMemory);
 	
-	instanceMemory->ownerEnemy->GetAIController()->SetFocus(target);
+	//instanceMemory->ownerEnemy->GetAIController()->SetFocus(target);
 
 	instanceMemory->targetActor = target;
 }
 
-void UBTTask_Attack::OnTargetDeath(AActor* deadActor)
+void UBTTask_Attack::OnTargetDeath(AActor* deadActor, uint8* nodeMemory)
 {
 	//If dead target was enemy, set parasite as new target
 	if(Cast<APawnEnemy>(deadActor))
 	{
-		SetTarget(playerRef);
+		SetTarget(playerRef, nodeMemory);
 	}
 }
 
-bool UBTTask_Attack::IsInRange(BTTaskAttackMemory* instanceMemory)
+bool UBTTask_Attack::IsInRange(uint8* nodeMemory)
 {
+	BTTaskAttackMemory* instanceMemory = reinterpret_cast<BTTaskAttackMemory*>(nodeMemory);
+	
 	UPathFollowingComponent* pathFollowingComponent = instanceMemory->ownerEnemy->GetAIController()->GetPathFollowingComponent();
 
 	return pathFollowingComponent->HasReached(*instanceMemory->targetActor, EPathFollowingReachMode::OverlapAgentAndGoal, instanceMemory->ownerEnemy->GetAttackRange(), true);;
 }
 
-void UBTTask_Attack::RotateWeaponToTarget(BTTaskAttackMemory* instanceMemory)
+bool UBTTask_Attack::RotateBodyToTarget(float turnRate, float acceptanceDist, uint8* nodeMemory)
+{
+	BTTaskAttackMemory* instanceMemory = reinterpret_cast<BTTaskAttackMemory*>(nodeMemory);
+	
+	APawnEnemy* ownerEnemy = instanceMemory->ownerEnemy;
+	APawnBase* targetActor = instanceMemory->targetActor;
+	
+	FVector dirToTarget = targetActor->GetActorLocation() - ownerEnemy->GetActorLocation();
+	dirToTarget.Normalize();
+
+	//Interpolate between owners forward dir and target dir
+	FVector finalFocalPoint = FMath::Lerp(ownerEnemy->GetActorForwardVector(), dirToTarget, turnRate * GetWorld()->GetDeltaSeconds());
+
+	//Set ai to look in final direction
+	ownerEnemy->GetAIController()->SetFocalPoint(ownerEnemy->GetActorLocation() + finalFocalPoint);
+
+	//Returns true if distance between final focal point and target dir is less than acceptance dist
+	return FVector::Dist(finalFocalPoint, dirToTarget) <= acceptanceDist;
+	
+}
+
+void UBTTask_Attack::RotateWeaponToTarget(uint8* nodeMemory)
 {
 	//Rotates weapon towards target (will later be replaced by joint rotation logic)
+
+	BTTaskAttackMemory* instanceMemory = reinterpret_cast<BTTaskAttackMemory*>(nodeMemory);
 
 	AWeaponBase* weapon = instanceMemory->ownerEnemy->GetWeapon();
 	
 	FVector dirToTarget = instanceMemory->targetActor->GetActorLocation() - weapon->GetActorLocation();
-		
+
 	weapon->SetActorRotation(dirToTarget.Rotation());
-}
-
-//Seems to be inconsistent
-BTTaskAttackMemory* UBTTask_Attack::GetInstanceMemory()
-{
-	uint8* nodeMemory = behaviorTreeComponent->GetNodeMemory(this, behaviorTreeComponent->GetActiveInstanceIdx());
-
-	return reinterpret_cast<BTTaskAttackMemory*>(nodeMemory);
 }
 
 uint16 UBTTask_Attack::GetInstanceMemorySize() const

@@ -34,15 +34,14 @@ public:
 
 private:
 	virtual uint16 GetInstanceMemorySize() const override;
-	BTTaskAttackMemory* GetInstanceMemory();
 	
-	void SetTarget(APawnBase* target);
+	void SetTarget(APawnBase* target, uint8* nodeMemory);
 
-	UFUNCTION()
-	void OnTargetDeath(AActor* deadActor);
+	void OnTargetDeath(AActor* deadActor, uint8* nodeMemory);
 
-	bool IsInRange(BTTaskAttackMemory* instanceMemory);
-	void RotateWeaponToTarget(BTTaskAttackMemory* instanceMemory);
+	bool IsInRange(uint8* nodeMemory);
+	void RotateWeaponToTarget(uint8* nodeMemory);
+	bool RotateBodyToTarget(float turnRate, float acceptanceDist, uint8* nodeMemory);
 
 	UBehaviorTreeComponent* behaviorTreeComponent = nullptr;
 

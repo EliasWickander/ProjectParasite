@@ -92,13 +92,6 @@ void UBTTask_Chase::SetTarget(APawnBase* target, BTTaskChaseMemory* instanceMemo
 	instanceMemory->targetActor = target;
 }
 
-BTTaskChaseMemory* UBTTask_Chase::GetInstanceMemory()
-{
-	uint8* nodeMemory = behaviorTreeComponent->GetNodeMemory(this, behaviorTreeComponent->GetActiveInstanceIdx());
-
-	return reinterpret_cast<BTTaskChaseMemory*>(nodeMemory);
-}
-
 uint16 UBTTask_Chase::GetInstanceMemorySize() const
 {
 	return sizeof(BTTaskChaseMemory);

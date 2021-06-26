@@ -43,6 +43,7 @@ public:
 
 	float GetPatrolSpeed() { return patrolSpeed; }
 	float GetChaseSpeed() { return chaseSpeed; }
+	float GetTurnRate() { return turnRate; }
 	
 	APawnParasite* GetPlayerRef() { return playerRef; }
 	AAIController* GetAIController() { return AIController; }
@@ -76,6 +77,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float chaseSpeed = 200;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float turnRate = 5;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Detection")
 	float detectionRange = 200;
