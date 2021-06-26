@@ -20,7 +20,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void Trigger() override;
+	virtual void Use() override;
 
 	virtual void Reload();
 

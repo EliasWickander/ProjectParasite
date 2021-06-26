@@ -21,7 +21,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void Trigger();
+	virtual void Use();
 
 protected:
 

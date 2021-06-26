@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "EliminationGamemode.generated.h"
 
+class APawnEnemy;
 class APawnBase;
 class APawnParasite;
 
@@ -31,6 +32,6 @@ private:
 	void OnPlayerDeath(APawnBase* deadPlayer);
 
 	APawnParasite* playerRef = nullptr;
-	int amountEnemiesLeft;
+	TArray<AActor*> enemiesAlive = {};
 	
 };

@@ -41,9 +41,9 @@ void ARangedWeapon::Tick(float DeltaTime)
 	}
 }
 
-void ARangedWeapon::Trigger()
+void ARangedWeapon::Use()
 {
-	Super::Trigger();
+	Super::Use();
 
 	//If out of ammo, don't do anything
 	if(currentAmmo <= 0)

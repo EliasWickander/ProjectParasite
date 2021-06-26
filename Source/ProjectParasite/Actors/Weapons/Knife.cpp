@@ -10,9 +10,9 @@ void AKnife::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AKnife::Trigger()
+void AKnife::Use()
 {
-	Super::Trigger();
+	Super::Use();
 
 	//Get all actors overlapping the knife
 	TArray<AActor*> overlappingActors;

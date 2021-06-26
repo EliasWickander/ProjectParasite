@@ -16,12 +16,10 @@ void AEliminationGamemode::BeginPlay()
 	playerRef->onStartDeathEvent.AddDynamic(this, &AEliminationGamemode::OnPlayerDeath);
 
 	//When an enemy dies, call the OnEnemyDeath method
-	TArray<AActor*> allEnemiesInWorld;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APawnEnemy::StaticClass(), allEnemiesInWorld);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APawnEnemy::StaticClass(), enemiesAlive);
 
-	amountEnemiesLeft = allEnemiesInWorld.Num();
 	
-	for(AActor* enemy : allEnemiesInWorld)
+	for(AActor* enemy : enemiesAlive)
 	{
 		Cast<APawnEnemy>(enemy)->onStartDeathEvent.AddDynamic(this, &AEliminationGamemode::OnEnemyDeath);
 	}
@@ -30,13 +28,22 @@ void AEliminationGamemode::BeginPlay()
 void AEliminationGamemode::OnEnemyDeath(APawnBase* deadEnemy)
 {
 	Cast<APawnEnemy>(deadEnemy)->onStartDeathEvent.RemoveDynamic(this, &AEliminationGamemode::OnEnemyDeath);
-	
-	amountEnemiesLeft--;
+
+	enemiesAlive.Remove(deadEnemy);
 
 	//If there are no enemies left (excluding a possessed one), the game is won
-	int targetAmountEnemiesLeft = playerRef->GetPossessedEnemy() ? 1 : 0;
-	
-	if(amountEnemiesLeft <= targetAmountEnemiesLeft)
+
+	int targetAmountEnemiesLeft = 0;
+
+	if(enemiesAlive.Num() == 1 && playerRef->GetPossessedEnemy())
+	{
+		if(playerRef->GetPossessedEnemy() == enemiesAlive[0])
+		{
+			targetAmountEnemiesLeft = 1;
+		}	
+	}
+
+	if(enemiesAlive.Num() <= targetAmountEnemiesLeft)
 	{
 		OnGameWon();
 	}	

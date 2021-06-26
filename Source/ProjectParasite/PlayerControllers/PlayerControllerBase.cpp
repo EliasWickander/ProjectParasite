@@ -13,17 +13,11 @@
 void APlayerControllerBase::BeginPlay()
 {	
 	playerRef = Cast<APawnParasite>(GetPawn());
-
+	controlledPawn = playerRef;
+	
 	SetShowMouseCursor(true);
 
 	EnableInput(this);
-
-	controlledPawn = Cast<APawnBase>(GetPawn());
-
-	if(controlledPawn == nullptr)
-	{
-		UE_LOG(LogTemp, Error, TEXT("%s is possessing %s that doesn't seem to be derived from APawnBase"), *GetName(), *GetPawn()->GetName())
-	}
 
 	SetupInputBindings();
 }
@@ -37,30 +31,19 @@ void APlayerControllerBase::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 		
-	//InputComponent->ClearActionBindings();
-	
 	controlledPawn = Cast<APawnBase>(InPawn);
 
 	if(controlledPawn == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s is possessing %s that doesn't seem to be derived from APawnBase"), *GetName(), *InPawn->GetName())
 	}
-
-	//SetupInputBindings();
-}
-
-void APlayerControllerBase::OnUnPossess()
-{	
-	Super::OnUnPossess();
 }
 
 void APlayerControllerBase::SetupInputBindings()
 {
-	//Clear all bindings so that we can set completely new bindings every time we possess a pawn
-
 	SetupGeneralActions();
 	SetupParasiteActions();
-	SetupEnemyActions();
+	SetupEnemyActions();	
 }
 
 void APlayerControllerBase::SetupGeneralActions()
@@ -95,6 +78,7 @@ void APlayerControllerBase::DashInternal()
 
 	if(controlledParasite != nullptr)
 	{
+		//Dash if not on cooldown
 		if(controlledParasite->GetDashTimer() <= 0)
 		{
 			controlledParasite->Dash();
@@ -104,6 +88,7 @@ void APlayerControllerBase::DashInternal()
 
 void APlayerControllerBase::PossessInternal()
 {
+	//If already possessing enemy, unpossess
 	if(playerRef->GetPossessedEnemy())
 	{
 		playerRef->SetPossessed(nullptr);	
@@ -120,6 +105,6 @@ void APlayerControllerBase::AttackInternal()
 
 	if(controlledEnemy != nullptr)
 	{
-		controlledEnemy->GetWeapon()->Trigger();		
-	}
+		controlledEnemy->GetWeapon()->Use();	
+	}		
 }

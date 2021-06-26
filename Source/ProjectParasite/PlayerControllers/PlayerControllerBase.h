@@ -22,7 +22,6 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 
 	virtual void OnPossess(APawn* InPawn) override;
-	virtual void OnUnPossess() override;
 
 	void SetupInputBindings();
 	void SetupGeneralActions();
