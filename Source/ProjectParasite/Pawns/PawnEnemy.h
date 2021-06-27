@@ -31,7 +31,7 @@ public:
 	virtual void Attack();
 
 	virtual void OnDeath(APawnBase* deadPawn) override;
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	virtual void SetWeapon(AWeaponBase* newWeapon);
 	AWeaponBase* GetWeapon() { return equippedWeapon; }

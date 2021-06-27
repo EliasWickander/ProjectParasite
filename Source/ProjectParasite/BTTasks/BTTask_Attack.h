@@ -41,7 +41,6 @@ private:
 
 	bool IsInRange(uint8* nodeMemory);
 	void RotateWeaponToTarget(uint8* nodeMemory);
-	bool RotateBodyToTarget(float turnRate, float acceptanceDist, uint8* nodeMemory);
 
 	UBehaviorTreeComponent* behaviorTreeComponent = nullptr;
 

@@ -5,6 +5,7 @@
 class UBTTaskNode;
 class UBehaviorTree;
 class UBTCompositeNode;
+class AAIController;
 
 FVector AngleVector(float deg);
 	
@@ -40,3 +41,6 @@ TaskType* FindTaskInTree(UBehaviorTree* tree)
 
 	return nullptr;
 }
+
+bool SetFocusExtended(AAIController* AIController, AActor* targetActor, float rotSpeed, float acceptanceDist);
+bool SetFocalPointExtended(AAIController* AIController, FVector targetPoint, float rotSpeed, float acceptanceDist);

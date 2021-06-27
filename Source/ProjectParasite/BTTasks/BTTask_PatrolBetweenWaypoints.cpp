@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 #include "Engine/TargetPoint.h"
+#include "ProjectParasite/Utilities/DevUtils.h"
 
 UBTTask_PatrolBetweenWaypoints::UBTTask_PatrolBetweenWaypoints()
 {
@@ -38,7 +39,8 @@ void UBTTask_PatrolBetweenWaypoints::TickTask(UBehaviorTreeComponent& OwnerComp,
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
 	BTTaskPatrolBetweenWaypointsMemory* instanceMemory = reinterpret_cast<BTTaskPatrolBetweenWaypointsMemory*>(NodeMemory);
-	
+
+	APawnEnemy* ownerEnemy = instanceMemory->ownerEnemy;
 	if(instanceMemory->patrolPointQueue->IsEmpty())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s has no patrol points assigned. Cannot move."), *instanceMemory->ownerEnemy->GetName());
@@ -46,6 +48,13 @@ void UBTTask_PatrolBetweenWaypoints::TickTask(UBehaviorTreeComponent& OwnerComp,
 	}
 
 	AAIController* AIController = instanceMemory->ownerEnemy->GetAIController();
+
+	bool finishedRotating = SetFocalPointExtended(ownerEnemy->GetAIController(), instanceMemory->currentWaypoint, ownerEnemy->GetTurnRate(), 0.2f);
+
+	if(finishedRotating)
+	{
+		instanceMemory->ownerEnemy->GetAIController()->MoveToLocation(instanceMemory->currentWaypoint, 20, false);
+	}
 
 	//If enemy reached current waypoint, initialize next one in queue
 	if(AIController->GetPathFollowingComponent()->DidMoveReachGoal())
@@ -58,9 +67,6 @@ void UBTTask_PatrolBetweenWaypoints::TickTask(UBehaviorTreeComponent& OwnerComp,
 void UBTTask_PatrolBetweenWaypoints::InitNextWaypoint(BTTaskPatrolBetweenWaypointsMemory* instanceMemory)
 {
 	instanceMemory->patrolPointQueue->Dequeue(instanceMemory->currentWaypoint);
-
-	instanceMemory->ownerEnemy->GetAIController()->SetFocalPoint(instanceMemory->currentWaypoint);
-	instanceMemory->ownerEnemy->GetAIController()->MoveToLocation(instanceMemory->currentWaypoint, 20, false);
 }
 
 void UBTTask_PatrolBetweenWaypoints::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,

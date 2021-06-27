@@ -1,6 +1,7 @@
 ﻿#include "DevUtils.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "BehaviorTree/BehaviorTree.h"
+#include "AIController.h"
 
 FVector AngleVector(float deg)
 {
@@ -82,4 +83,40 @@ TArray<UBTTaskNode*> FindAllTaskChildrenOfNode(UBTCompositeNode* node)
 	}
 
 	return taskNodes;
+}
+
+bool SetFocusExtended(AAIController* AIController, AActor* targetActor, float rotSpeed, float acceptanceDist)
+{
+	APawn* AIPawn = AIController->GetPawn();
+	
+	FVector dirToTarget = targetActor->GetActorLocation() - AIPawn->GetActorLocation();
+
+	dirToTarget.Normalize();
+
+	//Interpolate between owners forward dir and target dir
+	FVector finalFocalPoint = FMath::Lerp(AIPawn->GetActorForwardVector(), dirToTarget, rotSpeed * AIPawn->GetWorld()->GetDeltaSeconds());
+
+	//Set ai to look in final direction
+	AIController->SetFocalPoint(AIPawn->GetActorLocation() + finalFocalPoint);
+
+	//Returns true if distance between final focal point and target dir is less than acceptance dist
+	return FVector::Dist(finalFocalPoint, dirToTarget) <= acceptanceDist;
+}
+
+bool SetFocalPointExtended(AAIController* AIController, FVector targetPoint, float rotSpeed, float acceptanceDist)
+{
+	APawn* AIPawn = AIController->GetPawn();
+	
+	FVector dirToTarget = targetPoint - AIPawn->GetActorLocation();
+
+	dirToTarget.Normalize();
+
+	//Interpolate between owners forward dir and target dir
+	FVector finalFocalPoint = FMath::Lerp(AIPawn->GetActorForwardVector(), dirToTarget, rotSpeed * AIPawn->GetWorld()->GetDeltaSeconds());
+
+	//Set ai to look in final direction
+	AIController->SetFocalPoint(AIPawn->GetActorLocation() + finalFocalPoint);
+
+	//Returns true if distance between final focal point and target dir is less than acceptance dist
+	return FVector::Dist(finalFocalPoint, dirToTarget) <= acceptanceDist;
 }

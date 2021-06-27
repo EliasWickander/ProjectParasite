@@ -9,6 +9,7 @@
 #include "ProjectParasite/AIControllers/ShooterAIController.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
+#include "ProjectParasite/Utilities/DevUtils.h"
 
 UBTTask_Attack::UBTTask_Attack()
 {
@@ -58,13 +59,16 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 
 	BTTaskAttackMemory* instanceMemory = reinterpret_cast<BTTaskAttackMemory*>(NodeMemory);
 
+	APawnEnemy* ownerEnemy = instanceMemory->ownerEnemy;
+	APawnBase* targetActor = instanceMemory->targetActor;
+	
 	//If target actor is dead, trigger event method
-	if(instanceMemory->targetActor->GetIsPendingDeath())
+	if(targetActor->GetIsPendingDeath())
 	{
-		OnTargetDeath(instanceMemory->targetActor, NodeMemory);
+		OnTargetDeath(targetActor, NodeMemory);
 	}
 
-	bool rotatedToTarget = RotateBodyToTarget(instanceMemory->ownerEnemy->GetTurnRate(), 0.2f, NodeMemory);
+	bool rotatedToTarget = SetFocusExtended(ownerEnemy->GetAIController(), targetActor, ownerEnemy->GetTurnRate(), 0.2f);
 	
 	//If enemy is in attack range, rotate weapon and attack
 	if(IsInRange(NodeMemory))
@@ -72,7 +76,7 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		if(rotatedToTarget)
 		{
 			RotateWeaponToTarget(NodeMemory);	
-			instanceMemory->ownerEnemy->Attack();
+			ownerEnemy->Attack();
 		}
 	}
 	else
@@ -120,27 +124,6 @@ bool UBTTask_Attack::IsInRange(uint8* nodeMemory)
 	UPathFollowingComponent* pathFollowingComponent = instanceMemory->ownerEnemy->GetAIController()->GetPathFollowingComponent();
 
 	return pathFollowingComponent->HasReached(*instanceMemory->targetActor, EPathFollowingReachMode::OverlapAgentAndGoal, instanceMemory->ownerEnemy->GetAttackRange(), true);;
-}
-
-bool UBTTask_Attack::RotateBodyToTarget(float turnRate, float acceptanceDist, uint8* nodeMemory)
-{
-	BTTaskAttackMemory* instanceMemory = reinterpret_cast<BTTaskAttackMemory*>(nodeMemory);
-	
-	APawnEnemy* ownerEnemy = instanceMemory->ownerEnemy;
-	APawnBase* targetActor = instanceMemory->targetActor;
-	
-	FVector dirToTarget = targetActor->GetActorLocation() - ownerEnemy->GetActorLocation();
-	dirToTarget.Normalize();
-
-	//Interpolate between owners forward dir and target dir
-	FVector finalFocalPoint = FMath::Lerp(ownerEnemy->GetActorForwardVector(), dirToTarget, turnRate * GetWorld()->GetDeltaSeconds());
-
-	//Set ai to look in final direction
-	ownerEnemy->GetAIController()->SetFocalPoint(ownerEnemy->GetActorLocation() + finalFocalPoint);
-
-	//Returns true if distance between final focal point and target dir is less than acceptance dist
-	return FVector::Dist(finalFocalPoint, dirToTarget) <= acceptanceDist;
-	
 }
 
 void UBTTask_Attack::RotateWeaponToTarget(uint8* nodeMemory)

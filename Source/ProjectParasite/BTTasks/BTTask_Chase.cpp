@@ -8,6 +8,7 @@
 #include "ProjectParasite/AIControllers/ShooterAIController.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
+#include "ProjectParasite/Utilities/DevUtils.h"
 
 UBTTask_Chase::UBTTask_Chase()
 {
@@ -59,6 +60,8 @@ void UBTTask_Chase::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
 
 	if(instanceMemory->targetActor != nullptr)
 	{
+		SetFocusExtended(instanceMemory->shooterAIController, instanceMemory->targetActor, instanceMemory->ownerEnemy->GetTurnRate(), 0.2f);
+		
 		//Chase the player
 		instanceMemory->shooterAIController->MoveToActor(instanceMemory->targetActor, instanceMemory->ownerEnemy->GetAttackRange());
 
@@ -87,7 +90,7 @@ void UBTTask_Chase::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 
 void UBTTask_Chase::SetTarget(APawnBase* target, BTTaskChaseMemory* instanceMemory)
 {
-	instanceMemory->ownerEnemy->GetAIController()->SetFocus(target);
+	//instanceMemory->ownerEnemy->GetAIController()->SetFocus(target);
 
 	instanceMemory->targetActor = target;
 }
