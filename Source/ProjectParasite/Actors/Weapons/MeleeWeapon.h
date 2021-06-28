@@ -13,11 +13,32 @@ class PROJECTPARASITE_API AMeleeWeapon : public AWeaponBase
 
 public:
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void Use() override;
+
+	TArray<AActor*> GetHitActors();
+
+	float GetAttackConeRange() { return attackConeRange; }
+	float GetAttackConeAngle() { return attackConeAngle; }
+	FVector GetAttackConeOffset() { return attackConeOriginOffsetLocal; }
 	
 protected:
+	virtual void Attack();
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 	TSubclassOf<UDamageType> damageType;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
 	float damage = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	float attackConeRange = 200;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	float attackConeAngle = 60;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	FVector attackConeOriginOffsetLocal = FVector(0, 0, -50);
+
+	
 };

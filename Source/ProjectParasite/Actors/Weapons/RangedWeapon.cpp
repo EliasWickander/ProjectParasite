@@ -57,25 +57,30 @@ void ARangedWeapon::Use()
 		//If enemy can fire
 		if(attackTimer <= 0)
 		{
-			//Fire from weapon socket
-			FVector spawnPos = weaponSocket->GetComponentLocation();
-			FRotator spawnRot = weaponSocket->GetComponentRotation();
-
-			AProjectile* spawnedProjectile = GetWorld()->SpawnActor<AProjectile>(projectile, spawnPos, spawnRot);
-
-			//Set reference to this weapon
-			spawnedProjectile->weaponRef = this;
-	
+			Fire();
+			
 			//Reset attack timer
 			attackTimer = attackRate;
-
-			currentAmmo--;
 		}
 	}
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s has no projectile type set. Please check that it is set up properly in the blueprint"));
 	}
+}
+
+void ARangedWeapon::Fire()
+{
+	//Fire from weapon socket
+	FVector spawnPos = weaponSocket->GetComponentLocation();
+	FRotator spawnRot = weaponSocket->GetComponentRotation();
+
+	AProjectile* spawnedProjectile = GetWorld()->SpawnActor<AProjectile>(projectile, spawnPos, spawnRot);
+
+	//Set reference to this weapon
+	spawnedProjectile->weaponRef = this;
+
+	currentAmmo--;
 }
 
 void ARangedWeapon::Reload()

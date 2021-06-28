@@ -14,4 +14,7 @@ class PROJECTPARASITE_API AKnife : public AMeleeWeapon
 public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void Use() override;
+
+protected:
+	virtual void Attack() override;
 };

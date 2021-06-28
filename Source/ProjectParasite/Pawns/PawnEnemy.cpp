@@ -82,7 +82,7 @@ void APawnEnemy::SetWeapon(AWeaponBase* newWeapon)
 		newWeapon->SetActorRotation(weaponSocket->GetComponentRotation());
 		newWeapon->AttachToComponent(weaponSocket, FAttachmentTransformRules::KeepWorldTransform);
 
-		newWeapon->shooterRef = this;
+		newWeapon->weaponHolderRef = this;
 		newWeapon->isEquipped = true;	
 	} 
 	

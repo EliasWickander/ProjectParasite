@@ -30,6 +30,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void Fire();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	USceneComponent* weaponSocket = nullptr;
 

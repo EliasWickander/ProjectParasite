@@ -23,7 +23,15 @@ void UEnemyDebugComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if(!debugEnabled)
+		return;
 	
+	DrawDetectionCone();
+}
+
+void UEnemyDebugComponent::DrawDetectionCone()
+{
 	FBoxSphereBounds enemyColBounds = enemyRef->GetCollider()->Bounds;
 
 	SCone coneData {

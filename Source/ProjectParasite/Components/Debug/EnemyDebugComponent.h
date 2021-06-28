@@ -24,4 +24,9 @@ public:
 private:
 	APawnEnemy* enemyRef = nullptr;
 
+	UPROPERTY(EditDefaultsOnly, Category = "General")
+	bool debugEnabled = true;
+	
+	void DrawDetectionCone();
+
 };

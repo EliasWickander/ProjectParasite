@@ -8,6 +8,7 @@
 
 class APawnEnemy;
 class USphereComponent;
+class UWeaponDebugComponent;
 
 UCLASS()
 class PROJECTPARASITE_API AWeaponBase : public AActor
@@ -23,12 +24,17 @@ public:
 
 	virtual void Use();
 
+	APawnEnemy* GetWeaponHolder() { return weaponHolderRef; }
+
 protected:
 
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	UStaticMeshComponent* baseMesh = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UWeaponDebugComponent* debugComponent = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	USphereComponent* pickupTrigger = nullptr;
@@ -40,5 +46,5 @@ protected:
 	float attackRate = 2;
 	float attackTimer = 0;
 	
-	APawnEnemy* shooterRef = nullptr;
+	APawnEnemy* weaponHolderRef = nullptr;
 };

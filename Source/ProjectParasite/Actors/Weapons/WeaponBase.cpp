@@ -4,6 +4,7 @@
 #include "WeaponBase.h"
 
 #include "Components/SphereComponent.h"
+#include "ProjectParasite/Components/Debug/WeaponDebugComponent.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -15,6 +16,8 @@ AWeaponBase::AWeaponBase()
 
 	baseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon Base Mesh"));
 	RootComponent = baseMesh;
+
+	debugComponent = CreateDefaultSubobject<UWeaponDebugComponent>("Debug Component");
 
 	pickupTrigger = CreateDefaultSubobject<USphereComponent>(TEXT("Pickup Trigger"));
 	pickupTrigger->SetupAttachment(RootComponent);
