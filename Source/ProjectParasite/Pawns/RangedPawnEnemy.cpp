@@ -1,22 +1,22 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "PawnEnemyRanged.h"
+#include "RangedPawnEnemy.h"
 
 #include "ProjectParasite/Actors/Weapons/RangedWeapon.h"
 #include "ProjectParasite/Actors/Weapons/WeaponBase.h"
 
-APawnEnemyRanged::APawnEnemyRanged()
+ARangedPawnEnemy::ARangedPawnEnemy()
 {
 
 }
 
-void APawnEnemyRanged::BeginPlay()
+void ARangedPawnEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void APawnEnemyRanged::Attack()
+void ARangedPawnEnemy::Attack()
 {
 	Super::Attack();
 
@@ -46,7 +46,7 @@ void APawnEnemyRanged::Attack()
 	}
 }
 
-void APawnEnemyRanged::UpdatePawnBehavior(float deltaSeconds)
+void ARangedPawnEnemy::UpdatePawnBehavior(float deltaSeconds)
 {
 	Super::UpdatePawnBehavior(deltaSeconds);
 }

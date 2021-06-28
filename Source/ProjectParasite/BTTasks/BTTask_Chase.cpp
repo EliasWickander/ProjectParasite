@@ -68,7 +68,7 @@ void UBTTask_Chase::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
 		//If reached the attack range, transition to attack state
 		if(instanceMemory->shooterAIController->GetPathFollowingComponent()->DidMoveReachGoal())
 		{
-			instanceMemory->shooterAIController->SetCurrentState(ShooterStates::State_Attack);
+			instanceMemory->shooterAIController->SetCurrentState(EnemyStates::State_Attack);
 		}
 	}
 	else

@@ -69,17 +69,19 @@ void AMeleeWeapon::Attack()
 			//If weapon holder is controlled by player
 			if(weaponHolderRef->GetController() == playerController)
 			{
+				bool hitPawnIsParasite = Cast<APawnParasite>(hitPawn) != nullptr;
+				
 				//Only hit units that aren't controlled by player
-				if(hitPawn->GetController() != playerController && hitPawn->StaticClass() != APawnParasite::StaticClass())
+				if(hitPawn->GetController() != playerController && !hitPawnIsParasite)
 				{
-					UE_LOG(LogTemp, Warning, TEXT("Hit %s"), *actor->GetName());
+					UE_LOG(LogTemp, Warning, TEXT("Hit %s, %s"), *actor->GetName(), *hitPawn->StaticClass()->GetName());
 					UGameplayStatics::ApplyDamage(hitPawn, damage, playerController, this, damageType);
 				}	
 			}
 			else
 			{
 				//If weapon holder is not controlled by player
-				if(hitPawn->GetController() != playerController)
+				if(weaponHolderRef->GetController() != playerController)
 				{
 					//Only hit units that are controlled by player
 					if(hitPawn->GetController() == playerController)

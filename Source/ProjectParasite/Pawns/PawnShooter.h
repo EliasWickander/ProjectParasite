@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PawnEnemyRanged.h"
+#include "RangedPawnEnemy.h"
 
 #include "PawnShooter.generated.h"
 
 UCLASS()
-class PROJECTPARASITE_API APawnShooter : public APawnEnemyRanged
+class PROJECTPARASITE_API APawnShooter : public ARangedPawnEnemy
 {
 	GENERATED_BODY()
 

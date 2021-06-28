@@ -4,19 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "PawnEnemy.h"
-#include "PawnEnemyRanged.generated.h"
+#include "RangedPawnEnemy.generated.h"
 
 class AWeaponBase;
 class AProjectile;
 class UWeaponComponent;
 
 UCLASS()
-class PROJECTPARASITE_API APawnEnemyRanged : public APawnEnemy
+class PROJECTPARASITE_API ARangedPawnEnemy : public APawnEnemy
 {
 	GENERATED_BODY()
 
 public:
-	APawnEnemyRanged();
+	ARangedPawnEnemy();
 
 	virtual void UpdatePawnBehavior(float deltaSeconds) override;
 	

@@ -63,7 +63,7 @@ void APawnEnemy::OnDeath(APawnBase* deadPawn)
 	
 	APawnEnemy* deadEnemy = Cast<APawnEnemy>(deadPawn);
 
-	Cast<AShooterAIController>(deadEnemy->GetAIController())->SetCurrentState(ShooterStates::State_Idle);
+	Cast<AShooterAIController>(deadEnemy->GetAIController())->SetCurrentState(EnemyStates::State_Idle);
 }
 
 void APawnEnemy::SetWeapon(AWeaponBase* newWeapon)

@@ -82,7 +82,7 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 	else
 	{
 		//If not, transition back to chase state
-		instanceMemory->shooterAIController->SetCurrentState(ShooterStates::State_Chase);	
+		instanceMemory->shooterAIController->SetCurrentState(EnemyStates::State_Chase);	
 	}
 }
 

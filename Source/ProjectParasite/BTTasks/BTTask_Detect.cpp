@@ -55,7 +55,7 @@ void UBTTask_Detect::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		{
 			hasDetected = false;
 			
-			instanceMemory->shooterAIController->SetCurrentState(ShooterStates::State_Chase);
+			instanceMemory->shooterAIController->SetCurrentState(EnemyStates::State_Chase);
 		}
 		else
 		{
