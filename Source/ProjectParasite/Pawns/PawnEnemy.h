@@ -11,7 +11,6 @@ class ATargetPoint;
 class AAIControllerBase;
 class APawnParasite;
 class UEnemyDebugComponent;
-class AWeaponBase;
 
 UCLASS()
 class PROJECTPARASITE_API APawnEnemy : public APawnBase
@@ -54,6 +53,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	void SetWeaponOfType(TSubclassOf<AWeaponBase> weaponType);
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UEnemyDebugComponent* enemyDebugger = nullptr;
 	
@@ -63,9 +64,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USceneComponent* weaponSocket = nullptr;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
-	TSubclassOf<AWeaponBase> weaponType;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 	AWeaponBase* equippedWeapon = nullptr;
 	

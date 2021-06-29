@@ -6,7 +6,7 @@
 #include "PawnEnemy.h"
 #include "RangedPawnEnemy.generated.h"
 
-class AWeaponBase;
+class ARangedWeapon;
 class AProjectile;
 class UWeaponComponent;
 
@@ -26,4 +26,7 @@ public:
 protected:
 
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+	TSubclassOf<ARangedWeapon> weaponType;
 };

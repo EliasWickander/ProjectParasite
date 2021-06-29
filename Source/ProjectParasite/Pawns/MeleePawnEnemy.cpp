@@ -5,6 +5,13 @@
 
 #include "ProjectParasite/Actors/Weapons/MeleeWeapon.h"
 
+void AMeleePawnEnemy::BeginPlay()
+{
+	Super::BeginPlay();
+
+	SetWeaponOfType(weaponType);
+}
+
 void AMeleePawnEnemy::Attack()
 {
 	Super::Attack();

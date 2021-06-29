@@ -14,6 +14,8 @@ ARangedPawnEnemy::ARangedPawnEnemy()
 void ARangedPawnEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SetWeaponOfType(weaponType);
 }
 
 void ARangedPawnEnemy::Attack()

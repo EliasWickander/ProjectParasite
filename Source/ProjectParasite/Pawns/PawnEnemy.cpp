@@ -28,18 +28,6 @@ APawnEnemy::APawnEnemy()
 void APawnEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//Spawn weapon
-	if(weaponType)
-	{
-		AWeaponBase* weaponInstance = Cast<AWeaponBase>(GetWorld()->SpawnActor(weaponType));
-		
-		SetWeapon(weaponInstance);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("%s has no weapon type set."), *GetName());
-	}
 	
 	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	
@@ -94,5 +82,20 @@ void APawnEnemy::Attack()
 	if(equippedWeapon == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s has no weapon attached. Cannot attack."), *GetName());
+	}
+}
+
+void APawnEnemy::SetWeaponOfType(TSubclassOf<AWeaponBase> weaponType)
+{
+	//Spawn weapon
+	if(weaponType)
+	{
+		AWeaponBase* weaponInstance = Cast<AWeaponBase>(GetWorld()->SpawnActor(weaponType));
+		
+		SetWeapon(weaponInstance);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s has no weapon type set."), *GetName());
 	}
 }
