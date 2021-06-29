@@ -6,7 +6,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectParasite/Actors/Weapons/WeaponBase.h"
-#include "ProjectParasite/AIControllers/ShooterAIController.h"
+#include "ProjectParasite/AIControllers/AIControllerBase.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
 #include "ProjectParasite/Utilities/DevUtils.h"
@@ -27,13 +27,13 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	
 	instanceMemory->ownerEnemy = OwnerComp.GetAIOwner()->GetPawn<APawnEnemy>();
 	instanceMemory->blackboard = OwnerComp.GetBlackboardComponent();
-	instanceMemory->shooterAIController = Cast<AShooterAIController>(OwnerComp.GetAIOwner());
+	instanceMemory->enemyAIController = Cast<AAIControllerBase>(OwnerComp.GetAIOwner());
 
 	behaviorTreeComponent = &OwnerComp;
 
 	playerRef = instanceMemory->ownerEnemy->GetPlayerRef();
 	
-	if(instanceMemory->shooterAIController == nullptr)
+	if(instanceMemory->enemyAIController == nullptr)
 	{
 		//Enemy executing this task isn't of a shooter type
 		UE_LOG(LogTemp, Error, TEXT("Enemy %s executing this task isn't of a shooter type"), *instanceMemory->ownerEnemy->GetName())
@@ -82,7 +82,7 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 	else
 	{
 		//If not, transition back to chase state
-		instanceMemory->shooterAIController->SetCurrentState(EnemyStates::State_Chase);	
+		instanceMemory->enemyAIController->SetCurrentState(EnemyStates::State_Chase);	
 	}
 }
 

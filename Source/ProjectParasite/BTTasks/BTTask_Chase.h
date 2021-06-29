@@ -9,13 +9,13 @@
 class APawnBase;
 class APawnEnemy;
 class APawnParasite;
-class AShooterAIController;
+class AAIControllerBase;
 
 struct BTTaskChaseMemory
 {
 	APawnEnemy* ownerEnemy = nullptr;
 	UBlackboardComponent* blackboard = nullptr;
-	AShooterAIController* shooterAIController = nullptr;
+	AAIControllerBase* enemyAIController = nullptr;
 	APawnBase* targetActor = nullptr;
 };
 

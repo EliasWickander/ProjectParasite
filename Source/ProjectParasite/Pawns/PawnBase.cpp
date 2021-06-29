@@ -35,6 +35,8 @@ APawnBase::APawnBase()
 	springArm->bInheritPitch = false;
 	springArm->bInheritYaw = false;
 	springArm->bInheritRoll = false;
+
+	bUseControllerRotationYaw = true;
 }
 
 void APawnBase::BeginPlay()
