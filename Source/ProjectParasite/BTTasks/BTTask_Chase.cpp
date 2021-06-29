@@ -5,7 +5,7 @@
 
 #include "AIController.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
-#include "ProjectParasite/AIControllers/ShooterAIController.h"
+#include "ProjectParasite/AIControllers/AIControllerBase.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
 #include "ProjectParasite/Utilities/DevUtils.h"
@@ -26,12 +26,12 @@ EBTNodeResult::Type UBTTask_Chase::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 
 	instanceMemory->blackboard = OwnerComp.GetBlackboardComponent();
 	instanceMemory->ownerEnemy = OwnerComp.GetAIOwner()->GetPawn<APawnEnemy>();
-	instanceMemory->shooterAIController = Cast<AShooterAIController>(instanceMemory->ownerEnemy->GetAIController());
+	instanceMemory->enemyAIController = Cast<AAIControllerBase>(instanceMemory->ownerEnemy->GetAIController());
 
 	behaviorTreeComponent = &OwnerComp;
 	playerRef = instanceMemory->ownerEnemy->GetPlayerRef();
 	
-	if(instanceMemory->shooterAIController == nullptr)
+	if(instanceMemory->enemyAIController == nullptr)
 	{
 		//Enemy executing this task isn't of a shooter type
 		UE_LOG(LogTemp, Error, TEXT("Enemy %s executing this task isn't of a shooter type"), *instanceMemory->ownerEnemy->GetName())
@@ -60,15 +60,15 @@ void UBTTask_Chase::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
 
 	if(instanceMemory->targetActor != nullptr)
 	{
-		SetFocusExtended(instanceMemory->shooterAIController, instanceMemory->targetActor, instanceMemory->ownerEnemy->GetTurnRate(), 0.2f);
+		SetFocusExtended(instanceMemory->enemyAIController, instanceMemory->targetActor, instanceMemory->ownerEnemy->GetTurnRate(), 0.2f);
 		
 		//Chase the player
-		instanceMemory->shooterAIController->MoveToActor(instanceMemory->targetActor, instanceMemory->ownerEnemy->GetAttackRange());
+		instanceMemory->enemyAIController->MoveToActor(instanceMemory->targetActor, instanceMemory->ownerEnemy->GetAttackRange());
 
 		//If reached the attack range, transition to attack state
-		if(instanceMemory->shooterAIController->GetPathFollowingComponent()->DidMoveReachGoal())
+		if(instanceMemory->enemyAIController->GetPathFollowingComponent()->DidMoveReachGoal())
 		{
-			instanceMemory->shooterAIController->SetCurrentState(EnemyStates::State_Attack);
+			instanceMemory->enemyAIController->SetCurrentState(EnemyStates::State_Attack);
 		}
 	}
 	else

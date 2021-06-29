@@ -12,7 +12,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "ProjectParasite/Actors/Weapons/WeaponBase.h"
 #include "Kismet/GameplayStatics.h"
-#include "ProjectParasite/AIControllers/ShooterAIController.h"
+#include "ProjectParasite/AIControllers/AIControllerBase.h"
 
 APawnEnemy::APawnEnemy()
 {
@@ -43,7 +43,7 @@ void APawnEnemy::BeginPlay()
 	
 	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	
-	AIController = Cast<AAIController>(GetController());
+	AIController = Cast<AAIControllerBase>(GetController());
 }
 
 void APawnEnemy::UpdatePawnBehavior(float deltaSeconds)
@@ -63,7 +63,7 @@ void APawnEnemy::OnDeath(APawnBase* deadPawn)
 	
 	APawnEnemy* deadEnemy = Cast<APawnEnemy>(deadPawn);
 
-	Cast<AShooterAIController>(deadEnemy->GetAIController())->SetCurrentState(EnemyStates::State_Idle);
+	Cast<AAIControllerBase>(deadEnemy->GetAIController())->SetCurrentState(EnemyStates::State_Idle);
 }
 
 void APawnEnemy::SetWeapon(AWeaponBase* newWeapon)

@@ -3,7 +3,7 @@
 
 #include "BTTask_PatrolBetweenWaypoints.h"
 
-#include "AIController.h"
+#include "ProjectParasite/AIControllers/AIControllerBase.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 #include "Engine/TargetPoint.h"
 #include "ProjectParasite/Utilities/DevUtils.h"
@@ -47,13 +47,13 @@ void UBTTask_PatrolBetweenWaypoints::TickTask(UBehaviorTreeComponent& OwnerComp,
 		return;	
 	}
 
-	AAIController* AIController = instanceMemory->ownerEnemy->GetAIController();
+	AAIControllerBase* AIController = instanceMemory->ownerEnemy->GetAIController();
 
-	bool finishedRotating = SetFocalPointExtended(ownerEnemy->GetAIController(), instanceMemory->currentWaypoint, ownerEnemy->GetTurnRate(), 0.2f);
+	bool finishedRotating = SetFocalPointExtended(AIController, instanceMemory->currentWaypoint, ownerEnemy->GetTurnRate(), 0.2f);
 
 	if(finishedRotating)
 	{
-		instanceMemory->ownerEnemy->GetAIController()->MoveToLocation(instanceMemory->currentWaypoint, 20, false);
+		AIController->ResumeMove(FAIRequestID::CurrentRequest);
 	}
 
 	//If enemy reached current waypoint, initialize next one in queue
@@ -66,7 +66,15 @@ void UBTTask_PatrolBetweenWaypoints::TickTask(UBehaviorTreeComponent& OwnerComp,
 
 void UBTTask_PatrolBetweenWaypoints::InitNextWaypoint(BTTaskPatrolBetweenWaypointsMemory* instanceMemory)
 {
+	AAIControllerBase* AIController = instanceMemory->ownerEnemy->GetAIController();
+
+	//Set new current waypoint and move to it
 	instanceMemory->patrolPointQueue->Dequeue(instanceMemory->currentWaypoint);
+	AIController->MoveToLocation(instanceMemory->currentWaypoint, 20, false);
+
+	//Pause movement, to later resume when ai finished rotating towards waypoint
+	AIController->PauseMove(FAIRequestID::CurrentRequest);
+	
 }
 
 void UBTTask_PatrolBetweenWaypoints::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,
