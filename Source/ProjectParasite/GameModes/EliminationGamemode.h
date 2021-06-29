@@ -28,12 +28,14 @@ public:
 
 private:
 	UFUNCTION()
-	void OnEnemyDeath(APawnBase* deadEnemy);
+	void OnEnemyDeath(APawnBase* deadEnemy, const UDamageType* damageType);
 
 	UFUNCTION()
-	void OnPlayerDeath(APawnBase* deadPlayer);
+	void OnPlayerDeath(APawnBase* deadPlayer, const UDamageType* damageType);
 
 	APawnParasite* playerRef = nullptr;
 	TArray<AActor*> enemiesAlive = {};
+
+	int score = 0;
 	
 };

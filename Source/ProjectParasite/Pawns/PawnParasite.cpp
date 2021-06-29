@@ -3,10 +3,12 @@
 
 #include "PawnParasite.h"
 
-#include "AIController.h"
+#include "ProjectParasite/AIControllers/AIControllerBase.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 #include "EngineUtils.h"
+#include "Kismet/GameplayStatics.h"
 #include "ProjectParasite/Components/Debug/ParasiteDebugComponent.h"
+#include "ProjectParasite/DamageTypes/DamageType_Environmental.h"
 #include "ProjectParasite/Utilities/StateMachine/StateMachine.h"
 #include "ProjectParasite/Utilities/StateMachine/States/Player/Player_State_Idle.h"
 #include "ProjectParasite/Utilities/StateMachine/States/Player/Player_State_Dash.h"
@@ -83,7 +85,7 @@ void APawnParasite::SetPossessed(APawnEnemy* actorToPossess)
 		
 		GetPossessedEnemy()->onStartDeathEvent.RemoveDynamic(this, &APawnParasite::OnPossessedEnemyDeath);
 
-		GetPossessedEnemy()->Die();
+		UGameplayStatics::ApplyDamage(GetPossessedEnemy(), GetPossessedEnemy()->GetMaxHealth(), playerControllerRef, this, UDamageType_Environmental::StaticClass());
 	}
 	
 	if(actorToPossess != nullptr)
@@ -104,7 +106,7 @@ void APawnParasite::SetPossessed(APawnEnemy* actorToPossess)
 	possessedEnemy = actorToPossess;
 }
 
-void APawnParasite::OnPossessedEnemyDeath(APawnBase* enemy)
+void APawnParasite::OnPossessedEnemyDeath(APawnBase* enemy, const UDamageType* damageType)
 {
 	//Unpossess enemy upon death
 	SetPossessed(nullptr);

@@ -15,7 +15,7 @@ class UFloatingPawnMovement;
 class APawnBase;
 class APlayerControllerBase;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeathEvent, APawnBase*, deadPawn);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDeathEvent, APawnBase*, deadPawn, const UDamageType*, damageType);
 
 UCLASS()
 class PROJECTPARASITE_API APawnBase : public APawn
@@ -43,9 +43,13 @@ public:
 
 	bool GetIsPendingDeath() { return isPendingDeath; }
 
+	float GetMaxHealth() { return maxHealth; }
+	float GetCurrentHealth() { return currentHealth; }
+
 	virtual void HandlePendingDeath();
-	void Die();
-	virtual void OnDeath(APawnBase* deadPawn);
+
+	UFUNCTION()
+	virtual void OnDeath(APawnBase* deadPawn, const UDamageType* damageType);
 	
 	UFUNCTION()
 	void OnTakeDamage(AActor* damagedActor, float damage, const UDamageType* damageType, AController* causerController, AActor* causerActor);

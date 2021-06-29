@@ -54,7 +54,7 @@ private:
 	UStateMachine* stateMachine = nullptr;
 
 	UFUNCTION()
-	void OnPossessedEnemyDeath(APawnBase* enemy);
+	void OnPossessedEnemyDeath(APawnBase* enemy, const UDamageType* damageType);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float baseMoveSpeed = 300;

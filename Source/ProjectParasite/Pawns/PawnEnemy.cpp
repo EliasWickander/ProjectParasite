@@ -13,6 +13,7 @@
 #include "ProjectParasite/Actors/Weapons/WeaponBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectParasite/AIControllers/AIControllerBase.h"
+#include "ProjectParasite/DamageTypes/DamageType_Environmental.h"
 
 APawnEnemy::APawnEnemy()
 {
@@ -42,13 +43,13 @@ void APawnEnemy::UpdatePawnBehavior(float deltaSeconds)
 		RotateToMouseCursor();
 }
 
-void APawnEnemy::OnDeath(APawnBase* deadPawn)
+void APawnEnemy::OnDeath(APawnBase* deadPawn, const UDamageType* damageType)
 {
-	Super::OnDeath(deadPawn);
+	Super::OnDeath(deadPawn, damageType);
 
 	//Drop weapon
 	SetWeapon(nullptr);
-	
+
 	APawnEnemy* deadEnemy = Cast<APawnEnemy>(deadPawn);
 
 	Cast<AAIControllerBase>(deadEnemy->GetAIController())->SetCurrentState(EnemyStates::State_Idle);

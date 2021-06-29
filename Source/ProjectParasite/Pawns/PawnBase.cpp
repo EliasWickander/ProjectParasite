@@ -47,6 +47,7 @@ void APawnBase::BeginPlay()
 
 	playerControllerRef = Cast<APlayerControllerBase>(GetWorld()->GetFirstPlayerController());
 	OnTakeAnyDamage.AddDynamic(this, &APawnBase::OnTakeDamage);
+	onStartDeathEvent.AddDynamic(this, &APawnBase::OnDeath);
 	
 	currentHealth = maxHealth;
 }
@@ -156,18 +157,12 @@ void APawnBase::OnTakeDamage(AActor* damagedActor, float damage, const UDamageTy
 	UE_LOG(LogTemp, Warning, TEXT("Took %f damage"), damage);
 	if(currentHealth <= 0)
 	{
-		Die();
+		isPendingDeath = true;
+		onStartDeathEvent.Broadcast(this, damageType);
 	}
 }
 
-void APawnBase::Die()
-{
-	isPendingDeath = true;
-	onStartDeathEvent.Broadcast(this);
-	OnDeath(this);
-}
-
-void APawnBase::OnDeath(APawnBase* deadPawn)
+void APawnBase::OnDeath(APawnBase* deadPawn, const UDamageType* damageType)
 {
 	
 }

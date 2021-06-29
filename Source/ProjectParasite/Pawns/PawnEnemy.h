@@ -29,7 +29,7 @@ public:
 
 	virtual void Attack();
 
-	virtual void OnDeath(APawnBase* deadPawn) override;
+	virtual void OnDeath(APawnBase* deadPawn, const UDamageType* damageType) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	virtual void SetWeapon(AWeaponBase* newWeapon);
