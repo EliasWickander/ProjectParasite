@@ -24,6 +24,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Events")
 	void OnGameLost();
 
+	bool HasEliminatedAllEnemies();
+
 private:
 	UFUNCTION()
 	void OnEnemyDeath(APawnBase* deadEnemy);

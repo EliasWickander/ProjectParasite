@@ -23,10 +23,12 @@ void UPlayer_State_Dash::Start()
 	playerRef->SetCanMove(false);
 
 	playerRef->SetMoveSpeed(playerRef->dashSpeed);
+
+	playerRef->SetActorRotation(dashDir.Rotation());
 }
 
 void UPlayer_State_Dash::Update()
-{
+{	
 	//Dash in {dashTime} seconds
 	if(dashTimer < playerRef->dashTime)
 	{

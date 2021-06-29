@@ -105,6 +105,9 @@ void APlayerControllerBase::AttackInternal()
 
 	if(controlledEnemy != nullptr)
 	{
-		controlledEnemy->GetWeapon()->Use();	
+		if(controlledEnemy->GetWeapon())
+		{
+			controlledEnemy->GetWeapon()->Use();
+		}
 	}		
 }
