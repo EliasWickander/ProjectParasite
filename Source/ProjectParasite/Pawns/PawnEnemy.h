@@ -8,7 +8,7 @@
 #include "PawnEnemy.generated.h"
 
 class ATargetPoint;
-class AAIController;
+class AAIControllerBase;
 class APawnParasite;
 class UEnemyDebugComponent;
 class AWeaponBase;
@@ -46,7 +46,7 @@ public:
 	float GetTurnRate() { return turnRate; }
 	
 	APawnParasite* GetPlayerRef() { return playerRef; }
-	AAIController* GetAIController() { return AIController; }
+	AAIControllerBase* GetAIController() { return AIController; }
 	
 	USceneComponent* GetNapeComponent() { return napeComponent; }
 	TArray<ATargetPoint*> GetPatrolPoints() { return patrolPoints; }
@@ -94,5 +94,5 @@ protected:
 	float sightReactionTime = 0.2f;
 
 	APawnParasite* playerRef = nullptr;
-	AAIController* AIController = nullptr;
+	AAIControllerBase* AIController = nullptr;
 };

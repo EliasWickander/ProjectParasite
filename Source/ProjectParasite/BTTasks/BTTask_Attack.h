@@ -8,14 +8,14 @@
 
 class APawnEnemy;
 class APawnParasite;
-class AShooterAIController;
+class AAIControllerBase;
 class APawnBase;
 
 struct BTTaskAttackMemory
 {
 	UBlackboardComponent* blackboard = nullptr;
 	APawnEnemy* ownerEnemy = nullptr;
-	AShooterAIController* shooterAIController = nullptr;
+	AAIControllerBase* enemyAIController = nullptr;
 	
 	APawnBase* targetActor = nullptr;
 };

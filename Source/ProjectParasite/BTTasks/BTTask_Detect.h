@@ -7,13 +7,13 @@
 #include "BTTask_Detect.generated.h"
 
 class APawnParasite;
-class AShooterAIController;
+class AAIControllerBase;
 
 struct BTTaskDetectMemory
 {
 	class APawnEnemy* ownerEnemy = nullptr;
 	UBlackboardComponent* blackboard = nullptr;
-	AShooterAIController* shooterAIController = nullptr;
+	AAIControllerBase* enemyAIController = nullptr;
 };
 
 UCLASS()

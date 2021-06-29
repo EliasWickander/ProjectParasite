@@ -10,7 +10,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "ProjectParasite/AIControllers/ShooterAIController.h"
+#include "ProjectParasite/AIControllers/AIControllerBase.h"
 
 UBTTask_Detect::UBTTask_Detect()
 {
@@ -27,9 +27,9 @@ EBTNodeResult::Type UBTTask_Detect::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	
 	instanceMemory->ownerEnemy = OwnerComp.GetAIOwner()->GetPawn<APawnEnemy>();
 	instanceMemory->blackboard = OwnerComp.GetBlackboardComponent();
-	instanceMemory->shooterAIController = Cast<AShooterAIController>(OwnerComp.GetAIOwner());
+	instanceMemory->enemyAIController = Cast<AAIControllerBase>(OwnerComp.GetAIOwner());
 
-	if(instanceMemory->shooterAIController == nullptr)
+	if(instanceMemory->enemyAIController == nullptr)
 	{
 		//Enemy executing this task isn't of a shooter type
 		UE_LOG(LogTemp, Error, TEXT("Enemy %s executing this task isn't of a shooter type"), *instanceMemory->ownerEnemy->GetName())
@@ -55,7 +55,7 @@ void UBTTask_Detect::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		{
 			hasDetected = false;
 			
-			instanceMemory->shooterAIController->SetCurrentState(EnemyStates::State_Chase);
+			instanceMemory->enemyAIController->SetCurrentState(EnemyStates::State_Chase);
 		}
 		else
 		{
