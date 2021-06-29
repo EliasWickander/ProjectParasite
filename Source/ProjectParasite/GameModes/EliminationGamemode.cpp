@@ -25,14 +25,10 @@ void AEliminationGamemode::BeginPlay()
 	}
 }
 
-void AEliminationGamemode::OnEnemyDeath(APawnBase* deadEnemy)
+bool AEliminationGamemode::HasEliminatedAllEnemies()
 {
-	Cast<APawnEnemy>(deadEnemy)->onStartDeathEvent.RemoveDynamic(this, &AEliminationGamemode::OnEnemyDeath);
-
-	enemiesAlive.Remove(deadEnemy);
-
 	//If there are no enemies left (excluding a possessed one), the game is won
-
+	
 	int targetAmountEnemiesLeft = 0;
 
 	if(enemiesAlive.Num() == 1 && playerRef->GetPossessedEnemy())
@@ -43,7 +39,16 @@ void AEliminationGamemode::OnEnemyDeath(APawnBase* deadEnemy)
 		}	
 	}
 
-	if(enemiesAlive.Num() <= targetAmountEnemiesLeft)
+	return enemiesAlive.Num() <= targetAmountEnemiesLeft;
+}
+
+void AEliminationGamemode::OnEnemyDeath(APawnBase* deadEnemy)
+{
+	Cast<APawnEnemy>(deadEnemy)->onStartDeathEvent.RemoveDynamic(this, &AEliminationGamemode::OnEnemyDeath);
+
+	enemiesAlive.Remove(deadEnemy);
+
+	if(HasEliminatedAllEnemies())
 	{
 		OnGameWon();
 	}	

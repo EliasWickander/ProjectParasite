@@ -9,6 +9,8 @@ void AGameStateCustom::BeginPlay()
 {
 	Super::BeginPlay();
 
+	levelsDirectoryPath = FString::Printf(TEXT("%s/Levels"), *FPaths::ProjectContentDir());
+
 	for(int i = 0; i < 100; i++)
 	{
 		FString key = FString::FromInt(i);
@@ -17,7 +19,11 @@ void AGameStateCustom::BeginPlay()
 		
 		levelMap.Add({key}, {val});
 	}
-	OpenNextLevel();
+}
+
+void AGameStateCustom::OpenLevel(FString levelName)
+{
+	UGameplayStatics::OpenLevel(GetWorld(), *levelName);
 }
 
 void AGameStateCustom::OpenNextLevel()
@@ -29,24 +35,49 @@ void AGameStateCustom::OpenNextLevel()
 	
 	currentScene.Split(TEXT("_"),&levelPrefix, &levelInfo);
 	
-	FString currentLevel;
-	FString currentFloor;
+	FString currentLevelText;
+	FString currentFloorText;
 	
-	levelInfo.Split(TEXT("_"), &currentLevel, &currentFloor);
+	levelInfo.Split(TEXT("_"), &currentLevelText, &currentFloorText);
 
-	FString floorPrefix;
-	FString floorNumber;
-
-	currentFloor.Split(TEXT("F"))
-
-	if(levelMap.Contains(currentLevel))
+	if(levelMap.Contains(currentLevelText) && levelMap.Contains(currentFloorText))
 	{
-		
-		UE_LOG(LogTemp, Warning, TEXT("%i"), levelMap[currentLevel]);	
+		currentLevel = levelMap[currentLevelText];
+		currentFloor = levelMap[currentFloorText];
+
+		if(!IsCurrentFloorLast())
+		{
+			FString levelName = FString::Printf(TEXT("Level_%i_%i"), currentLevel, currentFloor + 1);
+			
+			OpenLevel(*levelName);
+		}
+		else
+		{
+			if(!IsCurrentLevelLast())
+			{
+				FString levelName = FString::Printf(TEXT("Level_%i_%i"), currentLevel + 1, 1);
+			
+				OpenLevel(*levelName);
+			}
+		}
 	}
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("Levelname does not match naming rules. The correct naming is {Level_{LevelNumber}_{FloorNumber}"));
 	}
 	
+}
+
+bool AGameStateCustom::IsCurrentLevelLast()
+{
+	FString nextScene = FString::Printf(TEXT("Level_%i_%i"), currentLevel + 1, 1);
+		
+	return !FPaths::FileExists(FString::Printf(TEXT("%s/%s.umap"), *levelsDirectoryPath, *nextScene));
+}
+
+bool AGameStateCustom::IsCurrentFloorLast()
+{
+	FString nextScene = FString::Printf(TEXT("Level_%i_%i"), currentLevel, currentFloor + 1);
+		
+	return !FPaths::FileExists(FString::Printf(TEXT("%s/%s.umap"), *levelsDirectoryPath, *nextScene));
 }
