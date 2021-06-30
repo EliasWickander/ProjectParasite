@@ -128,16 +128,16 @@ void AEliminationGamemode::OnGoalTriggered()
 
 	if(HasEliminatedAllEnemies())
 	{
-		//Add score if player finished level before time limit
-		if(levelTimer < levelTimeLimit)
-			AddScore(finishOnTimeScore, false);
-
 		if(!gameStateRef->IsCurrentFloorLast())
 		{
 			gameStateRef->OpenNextLevel();		
 		}
 		else
 		{
+			//Add score if player finished level before time limit
+			if(levelTimer < levelTimeLimit)
+				AddScore(finishOnTimeScore, false);
+			
 			gameStateRef->OpenLevel("Hideout");
 		}
 	}
