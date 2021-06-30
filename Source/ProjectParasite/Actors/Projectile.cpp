@@ -5,6 +5,8 @@
 #include "Components/CapsuleComponent.h"
 #include "ProjectParasite/Pawns/PawnBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "Weapons/RangedWeapon.h"
+#include "ProjectParasite/Pawns/PawnEnemy.h"
 
 AProjectile::AProjectile()
 {
@@ -49,7 +51,7 @@ void AProjectile::OnHit(UPrimitiveComponent* hitComp, AActor* otherActor, UPrimi
 		//Apply damage if hit actor is a pawn
 		if(hitPawn != nullptr)
 		{
-			UGameplayStatics::ApplyDamage(hitPawn, damage, UGameplayStatics::GetPlayerController(GetWorld(), 0), this, damageType);
+			UGameplayStatics::ApplyDamage(hitPawn, damage, UGameplayStatics::GetPlayerController(GetWorld(), 0), weaponRef->GetWeaponHolder(), damageType);
 		}
 
 		//Destroy bullet on hit

@@ -106,7 +106,7 @@ void APawnParasite::SetPossessed(APawnEnemy* actorToPossess)
 	possessedEnemy = actorToPossess;
 }
 
-void APawnParasite::OnPossessedEnemyDeath(APawnBase* enemy, const UDamageType* damageType)
+void APawnParasite::OnPossessedEnemyDeath(APawnBase* enemy, AActor* causerActor)
 {
 	//Unpossess enemy upon death
 	SetPossessed(nullptr);

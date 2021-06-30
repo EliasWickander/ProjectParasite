@@ -43,9 +43,9 @@ void APawnEnemy::UpdatePawnBehavior(float deltaSeconds)
 		RotateToMouseCursor();
 }
 
-void APawnEnemy::OnDeath(APawnBase* deadPawn, const UDamageType* damageType)
+void APawnEnemy::OnDeath(APawnBase* deadPawn, AActor* causerActor)
 {
-	Super::OnDeath(deadPawn, damageType);
+	Super::OnDeath(deadPawn, causerActor);
 
 	//Drop weapon
 	SetWeapon(nullptr);

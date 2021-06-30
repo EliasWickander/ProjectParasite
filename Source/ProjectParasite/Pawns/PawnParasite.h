@@ -42,6 +42,8 @@ public:
 
 	void SetPossessed(APawnEnemy* actorToPossess);
 
+	float GetKillScore() { return killScore; }
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -54,7 +56,7 @@ private:
 	UStateMachine* stateMachine = nullptr;
 
 	UFUNCTION()
-	void OnPossessedEnemyDeath(APawnBase* enemy, const UDamageType* damageType);
+	void OnPossessedEnemyDeath(APawnBase* enemy, AActor* causerActor);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float baseMoveSpeed = 300;
@@ -68,6 +70,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Possession", meta = (AllowPrivateAccess = "true"))
 	float attachRotationLerpSpeed = 50;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Score", meta = (AllowPrivateAccess = "true"))
+	float killScore = 400;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash", meta = (AllowPrivateAccess = "true"))
 	float dashTime = 2;
 

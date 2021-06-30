@@ -6,10 +6,11 @@
 #include "GameFramework/Actor.h"
 #include "GoalTrigger.generated.h"
 
-class AGameStateCustom;
 class AEliminationGamemode;
 class APawnParasite;
 class UBoxComponent;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGoalTriggeredEvent);
 
 UCLASS()
 class PROJECTPARASITE_API AGoalTrigger : public AActor
@@ -23,18 +24,18 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	FOnGoalTriggeredEvent onGoalTriggered;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& sweepResult);
-	
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	UBoxComponent* triggerVolume = nullptr;
 
-	AEliminationGamemode* gameModeRef = nullptr;
-	AGameStateCustom* gameStateRef = nullptr;
-	
 	APawnParasite* playerRef = nullptr;
 };

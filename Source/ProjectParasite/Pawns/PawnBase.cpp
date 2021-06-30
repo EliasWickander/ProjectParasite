@@ -158,11 +158,11 @@ void APawnBase::OnTakeDamage(AActor* damagedActor, float damage, const UDamageTy
 	if(currentHealth <= 0)
 	{
 		isPendingDeath = true;
-		onStartDeathEvent.Broadcast(this, damageType);
+		onStartDeathEvent.Broadcast(this, causerActor);
 	}
 }
 
-void APawnBase::OnDeath(APawnBase* deadPawn, const UDamageType* damageType)
+void APawnBase::OnDeath(APawnBase* deadPawn, AActor* causerActor)
 {
 	
 }

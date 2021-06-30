@@ -25,9 +25,6 @@ void AGoalTrigger::BeginPlay()
 {
 	Super::BeginPlay();
 
-	gameModeRef = Cast<AEliminationGamemode>(UGameplayStatics::GetGameMode(GetWorld()));
-	gameStateRef = Cast<AGameStateCustom>(GetWorld()->GetGameState());
-
 	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	
 	triggerVolume->OnComponentBeginOverlap.AddDynamic(this, &AGoalTrigger::OnBeginOverlap);
@@ -43,9 +40,6 @@ void AGoalTrigger::Tick(float DeltaTime)
 void AGoalTrigger::OnBeginOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
 	UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& sweepResult)
 {
-	if(!gameModeRef->HasEliminatedAllEnemies())
-		return;
-
 	//TODO: Refactor
 	
 	//If player is possessing enemy, check for that enemy overlapping the trigger
@@ -53,14 +47,7 @@ void AGoalTrigger::OnBeginOverlap(UPrimitiveComponent* overlappedComponent, AAct
 	{
 		if(otherActor == Cast<AActor>(playerRef->GetPossessedEnemy()))
 		{
-			if(!gameStateRef->IsCurrentFloorLast())
-			{
-				gameStateRef->OpenNextLevel();		
-			}
-			else
-			{
-				gameStateRef->OpenLevel("Hideout");
-			}
+			onGoalTriggered.Broadcast();
 		}
 	}
 	else
@@ -68,14 +55,7 @@ void AGoalTrigger::OnBeginOverlap(UPrimitiveComponent* overlappedComponent, AAct
 		//If not, only check for the parasite
 		if(Cast<APawnParasite>(otherActor))
 		{
-			if(!gameStateRef->IsCurrentFloorLast())
-			{
-				gameStateRef->OpenNextLevel();		
-			}
-			else
-			{
-				gameStateRef->OpenLevel("Hideout");
-			}
+			onGoalTriggered.Broadcast();
 		}	
 	}
 }
