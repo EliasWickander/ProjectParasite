@@ -50,6 +50,8 @@ void AEliminationGamemode::OnFloorStart()
 	//When an enemy dies, call the OnEnemyDeath method
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APawnEnemy::StaticClass(), enemiesAlive);
 
+	UE_LOG(LogTemp, Warning, TEXT("%i"), enemiesAlive.Num());
+	
 	for(AActor* enemy : enemiesAlive)
 	{
 		Cast<APawnEnemy>(enemy)->onStartDeathEvent.AddDynamic(this, &AEliminationGamemode::OnEnemyDeath);
@@ -58,8 +60,6 @@ void AEliminationGamemode::OnFloorStart()
 	TArray<AActor*> goalTriggers;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGoalTrigger::StaticClass(), goalTriggers);
 
-	UE_LOG(LogTemp, Warning, TEXT("%i"), enemiesAlive.Num());
-	
 	if(goalTriggers.Num() > 0)
 	{
 		goalTrigger = Cast<AGoalTrigger>(goalTriggers[0]);

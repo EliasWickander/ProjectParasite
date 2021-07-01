@@ -28,6 +28,10 @@ void AGameStateCustom::BeginPlay()
 	//UGameplayStatics::LoadStreamLevel(GetWorld(), TEXT("Level_1_1"), true, false, info);
 }
 
+void AGameStateCustom::OnLevelLoaded()
+{
+}
+
 void AGameStateCustom::OpenNextLevel()
 {
 	FString currentScene = UGameplayStatics::GetCurrentLevelName(GetWorld());
@@ -51,6 +55,7 @@ void AGameStateCustom::OpenNextLevel()
 			UGameplayStatics::UnloadStreamLevel(GetWorld(), *GetSubLevelName(currentLevel, currentFloor), info, false);
 			
 			info.UUID = 2;
+
 			//Load next sublevel
 			UGameplayStatics::LoadStreamLevel(GetWorld(), *GetSubLevelName(currentLevel, currentFloor + 1), true, false, info);
 

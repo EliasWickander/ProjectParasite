@@ -51,7 +51,6 @@ public:
 	UFUNCTION()
 	virtual void OnDeath(APawnBase* deadPawn, AActor* causerActor);
 	
-	UFUNCTION()
 	void OnTakeDamage(AActor* damagedActor, float damage, const UDamageType* damageType, AController* causerController, AActor* causerActor);
 	
 	void MoveHorizontal(float axis);

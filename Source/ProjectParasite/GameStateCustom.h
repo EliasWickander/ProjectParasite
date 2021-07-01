@@ -30,6 +30,8 @@ protected:
 	virtual void BeginPlay() override;
 	
 private:
+
+	void OnLevelLoaded();
 	TMap<FString, int> levelMap;
 
 	APawnParasite* playerRef = nullptr;

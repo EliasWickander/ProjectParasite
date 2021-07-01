@@ -44,7 +44,7 @@ private:
 
 	UFUNCTION()
 	void OnGoalTriggered();
-	
+
 	void AddScore(float scoreToAdd, bool allowCombo = true);
 
 	AGameStateCustom* gameStateRef = nullptr;
