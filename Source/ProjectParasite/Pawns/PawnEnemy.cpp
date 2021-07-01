@@ -47,12 +47,12 @@ void APawnEnemy::OnDeath(APawnBase* deadPawn, AActor* causerActor)
 {
 	Super::OnDeath(deadPawn, causerActor);
 
-	//Drop weapon
-	SetWeapon(nullptr);
-
 	APawnEnemy* deadEnemy = Cast<APawnEnemy>(deadPawn);
 
 	Cast<AAIControllerBase>(deadEnemy->GetAIController())->SetCurrentState(EnemyStates::State_Idle);
+
+	//Drop weapon
+	SetWeapon(nullptr);
 }
 
 void APawnEnemy::SetWeapon(AWeaponBase* newWeapon)

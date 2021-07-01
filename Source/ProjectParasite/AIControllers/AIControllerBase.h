@@ -40,7 +40,7 @@ public:
 private:
 
 	UFUNCTION()
-	void OnFloorStart();
+	void OnFloorEnter();
 	
 	void StartAIBehavior();
 

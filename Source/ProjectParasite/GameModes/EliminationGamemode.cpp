@@ -25,9 +25,10 @@ void AEliminationGamemode::BeginPlay()
 	
 	playerRef->onStartDeathEvent.AddDynamic(this, &AEliminationGamemode::OnPlayerDeath);
 
-	gameStateRef->OnFloorStart.AddDynamic(this, &AEliminationGamemode::OnFloorStart);
+	gameStateRef->OnFloorEnter.AddDynamic(this, &AEliminationGamemode::OnFloorEnter);
+	gameStateRef->OnFloorExit.AddDynamic(this, &AEliminationGamemode::OnFloorExit);
 
-	OnFloorStart();
+	OnFloorEnter();
 }
 
 void AEliminationGamemode::Tick(float DeltaSeconds)
@@ -45,13 +46,11 @@ void AEliminationGamemode::Tick(float DeltaSeconds)
 	}
 }
 
-void AEliminationGamemode::OnFloorStart()
-{
+void AEliminationGamemode::OnFloorEnter()
+{	
 	//When an enemy dies, call the OnEnemyDeath method
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APawnEnemy::StaticClass(), enemiesAlive);
 
-	UE_LOG(LogTemp, Warning, TEXT("%i"), enemiesAlive.Num());
-	
 	for(AActor* enemy : enemiesAlive)
 	{
 		Cast<APawnEnemy>(enemy)->onStartDeathEvent.AddDynamic(this, &AEliminationGamemode::OnEnemyDeath);
@@ -69,6 +68,19 @@ void AEliminationGamemode::OnFloorStart()
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("No goal triggers on floor"));
+	}
+}
+
+void AEliminationGamemode::OnFloorExit()
+{
+	for(AActor* enemy : enemiesAlive)
+	{
+		Cast<APawnEnemy>(enemy)->onStartDeathEvent.RemoveDynamic(this, &AEliminationGamemode::OnEnemyDeath);
+	}
+
+	if(goalTrigger)
+	{
+		goalTrigger->onGoalTriggered.RemoveDynamic(this, &AEliminationGamemode::OnGoalTriggered);		
 	}
 }
 
