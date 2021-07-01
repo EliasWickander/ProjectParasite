@@ -25,7 +25,10 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	UFUNCTION()
-	void OnFloorStart();
+	void OnFloorEnter();
+
+	UFUNCTION()
+	void OnFloorExit();
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = "Events")
 	void OnGameWon();
