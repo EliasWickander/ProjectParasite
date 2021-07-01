@@ -3,9 +3,16 @@
 
 #include "GameStateCustom.h"
 
+#include "Engine/LevelStreaming.h"
 #include "ProjectParasite/GameModes/EliminationGamemode.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
 #include "Kismet/GameplayStatics.h"
+
+AGameStateCustom::AGameStateCustom()
+{
+	PrimaryActorTick.bCanEverTick = true;
+}
+
 
 void AGameStateCustom::BeginPlay()
 {
@@ -28,8 +35,21 @@ void AGameStateCustom::BeginPlay()
 	//UGameplayStatics::LoadStreamLevel(GetWorld(), TEXT("Level_1_1"), true, false, info);
 }
 
-void AGameStateCustom::OnLevelLoaded()
+void AGameStateCustom::Tick(float DeltaSeconds)
 {
+	Super::Tick(DeltaSeconds);
+
+	if(loadingNextLevel)
+	{
+		ULevelStreaming* nextLevel = UGameplayStatics::GetStreamingLevel(GetWorld(), *GetSubLevelName(currentLevel, currentFloor + 1));
+
+		if(nextLevel->IsLevelLoaded())
+		{
+			OnFloorEnter.Broadcast();
+			loadingNextLevel = false;
+		}
+
+	}
 }
 
 void AGameStateCustom::OpenNextLevel()
@@ -48,18 +68,21 @@ void AGameStateCustom::OpenNextLevel()
 
 		if(!IsCurrentFloorLast())
 		{
+			
 			FLatentActionInfo info;
 			info.UUID = 1;
 			
 			//Unload current sublevel
 			UGameplayStatics::UnloadStreamLevel(GetWorld(), *GetSubLevelName(currentLevel, currentFloor), info, false);
+
+			OnFloorExit.Broadcast();
 			
 			info.UUID = 2;
-
+			
 			//Load next sublevel
-			UGameplayStatics::LoadStreamLevel(GetWorld(), *GetSubLevelName(currentLevel, currentFloor + 1), true, false, info);
+			UGameplayStatics::LoadStreamLevel(GetWorld(), *GetSubLevelName(currentLevel, currentFloor + 1), true, true, info);
 
-			OnFloorStart.Broadcast();
+			loadingNextLevel = true;
 		}
 		else
 		{
