@@ -155,6 +155,12 @@ void APawnBase::OnTakeDamage(AActor* damagedActor, float damage, const UDamageTy
 	currentHealth -= damage;
 
 	UE_LOG(LogTemp, Warning, TEXT("Took %f damage"), damage);
+
+	if(Cast<APawnEnemy>(causerActor))
+	{
+		OnDamagedByCharacter();
+	}
+	
 	if(currentHealth <= 0)
 	{
 		isPendingDeath = true;
@@ -166,3 +172,4 @@ void APawnBase::OnDeath(APawnBase* deadPawn, AActor* causerActor)
 {
 	
 }
+
