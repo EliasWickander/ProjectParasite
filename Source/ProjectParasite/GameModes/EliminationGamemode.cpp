@@ -25,27 +25,9 @@ void AEliminationGamemode::BeginPlay()
 	
 	playerRef->onStartDeathEvent.AddDynamic(this, &AEliminationGamemode::OnPlayerDeath);
 
-	//When an enemy dies, call the OnEnemyDeath method
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APawnEnemy::StaticClass(), enemiesAlive);
+	gameStateRef->OnFloorStart.AddDynamic(this, &AEliminationGamemode::OnFloorStart);
 
-	for(AActor* enemy : enemiesAlive)
-	{
-		Cast<APawnEnemy>(enemy)->onStartDeathEvent.AddDynamic(this, &AEliminationGamemode::OnEnemyDeath);
-	}
-
-	TArray<AActor*> goalTriggers;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGoalTrigger::StaticClass(), goalTriggers);
-
-	if(goalTriggers.Num() > 0)
-	{
-		goalTrigger = Cast<AGoalTrigger>(goalTriggers[0]);
-
-		goalTrigger->onGoalTriggered.AddDynamic(this, &AEliminationGamemode::OnGoalTriggered);	
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("No goal triggers in level"));
-	}
+	OnFloorStart();
 }
 
 void AEliminationGamemode::Tick(float DeltaSeconds)
@@ -60,6 +42,33 @@ void AEliminationGamemode::Tick(float DeltaSeconds)
 	if(comboTimer > 0)
 	{
 		comboTimer -= DeltaSeconds;
+	}
+}
+
+void AEliminationGamemode::OnFloorStart()
+{
+	//When an enemy dies, call the OnEnemyDeath method
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APawnEnemy::StaticClass(), enemiesAlive);
+
+	for(AActor* enemy : enemiesAlive)
+	{
+		Cast<APawnEnemy>(enemy)->onStartDeathEvent.AddDynamic(this, &AEliminationGamemode::OnEnemyDeath);
+	}
+
+	TArray<AActor*> goalTriggers;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGoalTrigger::StaticClass(), goalTriggers);
+
+	UE_LOG(LogTemp, Warning, TEXT("%i"), enemiesAlive.Num());
+	
+	if(goalTriggers.Num() > 0)
+	{
+		goalTrigger = Cast<AGoalTrigger>(goalTriggers[0]);
+
+		goalTrigger->onGoalTriggered.AddDynamic(this, &AEliminationGamemode::OnGoalTriggered);	
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("No goal triggers on floor"));
 	}
 }
 
@@ -125,9 +134,8 @@ void AEliminationGamemode::OnPlayerDeath(APawnBase* deadPlayer, AActor* causerAc
 
 void AEliminationGamemode::OnGoalTriggered()
 {	
-
-	if(HasEliminatedAllEnemies())
-	{
+	//if(HasEliminatedAllEnemies())
+	//{
 		if(!gameStateRef->IsCurrentFloorLast())
 		{
 			gameStateRef->OpenNextLevel();		
@@ -137,10 +145,10 @@ void AEliminationGamemode::OnGoalTriggered()
 			//Add score if player finished level before time limit
 			if(levelTimer < levelTimeLimit)
 				AddScore(finishOnTimeScore, false);
-			
-			gameStateRef->OpenLevel("Hideout");
+
+			UGameplayStatics::OpenLevel(GetWorld(), "Hideout");
 		}
-	}
+	//}
 }
 
 void AEliminationGamemode::AddScore(float scoreToAdd, bool allowCombo)

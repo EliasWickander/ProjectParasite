@@ -7,6 +7,7 @@
 #include "ProjectParasite/Pawns/PawnParasite.h"
 #include "ProjectParasite/Pawns/PawnShooter.h"
 #include "Kismet/GameplayStatics.h"
+#include "ProjectParasite/GameStateCustom.h"
 
 #include "BehaviorTree/BlackboardComponent.h"
 #include "ProjectParasite/BTTasks/BTTask_Chase.h"
@@ -15,13 +16,13 @@ void AAIControllerBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	gameStateRef = Cast<AGameStateCustom>(UGameplayStatics::GetGameState(GetWorld()));
 	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	enemyRef = Cast<APawnShooter>(GetPawn());
 
-	blackboard->SetValueAsObject("PlayerRef", playerRef);
-	
-	SetCurrentState(currentState);
-	
+	gameStateRef->OnFloorStart.AddDynamic(this, &AAIControllerBase::OnFloorStart);
+
+	OnFloorStart();
 }
 
 void AAIControllerBase::Tick(float DeltaSeconds)
@@ -40,6 +41,15 @@ void AAIControllerBase::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 
 	StartAIBehavior();
+}
+
+void AAIControllerBase::OnFloorStart()
+{
+	StartAIBehavior();
+	
+	blackboard->SetValueAsObject("PlayerRef", playerRef);
+	
+	SetCurrentState(currentState);
 }
 
 void AAIControllerBase::StartAIBehavior()
