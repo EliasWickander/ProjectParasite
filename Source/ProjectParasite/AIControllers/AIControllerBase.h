@@ -16,6 +16,7 @@ enum class EnemyStates : uint8
 	State_Stunned UMETA(DisplayName = "Stunned")
 };
 
+class AGameStateCustom;
 class APawnParasite;
 class APawnEnemy;
 UCLASS()
@@ -38,7 +39,12 @@ public:
 
 private:
 
+	UFUNCTION()
+	void OnFloorStart();
+	
 	void StartAIBehavior();
+
+	AGameStateCustom* gameStateRef = nullptr;
 	
 	UPROPERTY(EditAnywhere, Category = "Initialization")
 	UBehaviorTree* behaviorTree = nullptr;

@@ -3,12 +3,17 @@
 
 #include "GameStateCustom.h"
 
+#include "ProjectParasite/GameModes/EliminationGamemode.h"
+#include "ProjectParasite/Pawns/PawnParasite.h"
 #include "Kismet/GameplayStatics.h"
 
 void AGameStateCustom::BeginPlay()
 {
 	Super::BeginPlay();
 
+	gamemodeRef = Cast<AEliminationGamemode>(UGameplayStatics::GetGameMode(GetWorld()));
+	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	
 	levelsDirectoryPath = FString::Printf(TEXT("%s/Levels"), *FPaths::ProjectContentDir());
 
 	for(int i = 0; i < 100; i++)
@@ -18,12 +23,13 @@ void AGameStateCustom::BeginPlay()
 		int val = i;
 		
 		levelMap.Add({key}, {val});
-	}
+	}	
+
+	//UGameplayStatics::LoadStreamLevel(GetWorld(), TEXT("Level_1_1"), true, false, info);
 }
 
-void AGameStateCustom::OpenLevel(FString levelName)
+void AGameStateCustom::OnLevelLoaded()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), *levelName);
 }
 
 void AGameStateCustom::OpenNextLevel()
@@ -31,33 +37,35 @@ void AGameStateCustom::OpenNextLevel()
 	FString currentScene = UGameplayStatics::GetCurrentLevelName(GetWorld());
 	
 	FString levelPrefix;
-	FString levelInfo;
-	
-	currentScene.Split(TEXT("_"),&levelPrefix, &levelInfo);
-	
 	FString currentLevelText;
-	FString currentFloorText;
 	
-	levelInfo.Split(TEXT("_"), &currentLevelText, &currentFloorText);
+	currentScene.Split(TEXT("_"),&levelPrefix, &currentLevelText);
+	
 
-	if(levelMap.Contains(currentLevelText) && levelMap.Contains(currentFloorText))
+	if(levelMap.Contains(currentLevelText))
 	{
 		currentLevel = levelMap[currentLevelText];
-		currentFloor = levelMap[currentFloorText];
 
 		if(!IsCurrentFloorLast())
 		{
-			FString levelName = FString::Printf(TEXT("Level_%i_%i"), currentLevel, currentFloor + 1);
+			FLatentActionInfo info;
+			info.UUID = 1;
 			
-			OpenLevel(*levelName);
+			//Unload current sublevel
+			UGameplayStatics::UnloadStreamLevel(GetWorld(), *GetSubLevelName(currentLevel, currentFloor), info, false);
+			
+			info.UUID = 2;
+
+			//Load next sublevel
+			UGameplayStatics::LoadStreamLevel(GetWorld(), *GetSubLevelName(currentLevel, currentFloor + 1), true, false, info);
+
+			OnFloorStart.Broadcast();
 		}
 		else
 		{
 			if(!IsCurrentLevelLast())
 			{
-				FString levelName = FString::Printf(TEXT("Level_%i_%i"), currentLevel + 1, 1);
-			
-				OpenLevel(*levelName);
+				UGameplayStatics::OpenLevel(GetWorld(), *GetSubLevelName(currentLevel + 1, 1));
 			}
 		}
 	}
@@ -70,14 +78,19 @@ void AGameStateCustom::OpenNextLevel()
 
 bool AGameStateCustom::IsCurrentLevelLast()
 {
-	FString nextScene = FString::Printf(TEXT("Level_%i_%i"), currentLevel + 1, 1);
+	FString nextLevel = GetSubLevelName(currentLevel + 1, 1);
 		
-	return !FPaths::FileExists(FString::Printf(TEXT("%s/%s.umap"), *levelsDirectoryPath, *nextScene));
+	return !FPaths::FileExists(FString::Printf(TEXT("%s/%s.umap"), *levelsDirectoryPath, *nextLevel));
 }
 
 bool AGameStateCustom::IsCurrentFloorLast()
 {
-	FString nextScene = FString::Printf(TEXT("Level_%i_%i"), currentLevel, currentFloor + 1);
+	FString nextLevel = GetSubLevelName(currentLevel, currentFloor + 1);
 		
-	return !FPaths::FileExists(FString::Printf(TEXT("%s/%s.umap"), *levelsDirectoryPath, *nextScene));
+	return !FPaths::FileExists(FString::Printf(TEXT("%s/%s.umap"), *levelsDirectoryPath, *nextLevel));
+}
+
+FString AGameStateCustom::GetSubLevelName(int level, int floor)
+{
+	return FString::Printf(TEXT("Level_%i_%i"), level, floor);
 }

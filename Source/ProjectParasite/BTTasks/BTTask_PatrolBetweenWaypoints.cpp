@@ -43,7 +43,7 @@ void UBTTask_PatrolBetweenWaypoints::TickTask(UBehaviorTreeComponent& OwnerComp,
 	APawnEnemy* ownerEnemy = instanceMemory->ownerEnemy;
 	if(instanceMemory->patrolPointQueue->IsEmpty())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s has no patrol points assigned. Cannot move."), *instanceMemory->ownerEnemy->GetName());
+		//UE_LOG(LogTemp, Warning, TEXT("%s has no patrol points assigned. Cannot move."), *instanceMemory->ownerEnemy->GetName());
 		return;	
 	}
 

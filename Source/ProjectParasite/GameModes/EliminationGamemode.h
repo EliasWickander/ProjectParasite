@@ -23,6 +23,10 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaSeconds) override;
+
+	UFUNCTION()
+	void OnFloorStart();
+	
 	UFUNCTION(BlueprintImplementableEvent, Category = "Events")
 	void OnGameWon();
 
@@ -40,11 +44,12 @@ private:
 
 	UFUNCTION()
 	void OnGoalTriggered();
-	
+
 	void AddScore(float scoreToAdd, bool allowCombo = true);
 
 	AGameStateCustom* gameStateRef = nullptr;
 	APawnParasite* playerRef = nullptr;
+	
 	TArray<AActor*> enemiesAlive = {};
 
 	AGoalTrigger* goalTrigger = nullptr;
