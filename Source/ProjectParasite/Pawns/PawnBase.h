@@ -12,6 +12,7 @@ class UCameraComponent;
 class USpringArmComponent;
 class UCapsuleComponent;
 class UFloatingPawnMovement;
+class UPostProcessComponent;
 class APawnBase;
 class APlayerControllerBase;
 
@@ -34,6 +35,8 @@ public:
 	void RotateToMouseCursor();
 
 	UCapsuleComponent* GetCollider() { return capsuleCollider; }
+	UCameraComponent* GetCamera() { return cameraComponent; }
+	UPostProcessComponent* GetPostProcessComponent() { return postProcessComponent; }
 	
 	void SetMoveSpeed(float speed);
 	float GetMoveSpeed() { return currentMoveSpeed; }
@@ -52,7 +55,7 @@ public:
 	virtual void OnDeath(APawnBase* deadPawn, AActor* causerActor);
 	
 	UFUNCTION()
-	void OnTakeDamage(AActor* damagedActor, float damage, const UDamageType* damageType, AController* causerController, AActor* causerActor);
+	virtual void OnTakeDamage(AActor* damagedActor, float damage, const UDamageType* damageType, AController* causerController, AActor* causerActor);
 	
 	void MoveHorizontal(float axis);
 	void MoveVertical(float axis);
@@ -83,14 +86,17 @@ protected:
 private:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* camera = nullptr;
+	UCameraComponent* cameraComponent = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UPostProcessComponent* postProcessComponent = nullptr;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* springArm = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UPawnMovementComponent* movementComponent = nullptr;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health", meta = (AllowPrivateAccess = "true"))
 	float maxHealth = 100;
 

@@ -6,20 +6,28 @@
 #include "ProjectParasite/Pawns/PawnParasite.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 #include "ProjectParasite/Actors/Weapons/WeaponBase.h"
+#include "ProjectParasite/GameInstanceCustom.h"
 
+#include "ProjectParasite/GameStateCustom.h"
 #include "EngineUtils.h"
+#include "Kismet/GameplayStatics.h"
 
 
 void APlayerControllerBase::BeginPlay()
 {	
 	playerRef = Cast<APawnParasite>(GetPawn());
 	controlledPawn = playerRef;
+	gameStateRef = Cast<AGameStateCustom>(UGameplayStatics::GetGameState(GetWorld()));
+	gameInstanceRef = Cast<UGameInstanceCustom>(UGameplayStatics::GetGameInstance(GetWorld()));
 	
 	SetShowMouseCursor(true);
 
 	EnableInput(this);
-
+	
 	SetupInputBindings();
+
+	gameStateRef->OnFloorEnterEvent.AddDynamic(this, &APlayerControllerBase::OnFloorEnter);
+	gameStateRef->OnFloorExitEvent.AddDynamic(this, &APlayerControllerBase::OnFloorExit);
 }
 
 void APlayerControllerBase::Tick(float DeltaSeconds)
@@ -37,6 +45,16 @@ void APlayerControllerBase::OnPossess(APawn* InPawn)
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s is possessing %s that doesn't seem to be derived from APawnBase"), *GetName(), *InPawn->GetName())
 	}
+}
+
+void APlayerControllerBase::OnFloorEnter()
+{
+	APawnEnemy* possessedEnemy = playerRef->GetPossessedEnemy();
+}
+
+void APlayerControllerBase::OnFloorExit()
+{
+
 }
 
 void APlayerControllerBase::SetupInputBindings()

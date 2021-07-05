@@ -38,10 +38,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	TSubclassOf<AProjectile> projectile = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
 	int maxAmmo = 6;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ammo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Ammo")
 	int currentAmmo = 0;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ammo")

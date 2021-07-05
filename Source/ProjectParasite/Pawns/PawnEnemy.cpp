@@ -55,6 +55,19 @@ void APawnEnemy::OnDeath(APawnBase* deadPawn, AActor* causerActor)
 	SetWeapon(nullptr);
 }
 
+void APawnEnemy::OnTakeDamage(AActor* damagedActor, float damage, const UDamageType* damageType,
+	AController* causerController, AActor* causerActor)
+{
+	//If attacked by an enemy that's not possessed, ignore
+	if(Cast<APawnEnemy>(causerActor))
+	{
+		if(playerRef->GetPossessedEnemy() != Cast<APawnEnemy>(causerActor))
+			return;
+	}
+
+	Super::OnTakeDamage(damagedActor, damage, damageType, causerController, causerActor);
+}
+
 void APawnEnemy::SetWeapon(AWeaponBase* newWeapon)
 {
 	//If there's an old weapon equipped

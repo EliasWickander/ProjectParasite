@@ -31,6 +31,8 @@ public:
 
 	virtual void OnDeath(APawnBase* deadPawn, AActor* causerActor) override;
 
+	virtual void OnTakeDamage(AActor* damagedActor, float damage, const UDamageType* damageType, AController* causerController, AActor* causerActor) override;
+	
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	virtual void SetWeapon(AWeaponBase* newWeapon);
 	AWeaponBase* GetWeapon() { return equippedWeapon; }

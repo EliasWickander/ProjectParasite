@@ -11,6 +11,7 @@
 #include "GameFramework/FloatingPawnMovement.h"
 #include "GameFramework/DefaultPawn.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
+#include "Components/PostProcessComponent.h"
 
 APawnBase::APawnBase()
 {
@@ -25,8 +26,11 @@ APawnBase::APawnBase()
 	springArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
 	springArm->SetupAttachment(RootComponent);
 
-	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-	camera->SetupAttachment(springArm);
+	cameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	cameraComponent->SetupAttachment(springArm);
+
+	postProcessComponent = CreateDefaultSubobject<UPostProcessComponent>("Post Process Component");
+	postProcessComponent->SetupAttachment(cameraComponent);
 
 	movementComponent = CreateDefaultSubobject<UPawnMovementComponent, UFloatingPawnMovement>(ADefaultPawn::MovementComponentName);
 	movementComponent->UpdatedComponent = capsuleCollider;
@@ -53,7 +57,7 @@ void APawnBase::BeginPlay()
 }
 
 void APawnBase::Tick(float DeltaSeconds)
-{
+{	
 	Super::Tick(DeltaSeconds);
 
 	if(isPendingDeath)
@@ -73,7 +77,7 @@ void APawnBase::MoveVertical(float axis)
 {
 	if(!canMove)
 		return;
-	
+
 	AddMovementInput(FVector::ForwardVector * axis);
 }
 
@@ -152,6 +156,7 @@ void APawnBase::HandlePendingDeath()
 void APawnBase::OnTakeDamage(AActor* damagedActor, float damage, const UDamageType* damageType, AController* causerController,
                              AActor* causerActor)
 {
+	
 	currentHealth -= damage;
 
 	UE_LOG(LogTemp, Warning, TEXT("Took %f damage"), damage);
