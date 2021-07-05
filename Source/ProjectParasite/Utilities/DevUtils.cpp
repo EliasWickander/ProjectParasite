@@ -1,7 +1,9 @@
 ﻿#include "DevUtils.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "BehaviorTree/BehaviorTree.h"
+#include "Kismet/GameplayStatics.h"
 #include "AIController.h"
+#include "Engine/LevelStreaming.h"
 
 FVector AngleVector(float deg)
 {
@@ -119,4 +121,40 @@ bool SetFocalPointExtended(AAIController* AIController, FVector targetPoint, flo
 
 	//Returns true if distance between final focal point and target dir is less than acceptance dist
 	return FVector::Dist(finalFocalPoint, dirToTarget) <= acceptanceDist;
+}
+
+void MoveActorToLevel(AActor* actorToMove, ULevel* fromLevel, ULevel* toLevel)
+{
+	if(fromLevel->Actors.Find(actorToMove))
+	{
+		actorToMove->Rename(nullptr, toLevel);
+		toLevel->Actors.Add(actorToMove);	
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Level %s does not contain actor %s"), *fromLevel->GetName(), *actorToMove->GetName());
+	}
+}
+
+void MoveActorToLevel(AActor* actorToMove, ULevelStreaming* fromLevel, ULevelStreaming* toLevel)
+{
+	ULevel* fromLoadedLevel = fromLevel->GetLoadedLevel();
+	ULevel* toLoadedLevel = toLevel->GetLoadedLevel();
+	
+	if(fromLoadedLevel && toLoadedLevel)
+	{
+		if(fromLoadedLevel->Actors.Find(actorToMove))
+		{
+			actorToMove->Rename(nullptr, toLoadedLevel);
+			toLoadedLevel->Actors.Add(actorToMove);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Level %s does not contain actor %s"), *fromLoadedLevel->GetName(), *actorToMove->GetName());
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("From or to level is not loaded. Cannot access"));
+	}
 }

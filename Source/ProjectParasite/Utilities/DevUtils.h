@@ -44,3 +44,6 @@ TaskType* FindTaskInTree(UBehaviorTree* tree)
 
 bool SetFocusExtended(AAIController* AIController, AActor* targetActor, float rotSpeed, float acceptanceDist);
 bool SetFocalPointExtended(AAIController* AIController, FVector targetPoint, float rotSpeed, float acceptanceDist);
+
+void MoveActorToLevel(AActor* actorToMove, ULevelStreaming* fromLevel, ULevelStreaming* toLevel);
+void MoveActorToLevel(AActor* actorToMove, ULevel* fromLevel, ULevel* toLevel);

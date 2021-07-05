@@ -37,6 +37,8 @@ private:
 	void HandlePossessionLoop();
 	void MoveToEnemyNape();
 
+	FVector targetDetachPoint;
+	
 	APawnParasite* playerRef = nullptr;
 	APawnEnemy* possessedEnemy = nullptr;
 };

@@ -8,6 +8,7 @@
 #include "ProjectParasite/Pawns/PawnParasite.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 #include "ProjectParasite/PlayerControllers/PlayerControllerBase.h"
+#include "ProjectParasite/AIControllers/AIControllerBase.h"
 #include "ProjectParasite/Utilities/StateMachine/StateMachine.h"
 
 void UPlayer_State_Possess::Start()
@@ -33,9 +34,8 @@ void UPlayer_State_Possess::Exit()
 {
 	playerRef->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	
-	playerRef->SetActorLocation(possessedEnemy->GetActorLocation() + -possessedEnemy->GetActorForwardVector() * 200);
+	//playerRef->SetActorLocation(possessedEnemy->GetActorLocation() - possessedEnemy->GetActorForwardVector() * 200);
 
-	playerRef->GetCollider()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	playerRef->SetCanMove(true);
 }
 
@@ -49,7 +49,7 @@ void UPlayer_State_Possess::HandlePossessionLoop()
 	
 			if(FVector::Dist(playerRef->GetActorLocation(), napeLocation) > 1)
 			{
-				MoveToEnemyNape();
+				MoveToEnemyNape();	
 			}
 			else
 			{
@@ -70,13 +70,24 @@ void UPlayer_State_Possess::HandlePossessionLoop()
 			//TODO: Find better solution to this
 			if(playerRef->IsPlayerControlled())
 			{
+				playerRef->GetCollider()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+				targetDetachPoint = playerRef->GetActorLocation() - playerRef->GetActorForwardVector() * playerRef->detachTargetDist;
+				
 				currentState = PossessState::PostPossess;
 			}
 			break;
 		}
 	case PossessState::PostPossess:
 		{
-			stateMachine->SetState("State_Idle");
+			FVector newLocation = FMath::Lerp(playerRef->GetActorLocation(), targetDetachPoint, playerRef->detachLocationLerpSpeed * GetWorld()->DeltaTimeSeconds);
+
+			bool locationSet = playerRef->SetActorLocation(newLocation, true);
+			
+			if(!locationSet || FVector::Dist(playerRef->GetActorLocation(), targetDetachPoint) <= 50)
+			{
+				stateMachine->SetState("State_Idle");		
+			}
+			
 			break;
 		}
 	}

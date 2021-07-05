@@ -25,8 +25,8 @@ void AEliminationGamemode::BeginPlay()
 	
 	playerRef->onStartDeathEvent.AddDynamic(this, &AEliminationGamemode::OnPlayerDeath);
 
-	gameStateRef->OnFloorEnter.AddDynamic(this, &AEliminationGamemode::OnFloorEnter);
-	gameStateRef->OnFloorExit.AddDynamic(this, &AEliminationGamemode::OnFloorExit);
+	gameStateRef->OnFloorEnterEvent.AddDynamic(this, &AEliminationGamemode::OnFloorEnter);
+	gameStateRef->OnFloorExitEvent.AddDynamic(this, &AEliminationGamemode::OnFloorExit);
 
 	OnFloorEnter();
 }
@@ -55,10 +55,12 @@ void AEliminationGamemode::OnFloorEnter()
 	{
 		Cast<APawnEnemy>(enemy)->onStartDeathEvent.AddDynamic(this, &AEliminationGamemode::OnEnemyDeath);
 	}
-
+	
 	TArray<AActor*> goalTriggers;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGoalTrigger::StaticClass(), goalTriggers);
 
+	UE_LOG(LogTemp, Warning, TEXT("%i"), goalTriggers.Num());
+	
 	if(goalTriggers.Num() > 0)
 	{
 		goalTrigger = Cast<AGoalTrigger>(goalTriggers[0]);
@@ -106,7 +108,7 @@ void AEliminationGamemode::OnEnemyDeath(APawnBase* deadEnemy, AActor* causerActo
 	Cast<APawnEnemy>(deadEnemy)->onStartDeathEvent.RemoveDynamic(this, &AEliminationGamemode::OnEnemyDeath);
 	
 	enemiesAlive.Remove(deadEnemy);
-	
+
 	if(causerActor != nullptr)
 	{
 		if(Cast<APawnEnemy>(causerActor))
@@ -126,7 +128,7 @@ void AEliminationGamemode::OnEnemyDeath(APawnBase* deadEnemy, AActor* causerActo
 		{
 			AddScore(playerRef->GetKillScore());
 		}
-	
+		
 		if(HasEliminatedAllEnemies())
 		{
 			OnGameWon();
@@ -145,7 +147,7 @@ void AEliminationGamemode::OnPlayerDeath(APawnBase* deadPlayer, AActor* causerAc
 }
 
 void AEliminationGamemode::OnGoalTriggered()
-{	
+{
 	//if(HasEliminatedAllEnemies())
 	//{
 		if(!gameStateRef->IsCurrentFloorLast())

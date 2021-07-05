@@ -20,7 +20,7 @@ void AAIControllerBase::BeginPlay()
 	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	enemyRef = Cast<APawnShooter>(GetPawn());
 
-	gameStateRef->OnFloorEnter.AddDynamic(this, &AAIControllerBase::OnFloorEnter);
+	gameStateRef->OnFloorEnterEvent.AddDynamic(this, &AAIControllerBase::OnFloorEnter);
 
 	OnFloorEnter();
 }

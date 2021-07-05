@@ -6,8 +6,10 @@
 #include "GameFramework/PlayerController.h"
 #include "PlayerControllerBase.generated.h"
 
+class UGameInstanceCustom;
 class APawnBase;
 class APawnParasite;
+class AGameStateCustom;
 
 UCLASS()
 class PROJECTPARASITE_API APlayerControllerBase : public APlayerController
@@ -23,6 +25,12 @@ protected:
 
 	virtual void OnPossess(APawn* InPawn) override;
 
+	UFUNCTION()
+	void OnFloorEnter();
+	
+	UFUNCTION()
+	void OnFloorExit();
+	
 	void SetupInputBindings();
 	void SetupGeneralActions();
 	void SetupParasiteActions();
@@ -34,6 +42,8 @@ protected:
 	void AttackInternal();
 	void DashInternal();
 
+	UGameInstanceCustom* gameInstanceRef = nullptr;
 	APawnParasite* playerRef = nullptr;
 	APawnBase* controlledPawn = nullptr;
+	AGameStateCustom* gameStateRef = nullptr;
 };

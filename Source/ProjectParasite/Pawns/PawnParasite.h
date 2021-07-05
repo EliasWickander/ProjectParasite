@@ -70,6 +70,12 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Possession", meta = (AllowPrivateAccess = "true"))
 	float attachRotationLerpSpeed = 50;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Possession", meta = (AllowPrivateAccess = "true"))
+	float detachLocationLerpSpeed = 5;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Possession", meta = (AllowPrivateAccess = "true"))
+	float detachTargetDist = 200;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Score", meta = (AllowPrivateAccess = "true"))
 	float killScore = 400;
 	
