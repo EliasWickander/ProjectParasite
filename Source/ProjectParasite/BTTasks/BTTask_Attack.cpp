@@ -95,7 +95,8 @@ void UBTTask_Attack::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* No
 	
 	AWeaponBase* weapon = instanceMemory->ownerEnemy->GetWeapon();
 
-	weapon->SetActorRotation(instanceMemory->ownerEnemy->GetActorForwardVector().Rotation());
+	if(weapon)
+		weapon->SetActorRotation(instanceMemory->ownerEnemy->GetActorForwardVector().Rotation());
 	
 }
 

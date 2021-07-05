@@ -40,22 +40,21 @@ void AGoalTrigger::Tick(float DeltaTime)
 void AGoalTrigger::OnBeginOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
 	UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& sweepResult)
 {
-	//TODO: Refactor
-	
+	AActor* actorToConsider;
+
 	//If player is possessing enemy, check for that enemy overlapping the trigger
 	if(playerRef->GetPossessedEnemy())
 	{
-		if(otherActor == Cast<AActor>(playerRef->GetPossessedEnemy()))
-		{
-			onGoalTriggered.Broadcast();
-		}
+		actorToConsider = Cast<AActor>(playerRef->GetPossessedEnemy());
 	}
 	else
 	{
-		//If not, only check for the parasite
-		if(Cast<APawnParasite>(otherActor))
-		{
-			onGoalTriggered.Broadcast();
-		}	
+		//if not, only check for parasite
+		actorToConsider = Cast<AActor>(playerRef);
+	}
+
+	if(otherActor == actorToConsider)
+	{
+		onGoalTriggered.Broadcast();
 	}
 }

@@ -6,12 +6,9 @@
 #include "Engine/LevelStreaming.h"
 #include "ProjectParasite/GameModes/EliminationGamemode.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
-#include "ProjectParasite/GameInstanceCustom.h"
 #include "Kismet/GameplayStatics.h"
 #include "Pawns/PawnEnemy.h"
 #include "Utilities/DevUtils.h"
-#include "Camera/CameraComponent.h"
-#include "Components/PostProcessComponent.h"
 
 AGameStateCustom::AGameStateCustom()
 {
@@ -23,39 +20,34 @@ void AGameStateCustom::BeginPlay()
 {
 	Super::BeginPlay();
 
-	gameInstanceRef = Cast<UGameInstanceCustom>(UGameplayStatics::GetGameInstance(GetWorld()));
 	gamemodeRef = Cast<AEliminationGamemode>(UGameplayStatics::GetGameMode(GetWorld()));
 	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	
 	levelsDirectoryPath = FString::Printf(TEXT("%s/Levels"), *FPaths::ProjectContentDir());
 
 	for(int i = 0; i < 100; i++)
-	{
-		FString key = FString::FromInt(i);
-		
-		int val = i;
-		
-		levelMap.Add({key}, {val});
-	}
+		levelMap.Add(FString::FromInt(i), i);
 }
 
 void AGameStateCustom::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-		
+
+	//Wait until next level has finished loading
 	if(loadingNextLevel)
 	{
 		ULevelStreaming* nextLevel = UGameplayStatics::GetStreamingLevel(GetWorld(), *GetSubLevelName(currentLevel, currentFloor + 1));
 
 		if(nextLevel->IsLevelLoaded())
 		{
+			//Place player on the player start on the new level
 			PlacePlayerOnPlayerStart();
+
+			currentFloor += 1;
+			loadingNextLevel = false;
 			
 			OnFloorEnter();
 			OnFloorEnterEvent.Broadcast();
-			
-			currentFloor += 1;
-			loadingNextLevel = false;
 		}
 	}
 }
@@ -80,11 +72,13 @@ void AGameStateCustom::OpenNextLevel()
 	
 	FString levelPrefix;
 	FString currentLevelText;
-	
+
+	//Get current level as text
 	currentScene.Split(TEXT("_"),&levelPrefix, &currentLevelText);
-	
+
 	if(levelMap.Contains(currentLevelText))
 	{
+		//Get current level as integer
 		currentLevel = levelMap[currentLevelText];
 
 		if(!IsCurrentFloorLast())
@@ -92,6 +86,7 @@ void AGameStateCustom::OpenNextLevel()
 			FLatentActionInfo info;
 			info.UUID = 1;
 
+			//If player is possessing enemy, move it to the new level
 			if(playerRef->GetPossessedEnemy())
 			{
 				ULevelStreaming* oldLevel = UGameplayStatics::GetStreamingLevel(GetWorld(), *GetSubLevelName(currentLevel, currentFloor));
@@ -99,7 +94,8 @@ void AGameStateCustom::OpenNextLevel()
 				
 				MoveActorToLevel(playerRef->GetPossessedEnemy(), oldLevel, nextLevel);
 			}
-		
+
+			//Unload current sublevel
 			UGameplayStatics::UnloadStreamLevel(GetWorld(), *GetSubLevelName(currentLevel, currentFloor), info, true);
 
 			OnFloorExit();
@@ -114,10 +110,7 @@ void AGameStateCustom::OpenNextLevel()
 		}
 		else
 		{
-			if(!IsCurrentLevelLast())
-			{
-				UGameplayStatics::OpenLevel(GetWorld(), *GetSubLevelName(currentLevel + 1, 1));
-			}
+			//Last floor
 		}
 	}
 	else

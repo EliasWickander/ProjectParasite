@@ -39,9 +39,6 @@ public:
 
 private:
 
-	UFUNCTION()
-	void OnFloorEnter();
-	
 	void StartAIBehavior();
 
 	AGameStateCustom* gameStateRef = nullptr;

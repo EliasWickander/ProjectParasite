@@ -41,23 +41,20 @@ protected:
 	virtual void BeginPlay() override;
 	
 private:
-
 	void PlacePlayerOnPlayerStart();
 	TMap<FString, int> levelMap;
+	
+	int currentLevel = 1;
+	int currentFloor = 1;
 
-	UGameInstanceCustom* gameInstanceRef = nullptr;
+	FString levelsDirectoryPath;
+	
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	bool loadingNextLevel = false;
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	APawnParasite* playerRef = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	AEliminationGamemode* gamemodeRef = nullptr;
-	
-	FString levelsDirectoryPath;
-	
-	int currentLevel = 1;
-	int currentFloor = 1;
-
-	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	bool loadingNextLevel = false;
 };

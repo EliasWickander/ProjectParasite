@@ -20,9 +20,11 @@ void AAIControllerBase::BeginPlay()
 	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	enemyRef = Cast<APawnShooter>(GetPawn());
 
-	gameStateRef->OnFloorEnterEvent.AddDynamic(this, &AAIControllerBase::OnFloorEnter);
-
-	OnFloorEnter();
+	StartAIBehavior();
+	
+	blackboard->SetValueAsObject("PlayerRef", playerRef);
+	
+	SetCurrentState(currentState);
 }
 
 void AAIControllerBase::Tick(float DeltaSeconds)
@@ -41,15 +43,6 @@ void AAIControllerBase::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 
 	StartAIBehavior();
-}
-
-void AAIControllerBase::OnFloorEnter()
-{
-	StartAIBehavior();
-	
-	blackboard->SetValueAsObject("PlayerRef", playerRef);
-	
-	SetCurrentState(currentState);
 }
 
 void AAIControllerBase::StartAIBehavior()
