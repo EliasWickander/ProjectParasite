@@ -36,9 +36,7 @@ void AGameStateCustom::BeginPlay()
 		int val = i;
 		
 		levelMap.Add({key}, {val});
-	}	
-
-	//UGameplayStatics::LoadStreamLevel(GetWorld(), TEXT("Level_1_1"), true, false, info);
+	}
 }
 
 void AGameStateCustom::Tick(float DeltaSeconds)
@@ -52,7 +50,7 @@ void AGameStateCustom::Tick(float DeltaSeconds)
 		if(nextLevel->IsLevelLoaded())
 		{
 			PlacePlayerOnPlayerStart();
-
+			
 			OnFloorEnter();
 			OnFloorEnterEvent.Broadcast();
 			
@@ -60,17 +58,6 @@ void AGameStateCustom::Tick(float DeltaSeconds)
 			loadingNextLevel = false;
 		}
 	}
-
-	// if(timer > 0)
-	// {
-	// 	timer -= DeltaSeconds;
-	//
-	// 	playerRef->SetCanMove(false);
-	// }
-	// else
-	// {
-	// 	
-	// }
 }
 
 void AGameStateCustom::PlacePlayerOnPlayerStart()
@@ -96,14 +83,12 @@ void AGameStateCustom::OpenNextLevel()
 	
 	currentScene.Split(TEXT("_"),&levelPrefix, &currentLevelText);
 	
-
 	if(levelMap.Contains(currentLevelText))
 	{
 		currentLevel = levelMap[currentLevelText];
 
 		if(!IsCurrentFloorLast())
 		{
-			
 			FLatentActionInfo info;
 			info.UUID = 1;
 
@@ -116,8 +101,7 @@ void AGameStateCustom::OpenNextLevel()
 			}
 		
 			UGameplayStatics::UnloadStreamLevel(GetWorld(), *GetSubLevelName(currentLevel, currentFloor), info, true);
-			
-			timer = 1;
+
 			OnFloorExit();
 			OnFloorExitEvent.Broadcast();
 

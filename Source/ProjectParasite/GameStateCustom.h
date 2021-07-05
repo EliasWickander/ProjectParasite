@@ -60,6 +60,4 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	bool loadingNextLevel = false;
-	
-	float timer = 0;
 };
