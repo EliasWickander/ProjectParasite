@@ -28,7 +28,8 @@ EBTNodeResult::Type UBTTask_Detect::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	instanceMemory->ownerEnemy = OwnerComp.GetAIOwner()->GetPawn<APawnEnemy>();
 	instanceMemory->blackboard = OwnerComp.GetBlackboardComponent();
 	instanceMemory->enemyAIController = Cast<AAIControllerBase>(OwnerComp.GetAIOwner());
-
+	instanceMemory->hasDetected = false;
+			
 	if(instanceMemory->enemyAIController == nullptr)
 	{
 		//Enemy executing this task isn't of a shooter type
@@ -49,17 +50,15 @@ void UBTTask_Detect::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 	
 	Detect(instanceMemory);
 
-	if(hasDetected)
+	if(instanceMemory->hasDetected)
 	{
-		if(reactionTimer > instanceMemory->ownerEnemy->GetSightReactionTime())
+		if(instanceMemory->reactionTimer > instanceMemory->ownerEnemy->GetSightReactionTime())
 		{
-			hasDetected = false;
-			
 			instanceMemory->enemyAIController->SetCurrentState(EnemyStates::State_Chase);
 		}
 		else
 		{
-			reactionTimer += GetWorld()->GetDeltaSeconds();
+			instanceMemory->reactionTimer += GetWorld()->GetDeltaSeconds();
 		}
 	}
 }
@@ -118,7 +117,7 @@ void UBTTask_Detect::Detect(BTTaskDetectMemory* instanceMemory)
 			{
 				instanceMemory->ownerEnemy->GetAIController()->StopMovement();
 				
-				hasDetected = true;
+				instanceMemory->hasDetected = true;
 			}
 		}
 		else

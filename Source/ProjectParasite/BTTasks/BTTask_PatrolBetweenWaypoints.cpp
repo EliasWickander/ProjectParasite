@@ -54,15 +54,15 @@ void UBTTask_PatrolBetweenWaypoints::TickTask(UBehaviorTreeComponent& OwnerComp,
 	if(finishedRotating)
 	{
 		AIController->MoveToLocation(instanceMemory->currentWaypoint, 20, false);
-		reachedGoalLastFrame = false;
+		instanceMemory->reachedGoalLastFrame = false;
 	}
 
 	//If enemy reached current waypoint, initialize next one in queue
-	if(AIController->GetPathFollowingComponent()->DidMoveReachGoal() && !reachedGoalLastFrame)
+	if(AIController->GetPathFollowingComponent()->DidMoveReachGoal() && !instanceMemory->reachedGoalLastFrame)
 	{
 		instanceMemory->patrolPointQueue->Enqueue(instanceMemory->currentWaypoint);
 		InitNextWaypoint(instanceMemory);
-		reachedGoalLastFrame = true;
+		instanceMemory->reachedGoalLastFrame = true;
 	}
 }
 

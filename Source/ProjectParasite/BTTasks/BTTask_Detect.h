@@ -14,6 +14,10 @@ struct BTTaskDetectMemory
 	class APawnEnemy* ownerEnemy = nullptr;
 	UBlackboardComponent* blackboard = nullptr;
 	AAIControllerBase* enemyAIController = nullptr;
+
+	bool hasDetected = false;
+
+	float reactionTimer = 0;
 };
 
 UCLASS()
@@ -34,8 +38,4 @@ private:
 	virtual uint16 GetInstanceMemorySize() const override;
 
 	APawnParasite* playerRef = nullptr;
-
-	bool hasDetected = false;
-
-	float reactionTimer = 0;
 };

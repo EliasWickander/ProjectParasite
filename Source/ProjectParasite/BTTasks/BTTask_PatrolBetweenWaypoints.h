@@ -13,6 +13,7 @@ struct BTTaskPatrolBetweenWaypointsMemory
 	TQueue<FVector>* patrolPointQueue;
 	FVector currentWaypoint = FVector::ZeroVector;
 	APawnEnemy* ownerEnemy = nullptr;
+	bool reachedGoalLastFrame = false;
 };
 
 UCLASS()
@@ -33,6 +34,4 @@ private:
 	
 	virtual uint16 GetInstanceMemorySize() const override;
 	float timer = 0;
-
-	bool reachedGoalLastFrame = false;
 };
