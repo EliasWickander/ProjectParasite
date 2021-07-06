@@ -152,7 +152,7 @@ void AEliminationGamemode::OnGoalTriggered()
 	//{
 		if(!gameStateRef->IsCurrentFloorLast())
 		{
-			gameStateRef->OpenNextLevel();		
+			gameStateRef->LoadNextFloor();		
 		}
 		else
 		{

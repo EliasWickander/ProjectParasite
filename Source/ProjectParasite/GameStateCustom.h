@@ -21,10 +21,11 @@ class PROJECTPARASITE_API AGameStateCustom : public AGameStateBase
 public:
 	AGameStateCustom();
 	virtual void Tick(float DeltaSeconds) override;
-	void OpenNextLevel();
 
-	bool IsCurrentLevelLast();
-	bool IsCurrentFloorLast();
+	UFUNCTION(BlueprintCallable)
+	void OpenLevel(int level);
+	
+	void LoadNextFloor();
 
 	FString GetSubLevelName(int level, int floor);
 
@@ -33,6 +34,12 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnFloorExit();
+
+	UFUNCTION(BlueprintCallable)
+	bool DoesLevelExist(int level, int floor);
+
+	bool IsCurrentFloorLast();
+	bool IsCurrentLevelLast();
 	
 	FOnFloorEnterEvent OnFloorEnterEvent;
 	FOnFloorExitEvent OnFloorExitEvent;
@@ -41,16 +48,24 @@ protected:
 	virtual void BeginPlay() override;
 	
 private:
+	void PrepareLevelMap();
 	void PlacePlayerOnPlayerStart();
-	TMap<FString, int> levelMap;
-	
+
+	UFUNCTION(BlueprintCallable)
+	int GetLevelAmount();
+
+	UFUNCTION(BlueprintCallable)
+	int GetFloorAmount(int level);
+
+	TMap<int, TArray<int>> levelMap;
+
 	int currentLevel = 1;
 	int currentFloor = 1;
 
 	FString levelsDirectoryPath;
 	
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	bool loadingNextLevel = false;
+	bool loadingNextFloor = false;
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	APawnParasite* playerRef = nullptr;
