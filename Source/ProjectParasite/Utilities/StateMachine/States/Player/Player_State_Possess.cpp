@@ -71,7 +71,7 @@ void UPlayer_State_Possess::HandlePossessionLoop()
 			if(playerRef->IsPlayerControlled())
 			{
 				playerRef->GetCollider()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-				targetDetachPoint = playerRef->GetActorLocation() - playerRef->GetActorForwardVector() * playerRef->detachTargetDist;
+				targetDetachPoint = possessedEnemy->GetActorLocation() - possessedEnemy->GetActorForwardVector() * playerRef->detachTargetDist;
 				
 				currentState = PossessState::PostPossess;
 			}
