@@ -68,6 +68,7 @@ void APawnEnemy::OnTakeDamage(AActor* damagedActor, float damage, const UDamageT
 	Super::OnTakeDamage(damagedActor, damage, damageType, causerController, causerActor);
 }
 
+
 void APawnEnemy::SetWeapon(AWeaponBase* newWeapon)
 {
 	//If there's an old weapon equipped

@@ -20,6 +20,7 @@ class PROJECTPARASITE_API APawnEnemy : public APawnBase
 friend class UEnemyDebugComponent;
 friend class UBTTask_PatrolBetweenWaypoints;
 friend class AWeaponBase;
+friend class APawnParasite;
 	
 public:
 	
@@ -32,7 +33,7 @@ public:
 	virtual void OnDeath(APawnBase* deadPawn, AActor* causerActor) override;
 
 	virtual void OnTakeDamage(AActor* damagedActor, float damage, const UDamageType* damageType, AController* causerController, AActor* causerActor) override;
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	virtual void SetWeapon(AWeaponBase* newWeapon);
 	AWeaponBase* GetWeapon() { return equippedWeapon; }
@@ -93,6 +94,8 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Detection")
 	float sightReactionTime = 0.2f;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+	bool isPossessed = false;
 	APawnParasite* playerRef = nullptr;
 	AAIControllerBase* AIController = nullptr;
 };

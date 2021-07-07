@@ -24,7 +24,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OpenLevel(int level);
-	
+
+	UFUNCTION(BlueprintCallable)
 	void LoadNextFloor();
 
 	FString GetSubLevelName(int level, int floor);
@@ -51,6 +52,10 @@ private:
 	void PrepareLevelMap();
 	void PlacePlayerOnPlayerStart();
 
+	void PrepareFirstFloor();
+	void PrepareNextFloor();
+	int FindCurrentLevel();
+	
 	UFUNCTION(BlueprintCallable)
 	int GetLevelAmount();
 
@@ -67,6 +72,9 @@ private:
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	bool loadingNextFloor = false;
 
+	bool loadingFirstFloor = false;
+
+	FString currentWorldName = "";
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	APawnParasite* playerRef = nullptr;
 

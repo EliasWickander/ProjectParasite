@@ -34,7 +34,12 @@ protected:
 	void AttackInternal();
 	void DashInternal();
 
+	UPROPERTY(BlueprintReadOnly)
 	APawnParasite* playerRef = nullptr;
+
+	UPROPERTY(BlueprintReadOnly)
 	APawnBase* controlledPawn = nullptr;
+
+	UPROPERTY(BlueprintReadOnly)
 	AGameStateCustom* gameStateRef = nullptr;
 };

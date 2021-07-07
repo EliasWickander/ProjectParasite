@@ -80,6 +80,7 @@ void APawnParasite::SetPossessed(APawnEnemy* actorToPossess)
 	//If player is already possessing enemy
 	if(GetPossessedEnemy() != nullptr)
 	{
+		GetPossessedEnemy()->isPossessed = false;
 		//Give them AI behavior again
 		GetPossessedEnemy()->GetAIController()->Possess(GetPossessedEnemy());
 		
@@ -90,6 +91,8 @@ void APawnParasite::SetPossessed(APawnEnemy* actorToPossess)
 	
 	if(actorToPossess != nullptr)
 	{
+		actorToPossess->isPossessed = true;
+		
 		playerControllerRef->Possess(actorToPossess);
 
 		//Set the move speed of possessed enemy to its chase speed
