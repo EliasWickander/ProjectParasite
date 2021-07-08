@@ -5,6 +5,7 @@
 
 #include "AIController.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
+#include "Kismet/GameplayStatics.h"
 #include "ProjectParasite/AIControllers/AIControllerBase.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
@@ -29,7 +30,7 @@ EBTNodeResult::Type UBTTask_Chase::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 	instanceMemory->enemyAIController = Cast<AAIControllerBase>(instanceMemory->ownerEnemy->GetAIController());
 
 	behaviorTreeComponent = &OwnerComp;
-	playerRef = instanceMemory->ownerEnemy->GetPlayerRef();
+	playerRef = Cast<APawnBase>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	
 	if(instanceMemory->enemyAIController == nullptr)
 	{
@@ -38,15 +39,8 @@ EBTNodeResult::Type UBTTask_Chase::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 		return EBTNodeResult::Failed;
 	}
 
-	//If player is possessing an enemy, we want this unit to chase the possessed enemy
-	if(playerRef->GetPossessedEnemy() != nullptr)
-	{
-		SetTarget(playerRef->GetPossessedEnemy(), instanceMemory);
-	}
-	else
-	{
-		SetTarget(playerRef, instanceMemory);
-	}
+	//Chase the player
+	SetTarget(playerRef, instanceMemory);
 	
 	instanceMemory->ownerEnemy->SetMoveSpeed(instanceMemory->ownerEnemy->GetChaseSpeed());
 	

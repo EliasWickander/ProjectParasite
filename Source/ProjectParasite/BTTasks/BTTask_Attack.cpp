@@ -31,7 +31,7 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 
 	behaviorTreeComponent = &OwnerComp;
 
-	playerRef = instanceMemory->ownerEnemy->GetPlayerRef();
+	playerRef = Cast<APawnBase>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	
 	if(instanceMemory->enemyAIController == nullptr)
 	{
@@ -40,15 +40,7 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 		return EBTNodeResult::Failed;
 	}
 
-	//If player is possessing an enemy, we want this unit to attack the possessed enemy
-	if(playerRef->GetPossessedEnemy() != nullptr)
-	{
-		SetTarget(playerRef->GetPossessedEnemy(), NodeMemory);
-	}
-	else
-	{
-		SetTarget(playerRef, NodeMemory);
-	}
+	SetTarget(playerRef, NodeMemory);
 
 	return EBTNodeResult::InProgress;
 }

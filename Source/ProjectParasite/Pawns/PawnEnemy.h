@@ -47,7 +47,6 @@ public:
 	float GetChaseSpeed() { return chaseSpeed; }
 	float GetTurnRate() { return turnRate; }
 	
-	APawnParasite* GetPlayerRef() { return playerRef; }
 	AAIControllerBase* GetAIController() { return AIController; }
 	
 	USceneComponent* GetNapeComponent() { return napeComponent; }
@@ -96,6 +95,5 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 	bool isPossessed = false;
-	APawnParasite* playerRef = nullptr;
 	AAIControllerBase* AIController = nullptr;
 };

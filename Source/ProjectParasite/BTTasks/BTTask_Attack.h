@@ -44,5 +44,5 @@ private:
 
 	UBehaviorTreeComponent* behaviorTreeComponent = nullptr;
 
-	APawnParasite* playerRef = nullptr;
+	APawnBase* playerRef = nullptr;
 };

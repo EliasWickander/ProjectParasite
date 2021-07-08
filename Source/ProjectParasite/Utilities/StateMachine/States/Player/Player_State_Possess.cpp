@@ -49,7 +49,12 @@ void UPlayer_State_Possess::HandlePossessionLoop()
 	
 			if(FVector::Dist(playerRef->GetActorLocation(), napeLocation) > 1)
 			{
-				MoveToEnemyNape();	
+				MoveToEnemyNape();
+
+				if(possessedEnemy->GetIsPendingDeath())
+				{
+					stateMachine->SetState("State_Idle");	
+				}
 			}
 			else
 			{

@@ -37,5 +37,5 @@ private:
 	void SetTarget(APawnBase* target, BTTaskChaseMemory* instanceMemory);
 
 	UBehaviorTreeComponent* behaviorTreeComponent = nullptr;
-	APawnParasite* playerRef = nullptr;
+	APawnBase* playerRef = nullptr;
 };

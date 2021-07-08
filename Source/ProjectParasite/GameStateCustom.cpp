@@ -60,8 +60,6 @@ void AGameStateCustom::LoadNextFloor()
 
 			//Moves possessed enemy to new floor (Remember that all floors need to have the "Initially loaded" checkbox ticked for this to work)
 			MoveActorToLevel(playerRef->GetPossessedEnemy(), oldLevel, nextLevel);
-			
-			UE_LOG(LogTemp, Warning, TEXT("%s"), *playerRef->GetPossessedEnemy()->GetOutermostObject()->GetName());
 		}
 		
 		FLatentActionInfo info;

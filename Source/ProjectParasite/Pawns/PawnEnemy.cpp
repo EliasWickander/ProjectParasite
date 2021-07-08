@@ -29,10 +29,13 @@ APawnEnemy::APawnEnemy()
 void APawnEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+
+	AIController = GetWorld()->SpawnActor<AAIControllerBase>(AIControllerClass, GetActorLocation(), GetActorRotation());
 	
-	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-	
-	AIController = Cast<AAIControllerBase>(GetController());
+	if(!Cast<APlayerControllerBase>(GetController()))
+	{
+		AIController->Possess(this);
+	}
 }
 
 void APawnEnemy::UpdatePawnBehavior(float deltaSeconds)
@@ -58,13 +61,6 @@ void APawnEnemy::OnDeath(APawnBase* deadPawn, AActor* causerActor)
 void APawnEnemy::OnTakeDamage(AActor* damagedActor, float damage, const UDamageType* damageType,
 	AController* causerController, AActor* causerActor)
 {
-	//If attacked by an enemy that's not possessed, ignore
-	if(Cast<APawnEnemy>(causerActor))
-	{
-		if(playerRef->GetPossessedEnemy() != Cast<APawnEnemy>(causerActor))
-			return;
-	}
-
 	Super::OnTakeDamage(damagedActor, damage, damageType, causerController, causerActor);
 }
 

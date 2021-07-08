@@ -123,19 +123,6 @@ bool SetFocalPointExtended(AAIController* AIController, FVector targetPoint, flo
 	return FVector::Dist(finalFocalPoint, dirToTarget) <= acceptanceDist;
 }
 
-void MoveActorToLevel(AActor* actorToMove, ULevel* fromLevel, ULevel* toLevel)
-{
-	if(fromLevel->Actors.Find(actorToMove))
-	{
-		actorToMove->Rename(nullptr, toLevel);
-		toLevel->Actors.Add(actorToMove);	
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Level %s does not contain actor %s"), *fromLevel->GetName(), *actorToMove->GetName());
-	}
-}
-
 void MoveActorToLevel(AActor* actorToMove, ULevelStreaming* fromLevel, ULevelStreaming* toLevel)
 {
 	ULevel* fromLoadedLevel = fromLevel->GetLoadedLevel();
