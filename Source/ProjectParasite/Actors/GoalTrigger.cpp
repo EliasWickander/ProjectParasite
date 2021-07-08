@@ -25,8 +25,6 @@ void AGoalTrigger::BeginPlay()
 {
 	Super::BeginPlay();
 
-	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-	
 	triggerVolume->OnComponentBeginOverlap.AddDynamic(this, &AGoalTrigger::OnBeginOverlap);
 }
 
@@ -40,18 +38,7 @@ void AGoalTrigger::Tick(float DeltaTime)
 void AGoalTrigger::OnBeginOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
 	UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& sweepResult)
 {
-	AActor* actorToConsider;
-
-	//If player is possessing enemy, check for that enemy overlapping the trigger
-	if(playerRef->GetPossessedEnemy())
-	{
-		actorToConsider = Cast<AActor>(playerRef->GetPossessedEnemy());
-	}
-	else
-	{
-		//if not, only check for parasite
-		actorToConsider = Cast<AActor>(playerRef);
-	}
+	AActor* actorToConsider = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 
 	if(otherActor == actorToConsider)
 	{

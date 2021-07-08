@@ -5,7 +5,6 @@
 
 #include "ProjectParasite/PlayerControllers/PlayerControllerBase.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
-#include "ProjectParasite/Components/Debug/EnemyDebugComponent.h"
 #include "AIController.h"
 #include "ProjectParasite/Utilities/DevUtils.h"
 #include "EngineUtils.h"
@@ -22,8 +21,6 @@ APawnEnemy::APawnEnemy()
 
 	weaponSocket = CreateDefaultSubobject<USceneComponent>(TEXT("Weapon Socket"));
 	weaponSocket->SetupAttachment(baseMesh);
-
-	enemyDebugger = CreateDefaultSubobject<UEnemyDebugComponent>(TEXT("Debug Component"));
 }
 
 void APawnEnemy::BeginPlay()

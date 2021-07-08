@@ -10,7 +10,6 @@
 class ATargetPoint;
 class AAIControllerBase;
 class APawnParasite;
-class UEnemyDebugComponent;
 
 UCLASS()
 class PROJECTPARASITE_API APawnEnemy : public APawnBase
@@ -57,9 +56,6 @@ protected:
 
 	void SetWeaponOfType(TSubclassOf<AWeaponBase> weaponType);
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UEnemyDebugComponent* enemyDebugger = nullptr;
-	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USceneComponent* napeComponent = nullptr;
 

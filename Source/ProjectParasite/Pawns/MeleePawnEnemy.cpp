@@ -4,6 +4,12 @@
 #include "MeleePawnEnemy.h"
 
 #include "ProjectParasite/Actors/Weapons/MeleeWeapon.h"
+#include "ProjectParasite/Components/Debug/MeleeEnemyDebugComponent.h"
+
+AMeleePawnEnemy::AMeleePawnEnemy()
+{
+	enemyDebugger = CreateDefaultSubobject<UMeleeEnemyDebugComponent>(TEXT("Debug Component"));
+}
 
 void AMeleePawnEnemy::BeginPlay()
 {

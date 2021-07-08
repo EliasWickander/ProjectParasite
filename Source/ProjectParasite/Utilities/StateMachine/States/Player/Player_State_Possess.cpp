@@ -21,7 +21,8 @@ void UPlayer_State_Possess::Start()
 	playerRef->SetCanMove(false);
 	
 	possessedEnemy->GetAIController()->UnPossess();
-	
+
+	playerOriginPos = playerRef->GetActorLocation();
 	currentState = PossessState::PrePossess;
 }
 
@@ -76,7 +77,8 @@ void UPlayer_State_Possess::HandlePossessionLoop()
 			if(playerRef->IsPlayerControlled())
 			{
 				playerRef->GetCollider()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-				targetDetachPoint = possessedEnemy->GetActorLocation() - possessedEnemy->GetActorForwardVector() * playerRef->detachTargetDist;
+				targetDetachPoint = playerRef->GetActorLocation() - playerRef->GetActorForwardVector() * playerRef->detachTargetDist;
+				targetDetachPoint.Z = playerOriginPos.Z;
 				
 				currentState = PossessState::PostPossess;
 			}

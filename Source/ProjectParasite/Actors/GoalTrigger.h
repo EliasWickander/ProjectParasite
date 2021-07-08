@@ -35,6 +35,4 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	UBoxComponent* triggerVolume = nullptr;
-
-	APawnParasite* playerRef = nullptr;
 };

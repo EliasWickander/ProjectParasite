@@ -37,6 +37,7 @@ private:
 	void HandlePossessionLoop();
 	void MoveToEnemyNape();
 
+	FVector playerOriginPos;
 	FVector targetDetachPoint;
 	
 	APawnParasite* playerRef = nullptr;

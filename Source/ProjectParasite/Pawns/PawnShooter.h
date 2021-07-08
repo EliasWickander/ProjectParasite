@@ -20,5 +20,7 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
-
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UEnemyDebugComponent* enemyDebugger = nullptr;
 };

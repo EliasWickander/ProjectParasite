@@ -11,7 +11,7 @@ class APawnBase;
 class APawnParasite;
 class AWeaponBase;
 class AGoalTrigger;
-class AGameStateCustom;
+class UGameManager;
 
 UCLASS()
 class PROJECTPARASITE_API AEliminationGamemode : public AGameModeBase
@@ -50,7 +50,7 @@ private:
 
 	void AddScore(float scoreToAdd, bool allowCombo = true);
 
-	AGameStateCustom* gameStateRef = nullptr;
+	UGameManager* gameManagerRef = nullptr;
 	APawnParasite* playerRef = nullptr;
 	
 	TArray<AActor*> enemiesAlive = {};

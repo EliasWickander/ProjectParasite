@@ -21,7 +21,7 @@ public:
 
 	FColor coneColor = FColor::Blue;
 
-private:
+protected:
 	APawnEnemy* enemyRef = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = "General")

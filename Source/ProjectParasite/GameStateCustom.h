@@ -6,12 +6,7 @@
 #include "GameFramework/GameStateBase.h"
 #include "GameStateCustom.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFloorEnterEvent);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFloorExitEvent);
-
-class UGameInstanceCustom;
-class AEliminationGamemode;
-class APawnParasite;
+class UGameManager;
 
 UCLASS()
 class PROJECTPARASITE_API AGameStateCustom : public AGameStateBase
@@ -21,63 +16,11 @@ class PROJECTPARASITE_API AGameStateCustom : public AGameStateBase
 public:
 	AGameStateCustom();
 	virtual void Tick(float DeltaSeconds) override;
-
-	UFUNCTION(BlueprintCallable)
-	void OpenLevel(int level);
-
-	UFUNCTION(BlueprintCallable)
-	void LoadNextFloor();
-
-	FString GetSubLevelName(int level, int floor);
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnFloorEnter();
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnFloorExit();
-
-	UFUNCTION(BlueprintCallable)
-	bool DoesLevelExist(int level, int floor);
-
-	bool IsCurrentFloorLast();
-	bool IsCurrentLevelLast();
-	
-	FOnFloorEnterEvent OnFloorEnterEvent;
-	FOnFloorExitEvent OnFloorExitEvent;
 	
 protected:
 	virtual void BeginPlay() override;
 	
 private:
-	void PrepareLevelMap();
-	void PlacePlayerOnPlayerStart();
 
-	void PrepareFirstFloor();
-	void PrepareNextFloor();
-	int FindCurrentLevel();
-	
-	UFUNCTION(BlueprintCallable)
-	int GetLevelAmount();
-
-	UFUNCTION(BlueprintCallable)
-	int GetFloorAmount(int level);
-
-	TMap<int, TArray<int>> levelMap;
-
-	int currentLevel = 1;
-	int currentFloor = 1;
-
-	FString levelsDirectoryPath;
-	
-	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	bool loadingNextFloor = false;
-
-	bool loadingFirstFloor = false;
-
-	FString currentWorldName = "";
-	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	APawnParasite* playerRef = nullptr;
-
-	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	AEliminationGamemode* gamemodeRef = nullptr;
+	UGameManager* gameManagerRef = nullptr;
 };

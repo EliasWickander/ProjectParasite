@@ -9,7 +9,7 @@
 #include "ProjectParasite/Actors/Weapons/WeaponBase.h"
 #include "ProjectParasite/DamageTypes/DamageType_Environmental.h"
 #include "ProjectParasite/Actors/GoalTrigger.h"
-#include "ProjectParasite/GameStateCustom.h"
+#include "ProjectParasite/GameManager.h"
 
 AEliminationGamemode::AEliminationGamemode()
 {
@@ -21,12 +21,12 @@ void AEliminationGamemode::BeginPlay()
 	Super::BeginPlay();
 
 	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-	gameStateRef = Cast<AGameStateCustom>(GetWorld()->GetGameState());
+	gameManagerRef = Cast<UGameManager>(UGameplayStatics::GetGameInstance(GetWorld()));
 	
 	playerRef->onStartDeathEvent.AddDynamic(this, &AEliminationGamemode::OnPlayerDeath);
 
-	gameStateRef->OnFloorEnterEvent.AddDynamic(this, &AEliminationGamemode::OnFloorEnter);
-	gameStateRef->OnFloorExitEvent.AddDynamic(this, &AEliminationGamemode::OnFloorExit);
+	gameManagerRef->OnFloorEnterEvent.AddDynamic(this, &AEliminationGamemode::OnFloorEnter);
+	gameManagerRef->OnFloorExitEvent.AddDynamic(this, &AEliminationGamemode::OnFloorExit);
 
 	OnFloorEnter();
 }
@@ -150,9 +150,9 @@ void AEliminationGamemode::OnGoalTriggered()
 {
 	//if(HasEliminatedAllEnemies())
 	//{
-		if(!gameStateRef->IsCurrentFloorLast())
+		if(!gameManagerRef->IsCurrentFloorLast())
 		{
-			gameStateRef->LoadNextFloor();		
+			gameManagerRef->LoadNextFloor();		
 		}
 		else
 		{
