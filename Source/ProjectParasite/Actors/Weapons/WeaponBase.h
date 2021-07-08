@@ -25,7 +25,6 @@ public:
 	virtual void Use();
 
 	APawnEnemy* GetWeaponHolder() { return weaponHolderRef; }
-	
 	float GetKillScore() { return killScore; }
 
 protected:

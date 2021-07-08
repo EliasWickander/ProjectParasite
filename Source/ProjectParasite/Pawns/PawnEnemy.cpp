@@ -70,7 +70,6 @@ void APawnEnemy::SetWeapon(AWeaponBase* newWeapon)
 	//If there's an old weapon equipped
 	if(equippedWeapon)
 	{
-		equippedWeapon->weaponHolderRef = nullptr;
 		equippedWeapon->isEquipped = false;
 		equippedWeapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	}
