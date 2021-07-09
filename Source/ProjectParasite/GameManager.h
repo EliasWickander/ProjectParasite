@@ -9,8 +9,8 @@
 class APawnParasite;
 class AEliminationGamemode;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFloorEnterEvent);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFloorExitEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFloorEnterEvent, int, floor);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFloorExitEvent, int, floor);
 
 UCLASS()
 class PROJECTPARASITE_API UGameManager : public UGameInstance
@@ -23,14 +23,18 @@ public:
 	void Tick(float DeltaSeconds);
 
 	UFUNCTION(BlueprintCallable)
-	void OpenLevel(int level);
+	void OpenLevel(int level, int floor);
 
 	UFUNCTION(BlueprintCallable)
 	void LoadFloor(int floor);
 
+	UFUNCTION(BlueprintCallable)
+	void RestartFloor();
+
 	void LoadNextFloor();
 	void LoadPrevFloor();
 
+	void OnLoadingFloor();
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnFloorEnter();
 
@@ -54,12 +58,10 @@ public:
 
 private:
 	void PrepareLevelMap();
-	int FindCurrentLevel();
 	
 	void PlacePlayerOnPlayerStart();
 
-	void PrepareNextLevel();
-	void PrepareNextFloor();
+	void OnLoadingLevel();
 	
 	FString GetSubLevelName(int level, int floor);
 
@@ -75,6 +77,9 @@ private:
 	int currentFloor = -1;
 	int nextLevel = -1;
 	int nextFloor = -1;
+
+	bool isLoadingLevel = false;
+	bool isLoadingFloor = false;
 	
 	FString currentWorldName = "";
 	FString levelsDirectoryPath;

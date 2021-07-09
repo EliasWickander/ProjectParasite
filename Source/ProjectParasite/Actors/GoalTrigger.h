@@ -20,7 +20,7 @@ class PROJECTPARASITE_API AGoalTrigger : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AGoalTrigger();
-	
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

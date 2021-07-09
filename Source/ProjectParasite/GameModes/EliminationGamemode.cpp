@@ -27,8 +27,6 @@ void AEliminationGamemode::BeginPlay()
 
 	gameManagerRef->OnFloorEnterEvent.AddDynamic(this, &AEliminationGamemode::OnFloorEnter);
 	gameManagerRef->OnFloorExitEvent.AddDynamic(this, &AEliminationGamemode::OnFloorExit);
-
-	OnFloorEnter();
 }
 
 void AEliminationGamemode::Tick(float DeltaSeconds)
@@ -46,7 +44,7 @@ void AEliminationGamemode::Tick(float DeltaSeconds)
 	}
 }
 
-void AEliminationGamemode::OnFloorEnter()
+void AEliminationGamemode::OnFloorEnter(int floor)
 {	
 	//When an enemy dies, call the OnEnemyDeath method
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APawnEnemy::StaticClass(), enemiesAlive);
@@ -73,7 +71,7 @@ void AEliminationGamemode::OnFloorEnter()
 	}
 }
 
-void AEliminationGamemode::OnFloorExit()
+void AEliminationGamemode::OnFloorExit(int floor)
 {
 	for(AActor* enemy : enemiesAlive)
 	{
