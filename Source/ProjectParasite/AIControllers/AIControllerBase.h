@@ -11,6 +11,7 @@ enum class EnemyStates : uint8
 {
 	State_Idle UMETA(DisplayName = "Idle"),
 	State_Patrol UMETA(DisplayName = "Patrol"),
+	State_Guard UMETA(DisplayName = "Guard"),
 	State_Chase UMETA(DisplayName = "Chase"),
 	State_Attack UMETA(DisplayName = "Attack"),
 	State_Stunned UMETA(DisplayName = "Stunned")
