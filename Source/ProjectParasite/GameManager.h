@@ -8,6 +8,7 @@
 
 class APawnParasite;
 class AEliminationGamemode;
+class APawnEnemy;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFloorEnterEvent, int, floor);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFloorExitEvent, int, floor);
@@ -26,18 +27,8 @@ public:
 	void OpenLevel(int level, int floor);
 
 	UFUNCTION(BlueprintCallable)
-	void OpenLevelNew(int level, int floor);
-	
-	UFUNCTION(BlueprintCallable)
-	void LoadFloor(int floor);
+	void SpawnCopyOfPossessedEnemy(FVector pos);
 
-	UFUNCTION(BlueprintCallable)
-	void RestartFloor();
-
-	void LoadNextFloor();
-	void LoadPrevFloor();
-
-	void OnLoadingFloor();
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnFloorEnter();
 
@@ -57,17 +48,21 @@ public:
 	int GetFloorAmount(int level);
 
 	bool IsCurrentFloorLast();
-	bool IsCurrentLevelLast();
+
+	void LoadNextFloor();
+
+	bool IsOnFloorLevel();
+	UFUNCTION(BlueprintCallable)
+	void RestartFloor();
+
+	int GetCurrentFloor();
+	int GetCurrentLevel();
 
 private:
 	void PrepareLevelMap();
 	
-	void PlacePlayerOnPlayerStart();
-
-	void OnLoadingLevel();
-	
 	FString GetSubLevelName(int level, int floor);
-
+	
 	bool loadingFirstFloor = false;
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -76,14 +71,17 @@ private:
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	AEliminationGamemode* gamemodeRef = nullptr;
 	TMap<int, TArray<int>> levelMap;
-	int currentLevel = -1;
-	int currentFloor = -1;
-	int nextLevel = -1;
-	int nextFloor = -1;
+	
+	FString currentLevel;
+	FString nextLevel;
 
 	bool isLoadingLevel = false;
 	bool isLoadingFloor = false;
 	
 	FString currentWorldName = "";
 	FString levelsDirectoryPath;
+
+	UClass* possessedEnemyToTransition = nullptr;
+
+	bool beginPlayTriggered = false;
 };

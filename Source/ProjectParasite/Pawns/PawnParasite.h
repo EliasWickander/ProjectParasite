@@ -15,6 +15,7 @@ class PROJECTPARASITE_API APawnParasite : public APawnBase
 {
 	GENERATED_BODY()
 
+friend class UGameManager;
 friend class UPlayer_State_Idle;
 friend class UPlayer_State_Dash;
 friend class UPlayer_State_Possess;

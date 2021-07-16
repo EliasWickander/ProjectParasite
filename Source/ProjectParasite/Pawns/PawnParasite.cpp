@@ -36,8 +36,9 @@ APawnParasite::APawnParasite()
 void APawnParasite::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	SetMoveSpeed(baseMoveSpeed);
+	stateMachine->SetState("State_Idle");
 }
 
 void APawnParasite::Tick(float DeltaTime)
@@ -71,7 +72,7 @@ void APawnParasite::PossessClosestEnemyInRadius()
 
 	//Save reference to enemy player is possessing
 
-	possessState->possessedEnemy = enemiesInRadius[0];
+	possessState->SetPossessedEnemy(enemiesInRadius[0]);
 	stateMachine->SetState("State_Possess");
 }
 

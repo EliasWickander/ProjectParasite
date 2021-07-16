@@ -11,8 +11,9 @@
 #include "Kismet/KismetStringLibrary.h"
 #include "Pawns/PawnEnemy.h"
 #include "Utilities/DevUtils.h"
+#include "Utilities/StateMachine/StateMachine.h"
+#include "Utilities/StateMachine/States/Player/Player_State_Possess.h"
 
-//TODO: Handle restarting floors by teleporting everything to its original position instead of trying to load sublevel?
 UGameManager::UGameManager()
 {
 	PrepareLevelMap();
@@ -26,35 +27,62 @@ void UGameManager::BeginPlay()
 	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 
 	currentWorldName = UGameplayStatics::GetCurrentLevelName(GetWorld());
+
+	if(!beginPlayTriggered)
+	{
+		if(IsOnFloorLevel())
+			gamemodeRef->OnFloorEnter(GetCurrentFloor());
+		
+		beginPlayTriggered = true;	
+	}
 }
 
 void UGameManager::Tick(float DeltaSeconds)
 {
-	if(isLoadingLevel)
+	if(nextLevel != currentLevel)
 	{
-		OnLoadingLevel();
-	}
+		if(*GetWorld()->GetName() == nextLevel)
+		{
+			currentLevel = nextLevel;
+			
+			if(possessedEnemyToTransition != nullptr)
+			{
+				AActor* spawnedClone = GetWorld()->SpawnActor<AActor>(possessedEnemyToTransition, playerRef->GetActorLocation(), playerRef->GetActorRotation());
 
-	if(isLoadingFloor)
-	{
-		OnLoadingFloor();
+				APawnEnemy* spawnedCloneAsEnemy = Cast<APawnEnemy>(spawnedClone);
+				playerRef->possessState->SetPossessedEnemy(spawnedCloneAsEnemy, true);
+				playerRef->stateMachine->SetState("State_Possess");
+			}
+			
+			if(IsOnFloorLevel())
+			{
+				OnFloorEnterEvent.Broadcast(GetCurrentFloor());
+				OnFloorEnter();	
+			}
+		}
 	}
 }
 
 void UGameManager::OpenLevel(int level, int floor)
 {
+	
 	//Opens level if it exists
 	if(DoesLevelExist(level, floor))
 	{
-		FString levelName = FString::Printf(TEXT("Level_%i"), level);
+		if(playerRef->GetPossessedEnemy())
+			possessedEnemyToTransition = playerRef->GetPossessedEnemy()->GetClass();
+		
+		FString levelName = FString::Printf(TEXT("Level_%i_%i"), level, floor);
+
+		if(IsOnFloorLevel())
+		{
+			OnFloorExitEvent.Broadcast(GetCurrentFloor());
+			OnFloorExit();
+		}
 		
 		UGameplayStatics::OpenLevel(GetWorld(), *levelName);
 
-		nextLevel = level;
-
-		nextFloor = floor;
-		
-		isLoadingLevel = true;
+		nextLevel = levelName;;
 	}
 	else
 	{
@@ -62,186 +90,24 @@ void UGameManager::OpenLevel(int level, int floor)
 	}
 }
 
-void UGameManager::OpenLevelNew(int level, int floor)
+void UGameManager::SpawnCopyOfPossessedEnemy(FVector pos)
 {
-	FString levelName = FString::Printf(TEXT("Level_%i_%i"), level, floor);
-
-	UWorld* currentWorld = playerRef->GetWorld();
-
-	UGameplayStatics::OpenLevel(GetWorld(), *levelName);
-
-	//find a way to get new world
-	UWorld* newWorld = playerRef->GetWorld();
-
-	UE_LOG(LogTemp, Warning, TEXT("%s, %s"), *currentWorld->GetName(), *newWorld->GetName());
-	
-	//If player is possessing enemy, move it to the new level
 	if(playerRef->GetPossessedEnemy())
 	{
+		FVector position = pos;
+		FRotator rotation = FRotator::ZeroRotator;
 		
-		//Moves possessed enemy to new floor (Remember that all floors need to have the "Initially loaded" checkbox ticked for this to work)
-		//MoveActorToLevel(playerRef->GetPossessedEnemy(), currentLevelStreaming, nextLevelStreaming);
+		//find a way to spawn copy of blueprint of possessed enemy
+		AActor* spawnedClone = GetWorld()->SpawnActor<AActor>(playerRef->GetPossessedEnemy()->GetClass(), position, rotation);
 	}
 }
 
-void UGameManager::LoadFloor(int floor)
-{
-	ULevelStreaming* currentLevelStreaming = UGameplayStatics::GetStreamingLevel(GetWorld(), *GetSubLevelName(currentLevel, currentFloor));
-	ULevelStreaming* nextLevelStreaming = UGameplayStatics::GetStreamingLevel(GetWorld(), *GetSubLevelName(currentLevel, floor));
-	
-	if(DoesLevelExist(currentLevel, floor))
-	{
-		if(nextFloor != currentFloor)
-		{
-			//If player is possessing enemy, move it to the new level
-			if(playerRef->GetPossessedEnemy())
-			{
-				//Moves possessed enemy to new floor (Remember that all floors need to have the "Initially loaded" checkbox ticked for this to work)
-				MoveActorToLevel(playerRef->GetPossessedEnemy(), currentLevelStreaming, nextLevelStreaming);
-			}
-	
-			FLatentActionInfo info;
-			info.UUID = 1;
-	
-			if(currentLevelStreaming)
-			{
-				UGameplayStatics::UnloadStreamLevel(GetWorld(), *GetSubLevelName(currentLevel, currentFloor), info, true);
-	
-				UE_LOG(LogTemp, Warning, TEXT("Unload %i, %i"), currentLevel, currentFloor);
-			}
-	
-			//Broadcast the floor exit
-			OnFloorExit();
-			OnFloorExitEvent.Broadcast(floor);
-	
-			info.UUID = 2;
-	
-			//Load next sublevel
-			UGameplayStatics::LoadStreamLevel(GetWorld(), *GetSubLevelName(currentLevel, floor), true, true, info);	
-		}
-	
-		nextFloor = floor;
-	
-		isLoadingFloor = true;
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Trying to load floor %i but it doesn't exist"), floor)
-	 }
-}
-
-void UGameManager::RestartFloor()
-{
-	OpenLevel(currentLevel, currentFloor);
-}
-
-void UGameManager::OnLoadingFloor()
-{
-	ULevelStreaming* nextLevelStreaming = UGameplayStatics::GetStreamingLevel(GetWorld(), *GetSubLevelName(currentLevel, nextFloor));
-
-	if(nextLevelStreaming)
-	{
-		if(nextLevelStreaming->IsLevelLoaded() && nextLevelStreaming->IsLevelVisible())
-		{
-			currentFloor = nextFloor;
-
-			UE_LOG(LogTemp, Warning, TEXT("Loaded floor"));
-			PlacePlayerOnPlayerStart();
-				
-			OnFloorEnter();
-			OnFloorEnterEvent.Broadcast(currentFloor);
-
-			isLoadingFloor = false;
-		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Trying to load next floor %i of level %i but doesn't exist"), nextFloor, currentLevel);
-	}
-}
-
-void UGameManager::OnLoadingLevel()
-{
-	ULevelStreaming* currentLevelStreaming = UGameplayStatics::GetStreamingLevel(GetWorld(), *GetSubLevelName(nextLevel, 1));
-
-	if(currentLevelStreaming)
-	{
-		if(currentLevelStreaming->IsLevelLoaded() && currentLevelStreaming->IsLevelVisible())
-		{
-			currentLevel = nextLevel;
-
-			currentFloor = 1;
-			UE_LOG(LogTemp, Warning, TEXT("Loaded level"));
-
-			LoadFloor(nextFloor);
-			
-			isLoadingLevel = false;
-		}	
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Trying to load next level %i but doesn't exist"), nextLevel);
-	}
-}
-
-void UGameManager::PlacePlayerOnPlayerStart()
-{
-	ULevelStreaming* currentLevelStreaming = UGameplayStatics::GetStreamingLevel(GetWorld(), *GetSubLevelName(currentLevel, currentFloor));
-
-	AActor* playerStart = nullptr;
-
-	if(currentLevelStreaming)
-	{
-		//Iterate over all actors in current floor to find the player start
-		if(currentLevelStreaming->IsLevelLoaded() && currentLevelStreaming->IsLevelVisible()) 
-		{
-			for(AActor* actor : currentLevelStreaming->GetLoadedLevel()->Actors)
-			{
-				if(Cast<APlayerStart>(actor))
-				{
-					playerStart = actor;
-				}
-			}	
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("Trying to place player on player start but sublevel is not yet loaded"))
-			return;
-		}	
-	}
-
-	//Place player and possible possessed enemy at player start if found
-	if(playerStart)
-	{
-		if(playerRef->GetPossessedEnemy())
-		{
-			playerRef->GetPossessedEnemy()->SetActorLocation(playerStart->GetActorLocation());
-		}
-		else
-		{
-			playerRef->SetActorLocation(playerStart->GetActorLocation());
-		}	
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Level %i has no player start"), currentLevel);
-	}
-}
-
-void UGameManager::LoadNextFloor()
-{
-	LoadFloor(currentFloor + 1);
-}
-
-void UGameManager::LoadPrevFloor()
-{
-	LoadFloor(currentFloor - 1);
-}
 
 bool UGameManager::DoesLevelExist(int level, int floor)
 {
 	FString levelToCheck = GetSubLevelName(level, floor);
 
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *levelToCheck);
 	return FPaths::FileExists(FString::Printf(TEXT("%s/%s.umap"), *levelsDirectoryPath, *levelToCheck));
 }
 
@@ -265,12 +131,22 @@ int UGameManager::GetFloorAmount(int level)
 
 bool UGameManager::IsCurrentFloorLast()
 {
-	return !DoesLevelExist(currentLevel, currentFloor + 1);
+	return !DoesLevelExist(GetCurrentLevel(), GetCurrentFloor() + 1);
 }
 
-bool UGameManager::IsCurrentLevelLast()
+void UGameManager::LoadNextFloor()
 {
-	return !DoesLevelExist(currentLevel + 1, 1);
+	UE_LOG(LogTemp, Warning, TEXT("load next floor"));
+	OpenLevel(GetCurrentLevel(), GetCurrentFloor() + 1);
+}
+
+bool UGameManager::IsOnFloorLevel()
+{
+	return GetCurrentLevel() != 0;
+}
+
+void UGameManager::RestartFloor()
+{
 }
 
 void UGameManager::PrepareLevelMap()
@@ -299,4 +175,36 @@ void UGameManager::PrepareLevelMap()
 FString UGameManager::GetSubLevelName(int level, int floor)
 {
 	return FString::Printf(TEXT("Level_%i_%i"), level, floor);
+}
+
+int UGameManager::GetCurrentFloor()
+{
+	FString levelName = *GetWorld()->GetName();
+	FString prefix;
+	FString content;
+	
+	levelName.Split(TEXT("_"), &prefix, &content);
+
+	FString level;
+	FString floor;
+
+	levelName.Split(TEXT("_"), &level, &floor);
+
+	return UKismetStringLibrary::Conv_StringToInt(floor);
+}
+
+int UGameManager::GetCurrentLevel()
+{
+	FString levelName = *GetWorld()->GetName();
+	FString prefix;
+	FString content;
+	
+	levelName.Split(TEXT("_"), &prefix, &content);
+
+	FString level;
+	FString floor;
+
+	content.Split(TEXT("_"), &level, &floor);
+
+	return UKismetStringLibrary::Conv_StringToInt(level);
 }
