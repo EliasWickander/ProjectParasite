@@ -44,6 +44,7 @@ public:
 
 	float GetPatrolSpeed() { return patrolSpeed; }
 	float GetChaseSpeed() { return chaseSpeed; }
+	float GetPossessedSpeed() { return possessedSpeed; }
 	float GetTurnRate() { return turnRate; }
 	
 	AAIControllerBase* GetAIController() { return AIController; }
@@ -90,6 +91,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float chaseSpeed = 200;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float possessedSpeed = 150;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float turnRate = 5;
 	

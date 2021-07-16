@@ -100,7 +100,7 @@ void APawnParasite::SetPossessed(APawnEnemy* actorToPossess)
 		playerControllerRef->Possess(actorToPossess);
 
 		//Set the move speed of possessed enemy to its chase speed
-		actorToPossess->SetMoveSpeed(actorToPossess->GetChaseSpeed());
+		actorToPossess->SetMoveSpeed(actorToPossess->GetPossessedSpeed());
 
 		actorToPossess->onStartDeathEvent.AddDynamic(this, &APawnParasite::OnPossessedEnemyDeath);
 	}
