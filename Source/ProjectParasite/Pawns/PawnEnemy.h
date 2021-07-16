@@ -82,7 +82,7 @@ protected:
 	float guardTime = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
-	float guardTimeOffset = 0.5f;
+	float guardTimeOffset = 0;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float patrolSpeed = 200;
