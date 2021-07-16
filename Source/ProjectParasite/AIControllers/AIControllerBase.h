@@ -27,6 +27,7 @@ class PROJECTPARASITE_API AAIControllerBase : public AAIController
 public:
 	virtual void Tick(float DeltaSeconds) override;
 
+	UFUNCTION(BlueprintCallable)
 	void SetCurrentState(EnemyStates state);
 	EnemyStates GetCurrentState() { return currentState; }
 
@@ -34,7 +35,6 @@ public:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Initialization")
 	EnemyStates currentState;
 
 private:

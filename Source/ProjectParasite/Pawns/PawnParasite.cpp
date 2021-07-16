@@ -62,7 +62,10 @@ void APawnParasite::PossessClosestEnemyInRadius()
 	{
 		APawnEnemy* enemyFound = *enemy;
 
- 		if(FVector::Dist(enemy->GetActorLocation(), GetActorLocation()) <= possessRadius)
+ 		FVector enemyLocation = enemy->GetActorLocation();
+ 		enemyLocation.Z = GetActorLocation().Z;
+ 		
+ 		if(FVector::Dist(enemyLocation, GetActorLocation()) <= possessRadius)
  			enemiesInRadius.Add(enemyFound);
 	}
 
