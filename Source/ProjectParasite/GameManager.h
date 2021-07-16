@@ -26,6 +26,9 @@ public:
 	void OpenLevel(int level, int floor);
 
 	UFUNCTION(BlueprintCallable)
+	void OpenLevelNew(int level, int floor);
+	
+	UFUNCTION(BlueprintCallable)
 	void LoadFloor(int floor);
 
 	UFUNCTION(BlueprintCallable)

@@ -62,6 +62,28 @@ void UGameManager::OpenLevel(int level, int floor)
 	}
 }
 
+void UGameManager::OpenLevelNew(int level, int floor)
+{
+	FString levelName = FString::Printf(TEXT("Level_%i_%i"), level, floor);
+
+	UWorld* currentWorld = playerRef->GetWorld();
+
+	UGameplayStatics::OpenLevel(GetWorld(), *levelName);
+
+	//find a way to get new world
+	UWorld* newWorld = playerRef->GetWorld();
+
+	UE_LOG(LogTemp, Warning, TEXT("%s, %s"), *currentWorld->GetName(), *newWorld->GetName());
+	
+	//If player is possessing enemy, move it to the new level
+	if(playerRef->GetPossessedEnemy())
+	{
+		
+		//Moves possessed enemy to new floor (Remember that all floors need to have the "Initially loaded" checkbox ticked for this to work)
+		//MoveActorToLevel(playerRef->GetPossessedEnemy(), currentLevelStreaming, nextLevelStreaming);
+	}
+}
+
 void UGameManager::LoadFloor(int floor)
 {
 	ULevelStreaming* currentLevelStreaming = UGameplayStatics::GetStreamingLevel(GetWorld(), *GetSubLevelName(currentLevel, currentFloor));

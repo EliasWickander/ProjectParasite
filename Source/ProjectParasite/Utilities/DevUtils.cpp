@@ -145,3 +145,23 @@ void MoveActorToLevel(AActor* actorToMove, ULevelStreaming* fromLevel, ULevelStr
 		UE_LOG(LogTemp, Warning, TEXT("From or to level is not loaded. Cannot access"));
 	}
 }
+
+void MoveActorToLevel(AActor* actorToMove, ULevel* fromLevel, ULevel* toLevel)
+{
+	if(fromLevel && toLevel)
+	{
+		if(fromLevel->Actors.Find(actorToMove))
+		{
+			actorToMove->Rename(nullptr, toLevel);
+			toLevel->Actors.Add(actorToMove);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Level %s does not contain actor %s"), *fromLevel->GetName(), *actorToMove->GetName());
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("From or to level is not loaded. Cannot access"));
+	}
+}
