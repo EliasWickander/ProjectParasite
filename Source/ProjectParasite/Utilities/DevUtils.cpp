@@ -90,8 +90,12 @@ TArray<UBTTaskNode*> FindAllTaskChildrenOfNode(UBTCompositeNode* node)
 bool SetFocusExtended(AAIController* AIController, AActor* targetActor, float rotSpeed, float acceptanceDist)
 {
 	APawn* AIPawn = AIController->GetPawn();
+
+	//only rotate on yaw
+	FVector targetPos = targetActor->GetActorLocation();
+	targetPos.Z = AIPawn->GetActorLocation().Z;
 	
-	FVector dirToTarget = targetActor->GetActorLocation() - AIPawn->GetActorLocation();
+	FVector dirToTarget = targetPos - AIPawn->GetActorLocation();
 
 	dirToTarget.Normalize();
 

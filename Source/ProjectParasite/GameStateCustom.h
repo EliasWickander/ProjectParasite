@@ -7,6 +7,7 @@
 #include "GameStateCustom.generated.h"
 
 class UGameManager;
+class APawnParasite;
 
 UCLASS()
 class PROJECTPARASITE_API AGameStateCustom : public AGameStateBase
@@ -19,8 +20,12 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	APawnParasite* playerRef = nullptr;
 	
 private:
 
 	UGameManager* gameManagerRef = nullptr;
+
 };

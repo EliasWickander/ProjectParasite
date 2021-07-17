@@ -9,6 +9,7 @@
 class APawnBase;
 class APawnParasite;
 class AGameStateCustom;
+class UGameManager;
 
 UCLASS()
 class PROJECTPARASITE_API APlayerControllerBase : public APlayerController
@@ -34,6 +35,12 @@ protected:
 	void AttackInternal();
 	void DashInternal();
 
+	UFUNCTION()
+	void OnGamePaused();
+	
+	UFUNCTION()
+	void OnGameUnpaused();
+
 	UPROPERTY(BlueprintReadOnly)
 	APawnParasite* playerRef = nullptr;
 
@@ -42,4 +49,6 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	AGameStateCustom* gameStateRef = nullptr;
+
+	UGameManager* gameManagerRef = nullptr;
 };

@@ -3,6 +3,7 @@
 
 #include "GameManager.h"
 
+#include "AIController.h"
 #include "Engine/LevelStreaming.h"
 #include "GameFramework/PlayerStart.h"
 #include "ProjectParasite/GameModes/EliminationGamemode.h"
@@ -13,76 +14,107 @@
 #include "Utilities/DevUtils.h"
 #include "Utilities/StateMachine/StateMachine.h"
 #include "Utilities/StateMachine/States/Player/Player_State_Possess.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "Camera/CameraComponent.h"
+#include "Components/PostProcessComponent.h"
 
-UGameManager::UGameManager()
-{
-	PrepareLevelMap();
-}
-
+//Called on game state begin play (when a new level loads)
 void UGameManager::BeginPlay()
 {
-	levelsDirectoryPath = FString::Printf(TEXT("%s/Levels"), *FPaths::ProjectContentDir());
-
 	gamemodeRef = Cast<AEliminationGamemode>(UGameplayStatics::GetGameMode(GetWorld()));
 	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 
 	currentWorldName = UGameplayStatics::GetCurrentLevelName(GetWorld());
 
-	if(!beginPlayTriggered)
+	//if level loaded is a floor level, call enter event
+	if(IsOnFloorLevel())
 	{
-		if(IsOnFloorLevel())
-			gamemodeRef->OnFloorEnter(GetCurrentFloor());
-		
-		beginPlayTriggered = true;	
+		transitionIntoLevel = true;
+		OnFloorEnterEvent.Broadcast(GetCurrentFloor());
+		OnFloorEnter();	
 	}
+
+	isPaused = false;
+	beginPlayTriggered = true;
 }
 
 void UGameManager::Tick(float DeltaSeconds)
 {
-	if(nextLevel != currentLevel)
+	if(beginPlayTriggered)
 	{
-		if(*GetWorld()->GetName() == nextLevel)
-		{
-			currentLevel = nextLevel;
-			
+		//Handle enemy transition after the first frame to prevent conflicts
+		if(IsOnFloorLevel())
+		{	
 			if(possessedEnemyToTransition != nullptr)
 			{
 				AActor* spawnedClone = GetWorld()->SpawnActor<AActor>(possessedEnemyToTransition, playerRef->GetActorLocation(), playerRef->GetActorRotation());
 
 				APawnEnemy* spawnedCloneAsEnemy = Cast<APawnEnemy>(spawnedClone);
+
+				//Possess the new instance of the enemy
 				playerRef->possessState->SetPossessedEnemy(spawnedCloneAsEnemy, true);
 				playerRef->stateMachine->SetState("State_Possess");
 			}
-			
-			if(IsOnFloorLevel())
-			{
-				OnFloorEnterEvent.Broadcast(GetCurrentFloor());
-				OnFloorEnter();	
-			}
+
+			SetPaused(true);
 		}
+		
+		beginPlayTriggered = false;
 	}
+
+	if(transitionOutOfLevel)
+	{
+		if(FMath::Clamp<float>(levelTransitionTimer += DeltaSeconds, 0, levelTransitionTime) == levelTransitionTime)
+		{
+			levelTransitionTimer = 0;
+			transitionOutOfLevel = false;
+			UGameplayStatics::OpenLevel(GetWorld(), *nextLevel);	
+		}
+		
+		//Transition to black
+	}
+	else if(transitionIntoLevel)
+	{
+		if(FMath::Clamp<float>(levelTransitionTimer += DeltaSeconds, 0, levelTransitionTime) == levelTransitionTime)
+		{
+			levelTransitionTimer = 0;
+			transitionIntoLevel = false;
+			SetPaused(false);
+		}
+		//Transition from black to game
+	}
+
+	OnTick(DeltaSeconds);
 }
 
 void UGameManager::OpenLevel(int level, int floor)
 {
-	
 	//Opens level if it exists
 	if(DoesLevelExist(level, floor))
 	{
+		FString levelName = FString::Printf(TEXT("Level_%i_%i"), level, floor);
+		
+		//If a player is possessing an enemy when loading new level, save reference to that enemy
 		if(playerRef->GetPossessedEnemy())
 			possessedEnemyToTransition = playerRef->GetPossessedEnemy()->GetClass();
-		
-		FString levelName = FString::Printf(TEXT("Level_%i_%i"), level, floor);
 
+		//If player is exiting a floor level, call exit event
 		if(IsOnFloorLevel())
 		{
 			OnFloorExitEvent.Broadcast(GetCurrentFloor());
 			OnFloorExit();
 		}
-		
-		UGameplayStatics::OpenLevel(GetWorld(), *levelName);
 
-		nextLevel = levelName;;
+		if(IsOnFloorLevel())
+		{
+			SetPaused(true);
+			nextLevel = levelName;
+			transitionOutOfLevel = true;
+		}
+		else
+		{
+			UGameplayStatics::OpenLevel(GetWorld(), *levelName);	
+		}
 	}
 	else
 	{
@@ -90,43 +122,17 @@ void UGameManager::OpenLevel(int level, int floor)
 	}
 }
 
-void UGameManager::SpawnCopyOfPossessedEnemy(FVector pos)
+void UGameManager::RestartLevel()
 {
-	if(playerRef->GetPossessedEnemy())
-	{
-		FVector position = pos;
-		FRotator rotation = FRotator::ZeroRotator;
-		
-		//find a way to spawn copy of blueprint of possessed enemy
-		AActor* spawnedClone = GetWorld()->SpawnActor<AActor>(playerRef->GetPossessedEnemy()->GetClass(), position, rotation);
-	}
+	UGameplayStatics::OpenLevel(GetWorld(), *currentWorldName);
 }
-
 
 bool UGameManager::DoesLevelExist(int level, int floor)
 {
-	FString levelToCheck = GetSubLevelName(level, floor);
+	FString levelsDirectoryPath = FString::Printf(TEXT("%s/Levels"), *FPaths::ProjectContentDir());
+	FString levelToCheck = FString::Printf(TEXT("Level_%i_%i"), level, floor);;
 
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *levelToCheck);
 	return FPaths::FileExists(FString::Printf(TEXT("%s/%s.umap"), *levelsDirectoryPath, *levelToCheck));
-}
-
-int UGameManager::GetLevelAmount()
-{
-	return levelMap.Num();
-}
-
-int UGameManager::GetFloorAmount(int level)
-{
-	if(levelMap.Contains(level))
-	{
-		return levelMap[level].Num();
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Trying to get floor amount of level %i that doesn't exist"), level);
-		return -1;
-	}
 }
 
 bool UGameManager::IsCurrentFloorLast()
@@ -136,7 +142,6 @@ bool UGameManager::IsCurrentFloorLast()
 
 void UGameManager::LoadNextFloor()
 {
-	UE_LOG(LogTemp, Warning, TEXT("load next floor"));
 	OpenLevel(GetCurrentLevel(), GetCurrentFloor() + 1);
 }
 
@@ -145,61 +150,27 @@ bool UGameManager::IsOnFloorLevel()
 	return GetCurrentLevel() != 0;
 }
 
-void UGameManager::RestartFloor()
-{
-}
-
-void UGameManager::PrepareLevelMap()
-{
-	//Add all available levels and floors to a map of arrays
-	//The key represents the level, and the array its floors
-	
-	int levelAmount = 0;
-
-	while(FPaths::FileExists(FString::Printf(TEXT("%s/Level_%i.umap"), *levelsDirectoryPath, levelAmount + 1)))
-	{
-		int floorAmount = 0;
-		TArray<int> floorArray;
-
-		while(FPaths::FileExists(FString::Printf(TEXT("%s/Level_%i_%i.umap"), *levelsDirectoryPath, levelAmount + 1, floorAmount + 1)))
-		{
-			floorArray.Add(floorAmount);
-
-			floorAmount++;
-		}
-		
-		levelAmount++;
-	}
-}
-
-FString UGameManager::GetSubLevelName(int level, int floor)
-{
-	return FString::Printf(TEXT("Level_%i_%i"), level, floor);
-}
-
 int UGameManager::GetCurrentFloor()
 {
-	FString levelName = *GetWorld()->GetName();
 	FString prefix;
 	FString content;
 	
-	levelName.Split(TEXT("_"), &prefix, &content);
+	currentWorldName.Split(TEXT("_"), &prefix, &content);
 
 	FString level;
 	FString floor;
 
-	levelName.Split(TEXT("_"), &level, &floor);
+	content.Split(TEXT("_"), &level, &floor);
 
 	return UKismetStringLibrary::Conv_StringToInt(floor);
 }
 
 int UGameManager::GetCurrentLevel()
 {
-	FString levelName = *GetWorld()->GetName();
 	FString prefix;
 	FString content;
 	
-	levelName.Split(TEXT("_"), &prefix, &content);
+	currentWorldName.Split(TEXT("_"), &prefix, &content);
 
 	FString level;
 	FString floor;
@@ -207,4 +178,44 @@ int UGameManager::GetCurrentLevel()
 	content.Split(TEXT("_"), &level, &floor);
 
 	return UKismetStringLibrary::Conv_StringToInt(level);
+}
+
+void UGameManager::SetPaused(bool paused)
+{
+	if(isPaused == paused)
+		return;
+	
+	if(paused)
+	{
+		TArray<AActor*> outActors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAIController::StaticClass(), outActors);
+
+		for(int i = 0; i < outActors.Num(); i++)
+		{
+			AAIController* controller = Cast<AAIController>(outActors[i]);
+
+			controller->GetBrainComponent()->StopLogic(FString("Pause"));
+		}
+
+		OnPauseGameEvent.Broadcast();
+		OnPauseGame();
+	}
+	else
+	{
+		TArray<AActor*> outActors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAIController::StaticClass(), outActors);
+
+		for(int i = 0; i < outActors.Num(); i++)
+		{
+			AAIController* controller = Cast<AAIController>(outActors[i]);
+
+			if(controller->GetPawn() != nullptr)
+				controller->GetBrainComponent()->StartLogic();
+		}
+
+		OnUnpauseGameEvent.Broadcast();
+		OnUnpauseGame();
+	}
+
+	isPaused = paused;
 }

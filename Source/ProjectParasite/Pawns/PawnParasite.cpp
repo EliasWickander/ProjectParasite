@@ -42,7 +42,7 @@ void APawnParasite::BeginPlay()
 }
 
 void APawnParasite::Tick(float DeltaTime)
-{	
+{
 	Super::Tick(DeltaTime);
 
 	dashTimer = FMath::Clamp<float>(dashTimer - DeltaTime, 0, dashCooldown);

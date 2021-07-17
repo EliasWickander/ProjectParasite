@@ -12,57 +12,66 @@ class APawnEnemy;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFloorEnterEvent, int, floor);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFloorExitEvent, int, floor);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPauseGameEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnpauseGameEvent);
 
+enum GameState
+{
+	Playing,
+	Paused,
+	FloorEnter,
+	FloorExit,
+};
 UCLASS()
 class PROJECTPARASITE_API UGameManager : public UGameInstance
 {
 	GENERATED_BODY()
 
 public:
-	UGameManager();
 	void BeginPlay();
 	void Tick(float DeltaSeconds);
 
 	UFUNCTION(BlueprintCallable)
 	void OpenLevel(int level, int floor);
-
-	UFUNCTION(BlueprintCallable)
-	void SpawnCopyOfPossessedEnemy(FVector pos);
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnFloorEnter();
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnFloorExit();
-	
-	FOnFloorEnterEvent OnFloorEnterEvent;
-	FOnFloorExitEvent OnFloorExitEvent;
 	
 	UFUNCTION(BlueprintCallable)
 	bool DoesLevelExist(int level, int floor);
-
-	UFUNCTION(BlueprintCallable)
-	int GetLevelAmount();
-
-	UFUNCTION(BlueprintCallable)
-	int GetFloorAmount(int level);
 
 	bool IsCurrentFloorLast();
 
 	void LoadNextFloor();
 
 	bool IsOnFloorLevel();
+	
 	UFUNCTION(BlueprintCallable)
-	void RestartFloor();
+	void RestartLevel();
 
 	int GetCurrentFloor();
 	int GetCurrentLevel();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnFloorEnter();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnFloorExit();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPauseGame();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnUnpauseGame();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnTick(float deltaTime);
+
+	bool GetPaused() {return isPaused; }
+	void SetPaused(bool paused);
+	FOnFloorEnterEvent OnFloorEnterEvent;
+	FOnFloorExitEvent OnFloorExitEvent;
+	FOnPauseGameEvent OnPauseGameEvent;
+	FOnUnpauseGameEvent OnUnpauseGameEvent;
+
 private:
-	void PrepareLevelMap();
-	
-	FString GetSubLevelName(int level, int floor);
-	
 	bool loadingFirstFloor = false;
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -70,18 +79,29 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	AEliminationGamemode* gamemodeRef = nullptr;
-	TMap<int, TArray<int>> levelMap;
-	
-	FString currentLevel;
-	FString nextLevel;
 
 	bool isLoadingLevel = false;
 	bool isLoadingFloor = false;
+
+	FString nextLevel = "";
 	
 	FString currentWorldName = "";
-	FString levelsDirectoryPath;
 
 	UClass* possessedEnemyToTransition = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	bool transitionOutOfLevel = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	bool transitionIntoLevel = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	float levelTransitionTimer = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	float levelTransitionTime = 0.5f;
+	
 	bool beginPlayTriggered = false;
+
+	bool isPaused = false;
 };

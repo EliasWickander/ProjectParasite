@@ -11,11 +11,13 @@
 
 #include "BehaviorTree/BlackboardComponent.h"
 #include "ProjectParasite/BTTasks/BTTask_Chase.h"
+#include "ProjectParasite/GameManager.h"
 
 void AAIControllerBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	gameManagerRef = Cast<UGameManager>(UGameplayStatics::GetGameInstance(GetWorld()));
 	gameStateRef = Cast<AGameStateCustom>(UGameplayStatics::GetGameState(GetWorld()));
 	playerRef = Cast<APawnParasite>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 

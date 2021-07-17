@@ -61,12 +61,13 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 	}
 
 	bool rotatedToTarget = SetFocusExtended(ownerEnemy->GetAIController(), targetActor, ownerEnemy->GetTurnRate(), 0.2f);
-	
+
 	//If enemy is in attack range, rotate weapon and attack
 	if(IsInRange(NodeMemory))
 	{
 		if(rotatedToTarget)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Finished rotating"));
 			RotateWeaponToTarget(NodeMemory);	
 			ownerEnemy->Attack();
 		}

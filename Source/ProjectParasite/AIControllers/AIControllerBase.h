@@ -20,6 +20,7 @@ enum class EnemyStates : uint8
 class AGameStateCustom;
 class APawnParasite;
 class APawnEnemy;
+class UGameManager;
 UCLASS()
 class PROJECTPARASITE_API AAIControllerBase : public AAIController
 {
@@ -43,6 +44,7 @@ private:
 	void StartAIBehavior();
 
 	AGameStateCustom* gameStateRef = nullptr;
+	UGameManager* gameManagerRef = nullptr;
 	
 	UPROPERTY(EditAnywhere, Category = "Initialization")
 	UBehaviorTree* behaviorTree = nullptr;
