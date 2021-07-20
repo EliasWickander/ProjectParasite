@@ -51,7 +51,7 @@ void UStateMachine::SetState(FString stateName)
 		UE_LOG(LogTemp, Error, TEXT("State %s doesn't exist in dictionary"), *stateName);
 		return;
 	}
-	
+
 	if(currentState != states[stateName])
 	{
 		nextState = states[stateName];
@@ -62,7 +62,6 @@ void UStateMachine::SetState(FString stateName)
 //Needs to be called from the constructor
 void UStateMachine::AddState(FString stateName, UState* state)
 {
-
 	if(states.FindKey(state))
 		return;
 
@@ -74,10 +73,8 @@ void UStateMachine::AddState(FString stateName, UState* state)
 	//If this is the first state added, set it as first state to play
 	if(states.Num() == 1)
 	{
-		SetState(stateName);	
+		SetState(stateName);
 	}
-
-	
 }
 
 

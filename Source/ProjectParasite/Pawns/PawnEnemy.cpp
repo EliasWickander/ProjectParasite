@@ -27,6 +27,7 @@ void APawnEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//AIController = Cast<AAIControllerBase>(GetController());
 	AIController = GetWorld()->SpawnActor<AAIControllerBase>(AIControllerClass, GetActorLocation(), GetActorRotation());
 	
 	if(!Cast<APlayerControllerBase>(GetController()))

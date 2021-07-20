@@ -48,6 +48,7 @@ private:
 	UFUNCTION()
 	void OnGoalTriggered();
 
+	UFUNCTION(BlueprintCallable)
 	void AddScore(float scoreToAdd, bool allowCombo = true);
 
 	UGameManager* gameManagerRef = nullptr;
@@ -56,6 +57,8 @@ private:
 	TArray<AActor*> enemiesAlive = {};
 
 	AGoalTrigger* goalTrigger = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Score", meta = (AllowPrivateAccess = "true"))
 	int currentScore = 0;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Score", meta = (AllowPrivateAccess = "true"))

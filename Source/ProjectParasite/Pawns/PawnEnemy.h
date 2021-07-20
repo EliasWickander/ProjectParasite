@@ -44,12 +44,18 @@ public:
 
 	float GetPatrolSpeed() { return patrolSpeed; }
 	float GetChaseSpeed() { return chaseSpeed; }
+	float GetPossessedSpeed() { return possessedSpeed; }
+	float GetAttackMoveSpeed() { return attackMoveSpeed; }
 	float GetTurnRate() { return turnRate; }
 	
 	AAIControllerBase* GetAIController() { return AIController; }
 	
 	USceneComponent* GetNapeComponent() { return napeComponent; }
 	TArray<ATargetPoint*> GetPatrolPoints() { return patrolPoints; }
+	TArray<ATargetPoint*> GetGuardPoints() { return guardPoints; }
+	float GetGuardTime() { return guardTime; }
+	float GetGuardTimeOffset() { return guardTimeOffset; }
+	bool GetIsStationary() { return isStationary; }
 	
 protected:
 	virtual void BeginPlay() override;
@@ -68,12 +74,30 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
 	TArray<ATargetPoint*> patrolPoints;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
+	TArray<ATargetPoint*> guardPoints;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
+	bool isStationary = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
+	float guardTime = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
+	float guardTimeOffset = 0;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float patrolSpeed = 200;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float chaseSpeed = 200;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float attackMoveSpeed = 200;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float possessedSpeed = 150;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float turnRate = 5;
 	

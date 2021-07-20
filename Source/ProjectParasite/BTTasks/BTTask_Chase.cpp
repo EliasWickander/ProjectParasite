@@ -23,6 +23,8 @@ EBTNodeResult::Type UBTTask_Chase::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
+	UE_LOG(LogTemp, Warning, TEXT("Start chase"));
+	
 	BTTaskChaseMemory* instanceMemory = reinterpret_cast<BTTaskChaseMemory*>(NodeMemory);
 
 	instanceMemory->blackboard = OwnerComp.GetBlackboardComponent();
@@ -38,7 +40,7 @@ EBTNodeResult::Type UBTTask_Chase::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 		UE_LOG(LogTemp, Error, TEXT("Enemy %s executing this task isn't of a shooter type"), *instanceMemory->ownerEnemy->GetName())
 		return EBTNodeResult::Failed;
 	}
-
+	
 	//Chase the player
 	SetTarget(playerRef, instanceMemory);
 	

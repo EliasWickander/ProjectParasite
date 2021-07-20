@@ -19,10 +19,12 @@ void UPlayer_State_Possess::Start()
 	playerRef->GetCollider()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 
 	playerRef->SetCanMove(false);
-	
-	possessedEnemy->GetAIController()->UnPossess();
+
+	if(possessedEnemy->GetAIController() != nullptr)
+		possessedEnemy->GetAIController()->UnPossess();
 
 	playerOriginPos = playerRef->GetActorLocation();
+	detachTimer = 0;
 	currentState = PossessState::PrePossess;
 }
 
@@ -48,7 +50,7 @@ void UPlayer_State_Possess::HandlePossessionLoop()
 		{
 			FVector napeLocation = possessedEnemy->GetNapeComponent()->GetComponentLocation();
 	
-			if(FVector::Dist(playerRef->GetActorLocation(), napeLocation) > 1)
+			if(FVector::Dist(playerRef->GetActorLocation(), napeLocation) > 1 && !instantPossession)
 			{
 				MoveToEnemyNape();
 
@@ -79,18 +81,20 @@ void UPlayer_State_Possess::HandlePossessionLoop()
 				playerRef->GetCollider()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 				targetDetachPoint = playerRef->GetActorLocation() - playerRef->GetActorForwardVector() * playerRef->detachTargetDist;
 				targetDetachPoint.Z = playerOriginPos.Z;
-				
+
 				currentState = PossessState::PostPossess;
 			}
 			break;
 		}
 	case PossessState::PostPossess:
 		{
-			FVector newLocation = FMath::Lerp(playerRef->GetActorLocation(), targetDetachPoint, playerRef->detachLocationLerpSpeed * GetWorld()->DeltaTimeSeconds);
+			detachTimer = FMath::Clamp<float>(detachTimer += playerRef->detachLocationLerpSpeed * GetWorld()->GetDeltaSeconds(), 0, 1);
+			
+			FVector newLocation = FMath::Lerp(playerRef->GetActorLocation(), targetDetachPoint, detachTimer);
 
 			bool locationSet = playerRef->SetActorLocation(newLocation, true);
-			
-			if(!locationSet || FVector::Dist(playerRef->GetActorLocation(), targetDetachPoint) <= 50)
+
+			if(!locationSet || FVector::Dist(playerRef->GetActorLocation(), targetDetachPoint) <= 0.3f)
 			{
 				stateMachine->SetState("State_Idle");		
 			}
@@ -113,4 +117,11 @@ void UPlayer_State_Possess::MoveToEnemyNape()
 	playerRef->SetActorLocation(lerpedPos);
 	playerRef->SetActorRotation(lerpedRot);
 	
+}
+
+void UPlayer_State_Possess::SetPossessedEnemy(APawnEnemy* enemy, bool instant)
+{
+	instantPossession = instant;
+	possessedEnemy = enemy;
+	int t = 1;
 }

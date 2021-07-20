@@ -10,6 +10,7 @@
 #include "ProjectParasite/GameStateCustom.h"
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
+#include "ProjectParasite/GameManager.h"
 
 
 void APlayerControllerBase::BeginPlay()
@@ -17,12 +18,16 @@ void APlayerControllerBase::BeginPlay()
 	playerRef = Cast<APawnParasite>(GetPawn());
 	controlledPawn = playerRef;
 	gameStateRef = Cast<AGameStateCustom>(UGameplayStatics::GetGameState(GetWorld()));
+	gameManagerRef = Cast<UGameManager>(UGameplayStatics::GetGameInstance(GetWorld()));
 	
 	SetShowMouseCursor(true);
 
 	EnableInput(this);
 	
 	SetupInputBindings();
+
+	gameManagerRef->OnPauseGameEvent.AddDynamic(this, &APlayerControllerBase::OnGamePaused);
+	gameManagerRef->OnUnpauseGameEvent.AddDynamic(this, &APlayerControllerBase::OnGameUnpaused);
 }
 
 void APlayerControllerBase::Tick(float DeltaSeconds)
@@ -108,4 +113,15 @@ void APlayerControllerBase::AttackInternal()
 			controlledEnemy->GetWeapon()->Use();
 		}
 	}		
+}
+
+void APlayerControllerBase::OnGamePaused()
+{
+	DisableInput(this);
+}
+
+void APlayerControllerBase::OnGameUnpaused()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Unpaused"));
+	EnableInput(this);
 }

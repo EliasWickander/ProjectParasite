@@ -90,8 +90,12 @@ TArray<UBTTaskNode*> FindAllTaskChildrenOfNode(UBTCompositeNode* node)
 bool SetFocusExtended(AAIController* AIController, AActor* targetActor, float rotSpeed, float acceptanceDist)
 {
 	APawn* AIPawn = AIController->GetPawn();
+
+	//only rotate on yaw
+	FVector targetPos = targetActor->GetActorLocation();
+	targetPos.Z = AIPawn->GetActorLocation().Z;
 	
-	FVector dirToTarget = targetActor->GetActorLocation() - AIPawn->GetActorLocation();
+	FVector dirToTarget = targetPos - AIPawn->GetActorLocation();
 
 	dirToTarget.Normalize();
 
@@ -138,6 +142,26 @@ void MoveActorToLevel(AActor* actorToMove, ULevelStreaming* fromLevel, ULevelStr
 		else
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Level %s does not contain actor %s"), *fromLoadedLevel->GetName(), *actorToMove->GetName());
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("From or to level is not loaded. Cannot access"));
+	}
+}
+
+void MoveActorToLevel(AActor* actorToMove, ULevel* fromLevel, ULevel* toLevel)
+{
+	if(fromLevel && toLevel)
+	{
+		if(fromLevel->Actors.Find(actorToMove))
+		{
+			actorToMove->Rename(nullptr, toLevel);
+			toLevel->Actors.Add(actorToMove);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Level %s does not contain actor %s"), *fromLevel->GetName(), *actorToMove->GetName());
 		}
 	}
 	else

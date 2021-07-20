@@ -45,7 +45,8 @@ void AEliminationGamemode::Tick(float DeltaSeconds)
 }
 
 void AEliminationGamemode::OnFloorEnter(int floor)
-{	
+{
+	UE_LOG(LogTemp, Warning, TEXT("Enter floor"));
 	//When an enemy dies, call the OnEnemyDeath method
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APawnEnemy::StaticClass(), enemiesAlive);
 

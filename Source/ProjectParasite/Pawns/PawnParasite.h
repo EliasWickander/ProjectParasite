@@ -15,6 +15,7 @@ class PROJECTPARASITE_API APawnParasite : public APawnBase
 {
 	GENERATED_BODY()
 
+friend class UGameManager;
 friend class UPlayer_State_Idle;
 friend class UPlayer_State_Dash;
 friend class UPlayer_State_Possess;
@@ -64,6 +65,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Possession", meta = (AllowPrivateAccess = "true"))
 	float possessRadius = 100;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Possession", meta = (AllowPrivateAccess = "true"))
+	float possessAngle = 45;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Possession", meta = (AllowPrivateAccess = "true"))
 	float attachLocationLerpSpeed = 10;
 

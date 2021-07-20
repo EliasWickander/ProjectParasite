@@ -36,12 +36,13 @@ APawnParasite::APawnParasite()
 void APawnParasite::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	SetMoveSpeed(baseMoveSpeed);
+	stateMachine->SetState("State_Idle");
 }
 
 void APawnParasite::Tick(float DeltaTime)
-{	
+{
 	Super::Tick(DeltaTime);
 
 	dashTimer = FMath::Clamp<float>(dashTimer - DeltaTime, 0, dashCooldown);
@@ -61,8 +62,21 @@ void APawnParasite::PossessClosestEnemyInRadius()
 	{
 		APawnEnemy* enemyFound = *enemy;
 
- 		if(FVector::Dist(enemy->GetActorLocation(), GetActorLocation()) <= possessRadius)
- 			enemiesInRadius.Add(enemyFound);
+ 		FVector dirToEnemy = enemy->GetActorLocation() - GetActorLocation();
+ 		dirToEnemy.Z = 0;
+ 		
+ 		if(dirToEnemy.Size() <= possessRadius)
+ 		{
+ 			dirToEnemy.Normalize();
+ 			float dotProduct = FVector::DotProduct(dirToEnemy, enemy->GetActorForwardVector());
+
+ 			float angle = FMath::RadiansToDegrees(acos(dotProduct));
+
+ 			if(angle <= possessAngle)
+ 			{
+ 				enemiesInRadius.Add(enemyFound);		
+ 			}
+ 		}
 	}
 
 	//If there are enemies in radius, possess the first one
@@ -71,7 +85,7 @@ void APawnParasite::PossessClosestEnemyInRadius()
 
 	//Save reference to enemy player is possessing
 
-	possessState->possessedEnemy = enemiesInRadius[0];
+	possessState->SetPossessedEnemy(enemiesInRadius[0]);
 	stateMachine->SetState("State_Possess");
 }
 
@@ -96,7 +110,7 @@ void APawnParasite::SetPossessed(APawnEnemy* actorToPossess)
 		playerControllerRef->Possess(actorToPossess);
 
 		//Set the move speed of possessed enemy to its chase speed
-		actorToPossess->SetMoveSpeed(actorToPossess->GetChaseSpeed());
+		actorToPossess->SetMoveSpeed(actorToPossess->GetPossessedSpeed());
 
 		actorToPossess->onStartDeathEvent.AddDynamic(this, &APawnParasite::OnPossessedEnemyDeath);
 	}

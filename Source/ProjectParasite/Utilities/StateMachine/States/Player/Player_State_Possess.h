@@ -25,6 +25,8 @@ public:
 	};
 
 	PossessState currentState;
+
+	void SetPossessedEnemy(APawnEnemy* enemy, bool instant = false);
 	
 protected:
 
@@ -42,4 +44,8 @@ private:
 	
 	APawnParasite* playerRef = nullptr;
 	APawnEnemy* possessedEnemy = nullptr;
+
+	bool instantPossession = false;
+
+	float detachTimer = 0;
 };

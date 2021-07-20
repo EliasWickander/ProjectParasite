@@ -11,6 +11,7 @@ enum class EnemyStates : uint8
 {
 	State_Idle UMETA(DisplayName = "Idle"),
 	State_Patrol UMETA(DisplayName = "Patrol"),
+	State_Guard UMETA(DisplayName = "Guard"),
 	State_Chase UMETA(DisplayName = "Chase"),
 	State_Attack UMETA(DisplayName = "Attack"),
 	State_Stunned UMETA(DisplayName = "Stunned")
@@ -19,6 +20,7 @@ enum class EnemyStates : uint8
 class AGameStateCustom;
 class APawnParasite;
 class APawnEnemy;
+class UGameManager;
 UCLASS()
 class PROJECTPARASITE_API AAIControllerBase : public AAIController
 {
@@ -27,6 +29,7 @@ class PROJECTPARASITE_API AAIControllerBase : public AAIController
 public:
 	virtual void Tick(float DeltaSeconds) override;
 
+	UFUNCTION(BlueprintCallable)
 	void SetCurrentState(EnemyStates state);
 	EnemyStates GetCurrentState() { return currentState; }
 
@@ -34,7 +37,6 @@ public:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Initialization")
 	EnemyStates currentState;
 
 private:
@@ -42,6 +44,7 @@ private:
 	void StartAIBehavior();
 
 	AGameStateCustom* gameStateRef = nullptr;
+	UGameManager* gameManagerRef = nullptr;
 	
 	UPROPERTY(EditAnywhere, Category = "Initialization")
 	UBehaviorTree* behaviorTree = nullptr;
