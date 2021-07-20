@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Weapons/RangedWeapon.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
+#include "DestructibleComponent.h"
 
 AProjectile::AProjectile()
 {
@@ -20,14 +21,13 @@ void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	projectileMesh->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
+
+	projectileMesh->AddImpulse(GetActorForwardVector() * moveForce);
 }
 
 void AProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	//Move projectile forward
-	AddActorLocalOffset(FVector::ForwardVector * moveSpeed, true);
 
 	//Destroy projectile after life time
 	if(lifeTimer < lifeTime)
@@ -43,19 +43,18 @@ void AProjectile::Tick(float DeltaTime)
 void AProjectile::OnHit(UPrimitiveComponent* hitComp, AActor* otherActor, UPrimitiveComponent* otherComp,
 	FVector normalImpulse, const FHitResult& result)
 {
+	//TODO: Change this to OnOverlap instead to support shooting through glass panels
+	
 	//Consider bullet hit if hit actor isn't itself, the owning actor (the shooter), or another bullet
 	if(otherActor != this && otherActor != GetOwner() && Cast<AProjectile>(otherActor) == nullptr)
 	{
-		APawnBase* hitPawn = Cast<APawnBase>(otherActor);
+		UGameplayStatics::ApplyDamage(otherActor, damage, UGameplayStatics::GetPlayerController(GetWorld(), 0), weaponRef->GetWeaponHolder(), damageType);
 
-		//Apply damage if hit actor is a pawn
-		if(hitPawn != nullptr)
+		if(!Cast<UDestructibleComponent>(otherComp))
 		{
-			UGameplayStatics::ApplyDamage(hitPawn, damage, UGameplayStatics::GetPlayerController(GetWorld(), 0), weaponRef->GetWeaponHolder(), damageType);
+			//Destroy bullet on hit
+			Destroy();	
 		}
-
-		//Destroy bullet on hit
-		Destroy();	
 	}
 }
 

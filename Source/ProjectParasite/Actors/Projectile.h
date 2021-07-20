@@ -36,7 +36,7 @@ protected:
 	float lifeTime = 2;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
-	float moveSpeed = 2;
+	float moveForce = 1000;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
 	float damage = 10;
