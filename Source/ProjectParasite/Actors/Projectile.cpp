@@ -8,6 +8,7 @@
 #include "Weapons/RangedWeapon.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 #include "DestructibleComponent.h"
+#include "Components/CapsuleComponent.h"
 
 AProjectile::AProjectile()
 {
@@ -15,12 +16,15 @@ AProjectile::AProjectile()
 
 	projectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Projectile Mesh"));
 	RootComponent = projectileMesh;
+
+	capsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule Component"));
+	capsuleComponent->SetupAttachment(RootComponent);
 }
 
 void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	projectileMesh->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
+	capsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlap);
 
 	projectileMesh->AddImpulse(GetActorForwardVector() * moveForce);
 }
@@ -40,8 +44,7 @@ void AProjectile::Tick(float DeltaTime)
 	}
 }
 
-void AProjectile::OnHit(UPrimitiveComponent* hitComp, AActor* otherActor, UPrimitiveComponent* otherComp,
-	FVector normalImpulse, const FHitResult& result)
+void AProjectile::OnOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& sweepResult)
 {
 	//TODO: Change this to OnOverlap instead to support shooting through glass panels
 	
@@ -50,10 +53,20 @@ void AProjectile::OnHit(UPrimitiveComponent* hitComp, AActor* otherActor, UPrimi
 	{
 		UGameplayStatics::ApplyDamage(otherActor, damage, UGameplayStatics::GetPlayerController(GetWorld(), 0), weaponRef->GetWeaponHolder(), damageType);
 
-		if(!Cast<UDestructibleComponent>(otherComp))
+		UDestructibleComponent* destructibleComponent = Cast<UDestructibleComponent>(otherComp);
+		
+		if(!destructibleComponent)
 		{
 			//Destroy bullet on hit
 			Destroy();	
+		}
+		else
+		{
+			FVector impulseDir = destructibleComponent->GetComponentLocation() - GetActorLocation();
+			impulseDir.Z = 0;
+			impulseDir.Normalize();
+			
+			destructibleComponent->ApplyDamage(damage, destructibleComponent->GetComponentLocation(), impulseDir, 10);
 		}
 	}
 }

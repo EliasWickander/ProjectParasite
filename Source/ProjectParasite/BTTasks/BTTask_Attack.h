@@ -45,4 +45,6 @@ private:
 	UBehaviorTreeComponent* behaviorTreeComponent = nullptr;
 
 	APawnBase* playerRef = nullptr;
+
+	float backOffTimer = 0;
 };

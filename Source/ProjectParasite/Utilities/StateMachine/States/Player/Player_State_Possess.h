@@ -46,4 +46,6 @@ private:
 	APawnEnemy* possessedEnemy = nullptr;
 
 	bool instantPossession = false;
+
+	float detachTimer = 0;
 };

@@ -8,6 +8,8 @@
 #include "Projectile.generated.h"
 
 class ARangedWeapon;
+class UCapsuleComponent;
+
 UCLASS()
 class PROJECTPARASITE_API AProjectile : public AActor
 {
@@ -26,12 +28,14 @@ protected:
 	void BeginPlay() override;
 	
 	UFUNCTION()
-	void OnHit(UPrimitiveComponent* hitComp, AActor* otherActor, UPrimitiveComponent* otherComp,
-	FVector normalImpulse, const FHitResult& result);
+	void OnOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& sweepResult);
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UStaticMeshComponent* projectileMesh = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UCapsuleComponent* capsuleComponent = nullptr;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float lifeTime = 2;
 

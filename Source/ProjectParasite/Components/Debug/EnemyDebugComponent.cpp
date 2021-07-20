@@ -49,12 +49,12 @@ void UEnemyDebugComponent::DrawDetectionCone()
 
 	if(OverlapCone(coneData, GetWorld(), objectTypes, classFilter, actorsToIgnore, outActors))
 	{
-		coneColor = FColor::Green;
+		detectionConeColor = FColor::Green;
 	}
 	else
 	{
-		coneColor = FColor::Blue;
+		detectionConeColor = FColor::Blue;
 	}
 	
-	DrawCone(coneData, GetWorld(), coneColor);
+	DrawCone(coneData, GetWorld(), detectionConeColor);
 }

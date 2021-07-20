@@ -9,6 +9,7 @@
 #include "ProjectParasite/AIControllers/AIControllerBase.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
+#include "ProjectParasite/Pawns/RangedPawnEnemy.h"
 #include "ProjectParasite/Utilities/DevUtils.h"
 
 UBTTask_Attack::UBTTask_Attack()
@@ -42,6 +43,8 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 
 	SetTarget(playerRef, NodeMemory);
 
+	instanceMemory->ownerEnemy->SetMoveSpeed(instanceMemory->ownerEnemy->GetAttackMoveSpeed());
+	
 	return EBTNodeResult::InProgress;
 }
 
@@ -62,15 +65,36 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 
 	bool rotatedToTarget = SetFocusExtended(ownerEnemy->GetAIController(), targetActor, ownerEnemy->GetTurnRate(), 0.2f);
 
+	if(Cast<ARangedPawnEnemy>(instanceMemory->ownerEnemy))
+	{
+		FVector dirToTarget = targetActor->GetActorLocation() - ownerEnemy->GetActorLocation();
+		dirToTarget.Z = 0;
+
+		if(dirToTarget.Size() < ownerEnemy->GetAttackRange())
+		{
+			if(backOffTimer < 0.2f)
+			{
+				backOffTimer += DeltaSeconds;
+			}
+			else
+			{
+				FVector safePoint = ownerEnemy->GetActorLocation() - ownerEnemy->GetActorForwardVector() * ownerEnemy->GetAttackRange();
+
+				ownerEnemy->GetAIController()->MoveToLocation(safePoint, 0);
+				backOffTimer = 0;
+				return;	
+			}
+		}
+	}
+	
 	//If enemy is in attack range, rotate weapon and attack
 	if(IsInRange(NodeMemory))
 	{
-		if(rotatedToTarget)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Finished rotating"));
-			RotateWeaponToTarget(NodeMemory);	
-			ownerEnemy->Attack();
-		}
+		// if(rotatedToTarget)
+		// {
+		// 	RotateWeaponToTarget(NodeMemory);	
+		// 	ownerEnemy->Attack();
+		// }
 	}
 	else
 	{

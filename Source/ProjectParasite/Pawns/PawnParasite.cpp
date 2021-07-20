@@ -62,11 +62,21 @@ void APawnParasite::PossessClosestEnemyInRadius()
 	{
 		APawnEnemy* enemyFound = *enemy;
 
- 		FVector enemyLocation = enemy->GetActorLocation();
- 		enemyLocation.Z = GetActorLocation().Z;
+ 		FVector dirToEnemy = enemy->GetActorLocation() - GetActorLocation();
+ 		dirToEnemy.Z = 0;
  		
- 		if(FVector::Dist(enemyLocation, GetActorLocation()) <= possessRadius)
- 			enemiesInRadius.Add(enemyFound);
+ 		if(dirToEnemy.Size() <= possessRadius)
+ 		{
+ 			dirToEnemy.Normalize();
+ 			float dotProduct = FVector::DotProduct(dirToEnemy, enemy->GetActorForwardVector());
+
+ 			float angle = FMath::RadiansToDegrees(acos(dotProduct));
+
+ 			if(angle <= possessAngle)
+ 			{
+ 				enemiesInRadius.Add(enemyFound);		
+ 			}
+ 		}
 	}
 
 	//If there are enemies in radius, possess the first one

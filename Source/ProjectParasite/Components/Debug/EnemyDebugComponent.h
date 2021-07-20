@@ -19,7 +19,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	FColor coneColor = FColor::Blue;
+	FColor detectionConeColor = FColor::Blue;
 
 protected:
 	APawnEnemy* enemyRef = nullptr;
