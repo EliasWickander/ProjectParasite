@@ -48,12 +48,15 @@ void UGameManager::Tick(float DeltaSeconds)
 			if(possessedEnemyToTransition != nullptr)
 			{
 				AActor* spawnedClone = GetWorld()->SpawnActor<AActor>(possessedEnemyToTransition, playerRef->GetActorLocation(), playerRef->GetActorRotation());
-
+				
 				APawnEnemy* spawnedCloneAsEnemy = Cast<APawnEnemy>(spawnedClone);
 
-				//Possess the new instance of the enemy
-				playerRef->possessState->SetPossessedEnemy(spawnedCloneAsEnemy, true);
-				playerRef->stateMachine->SetState("State_Possess");
+				if(spawnedCloneAsEnemy)
+				{
+					//Possess the new instance of the enemy
+					playerRef->possessState->SetPossessedEnemy(spawnedCloneAsEnemy, true);
+					playerRef->stateMachine->SetState("State_Possess");	
+				}
 			}
 
 			SetPaused(true);
