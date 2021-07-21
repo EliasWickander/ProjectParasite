@@ -123,6 +123,21 @@ void APawnParasite::SetPossessed(APawnEnemy* actorToPossess)
 	possessedEnemy = actorToPossess;
 }
 
+bool APawnParasite::IsPlayerDashing()
+{
+	return stateMachine->currentState == dashState;
+}
+
+bool APawnParasite::IsPlayerIdle()
+{
+	return stateMachine->currentState == idleState;	
+}
+
+bool APawnParasite::IsPlayerPossessing()
+{
+	return stateMachine->currentState == possessState;
+}
+
 void APawnParasite::OnPossessedEnemyDeath(APawnBase* enemy, AActor* causerActor)
 {
 	//Unpossess enemy upon death
