@@ -38,6 +38,9 @@ void UGameManager::BeginPlay()
 	isPaused = false;
 	beginPlayTriggered = true;
 
+	if(GetCurrentFloor() == 1)
+		OnLevelStart();
+	
 	OnBeginPlay();
 }
 
@@ -90,6 +93,11 @@ void UGameManager::Tick(float DeltaSeconds)
 		//Transition from black to game
 	}
 
+	if(levelTimer < gamemodeRef->GetLevelTimeLimit())
+	{
+		levelTimer += DeltaSeconds;
+	}
+
 	OnTick(DeltaSeconds);
 }
 
@@ -99,9 +107,6 @@ void UGameManager::OpenLevel(int level, int floor)
 	if(DoesLevelExist(level, floor))
 	{
 		FString levelName = FString::Printf(TEXT("Level_%i_%i"), level, floor);
-
-		if(floor == 1)
-			OnLevelStart();
 		
 		//If a player is possessing an enemy when loading new level, save reference to that enemy
 		if(playerRef->GetPossessedEnemy())
@@ -193,7 +198,7 @@ int UGameManager::GetCurrentLevel()
 void UGameManager::OnLevelStart()
 {
 	scoreHandler = NewObject<UScoreHandler>();
-	int t = 1;
+	levelTimer = 0;
 }
 
 void UGameManager::SetPaused(bool paused)

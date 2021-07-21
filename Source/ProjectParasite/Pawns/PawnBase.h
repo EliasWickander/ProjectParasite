@@ -76,7 +76,7 @@ protected:
 	UCapsuleComponent* capsuleCollider = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UStaticMeshComponent* baseMesh = nullptr;
+	USkeletalMeshComponent* skeletalMesh = nullptr;
 	
 	float horizontalAxis = 0;
 	float verticalAxis = 0;

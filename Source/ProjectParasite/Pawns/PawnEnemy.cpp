@@ -17,10 +17,10 @@
 APawnEnemy::APawnEnemy()
 {
 	napeComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Nape"));
-	napeComponent->SetupAttachment(baseMesh);
+	napeComponent->SetupAttachment(skeletalMesh);
 
 	weaponSocket = CreateDefaultSubobject<USceneComponent>(TEXT("Weapon Socket"));
-	weaponSocket->SetupAttachment(baseMesh);
+	weaponSocket->SetupAttachment(skeletalMesh);
 }
 
 void APawnEnemy::BeginPlay()

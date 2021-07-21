@@ -20,8 +20,8 @@ APawnBase::APawnBase()
 	capsuleCollider = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule Collider"));
 	RootComponent = capsuleCollider;
 
-	baseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Base Mesh"));
-	baseMesh->SetupAttachment(RootComponent);
+	skeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Skeletal Mesh"));
+	skeletalMesh->SetupAttachment(RootComponent);
 
 	springArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
 	springArm->SetupAttachment(RootComponent);

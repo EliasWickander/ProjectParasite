@@ -36,6 +36,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Events")
 	void OnGameLost();
 
+	float GetLevelTimeLimit() { return levelTimeLimit; }
+
 	bool HasEliminatedAllEnemies();
 
 private:
@@ -70,6 +72,5 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Time", meta = (AllowPrivateAccess = "true"))
 	float levelTimeLimit = 2;
-	float levelTimer = 0;
 	
 };

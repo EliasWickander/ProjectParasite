@@ -34,11 +34,6 @@ void AEliminationGamemode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	if(levelTimer < levelTimeLimit)
-	{
-		levelTimer += DeltaSeconds;
-	}
-
 	if(comboTimer > 0)
 	{
 		comboTimer -= DeltaSeconds;
@@ -166,13 +161,13 @@ void AEliminationGamemode::OnGoalTriggered()
 		else
 		{
 			//Add score if player finished level before time limit
-			if(levelTimer < levelTimeLimit)
+			if(gameManagerRef->GetLevelTimer() < levelTimeLimit)
 			{
 				gameManagerRef->GetScoreHandler()->AddScore(UScoreHandler::TimeBonus, finishOnTimeScore);
 			}
 
 			gameManagerRef->OnFinishLevel();
-			UGameplayStatics::OpenLevel(GetWorld(), "Hideout");
+			//UGameplayStatics::OpenLevel(GetWorld(), "Hideout");
 		}
 	//}
 }
