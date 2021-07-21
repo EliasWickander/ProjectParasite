@@ -42,7 +42,7 @@ void AGoalTrigger::OnBeginOverlap(UPrimitiveComponent* overlappedComponent, AAct
 
 	if(otherActor == actorToConsider)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Goal Triggered"));
 		onGoalTriggered.Broadcast();
+		OnGoalTriggered();
 	}
 }

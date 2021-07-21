@@ -17,6 +17,7 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "Camera/CameraComponent.h"
 #include "Components/PostProcessComponent.h"
+#include "ProjectParasite/ScoreHandler.h"
 
 //Called on game state begin play (when a new level loads)
 void UGameManager::BeginPlay()
@@ -36,6 +37,8 @@ void UGameManager::BeginPlay()
 
 	isPaused = false;
 	beginPlayTriggered = true;
+
+	OnBeginPlay();
 }
 
 void UGameManager::Tick(float DeltaSeconds)
@@ -96,6 +99,9 @@ void UGameManager::OpenLevel(int level, int floor)
 	if(DoesLevelExist(level, floor))
 	{
 		FString levelName = FString::Printf(TEXT("Level_%i_%i"), level, floor);
+
+		if(floor == 1)
+			OnLevelStart();
 		
 		//If a player is possessing an enemy when loading new level, save reference to that enemy
 		if(playerRef->GetPossessedEnemy())
@@ -118,6 +124,7 @@ void UGameManager::OpenLevel(int level, int floor)
 		{
 			UGameplayStatics::OpenLevel(GetWorld(), *levelName);	
 		}
+		
 	}
 	else
 	{
@@ -181,6 +188,12 @@ int UGameManager::GetCurrentLevel()
 	content.Split(TEXT("_"), &level, &floor);
 
 	return UKismetStringLibrary::Conv_StringToInt(level);
+}
+
+void UGameManager::OnLevelStart()
+{
+	scoreHandler = NewObject<UScoreHandler>();
+	int t = 1;
 }
 
 void UGameManager::SetPaused(bool paused)

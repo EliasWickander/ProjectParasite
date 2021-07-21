@@ -24,7 +24,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY(BlueprintAssignable)
 	FOnGoalTriggeredEvent onGoalTriggered;
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnGoalTriggered();
+	
 
 protected:
 	// Called when the game starts or when spawned
