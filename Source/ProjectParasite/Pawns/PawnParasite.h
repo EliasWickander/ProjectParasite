@@ -54,6 +54,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsPlayerPossessing();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPossessedEnemy(APawnEnemy* enemyPossessed);
+
 protected:
 	virtual void BeginPlay() override;
 
