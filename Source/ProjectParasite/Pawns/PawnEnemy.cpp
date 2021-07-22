@@ -81,7 +81,7 @@ void APawnEnemy::SetWeapon(AWeaponBase* newWeapon)
 		newWeapon->AttachToComponent(weaponSocket, FAttachmentTransformRules::KeepWorldTransform);
 
 		newWeapon->weaponHolderRef = this;
-		newWeapon->isEquipped = true;	
+		newWeapon->isEquipped = true;
 	} 
 	
 	equippedWeapon = newWeapon;

@@ -55,6 +55,12 @@ void AProjectile::OnOverlap(UPrimitiveComponent* overlappedComponent, AActor* ot
 	if(Cast<AProjectile>(otherActor))
 		return;
 
+	if(weaponRef->GetWeaponHolder() == nullptr)
+		return;
+	
+	if(otherActor == weaponRef->GetWeaponHolder())
+		return;
+	
 	UGameplayStatics::ApplyDamage(otherActor, damage, UGameplayStatics::GetPlayerController(GetWorld(), 0), weaponRef->GetWeaponHolder(), damageType);
 
 	UDestructibleComponent* destructibleComponent = Cast<UDestructibleComponent>(otherComp);
