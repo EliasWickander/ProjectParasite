@@ -14,7 +14,8 @@ enum class EnemyStates : uint8
 	State_Guard UMETA(DisplayName = "Guard"),
 	State_Chase UMETA(DisplayName = "Chase"),
 	State_Attack UMETA(DisplayName = "Attack"),
-	State_Stunned UMETA(DisplayName = "Stunned")
+	State_Stunned UMETA(DisplayName = "Stunned"),
+	State_NoiseSearch UMETA(DisplayName = "NoiseSearch")
 };
 
 class AGameStateCustom;
