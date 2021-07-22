@@ -104,17 +104,15 @@ void APlayerControllerBase::PossessInternal()
 
 void APlayerControllerBase::AttackInternal()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Attack"));
+	APawnEnemy* controlledEnemy = Cast<APawnEnemy>(controlledPawn);
 	
-	// APawnEnemy* controlledEnemy = Cast<APawnEnemy>(controlledPawn);
-	
-	// if(controlledEnemy != nullptr)
-	// {
-	// 	if(controlledEnemy->GetWeapon())
-	// 	{
-	// 		controlledEnemy->GetWeapon()->Use();
-	// 	}
-	// }		
+	if(controlledEnemy != nullptr)
+	{
+		if(controlledEnemy->GetWeapon())
+		{
+			controlledEnemy->GetWeapon()->Use();
+		}
+	}		
 }
 
 void APlayerControllerBase::OnGamePaused()
