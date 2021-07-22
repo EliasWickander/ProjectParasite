@@ -11,6 +11,8 @@ struct BTTaskSearchNoiseMemory
 {
 	APawnEnemy* ownerEnemy = nullptr;
 	bool reachedGoal = false;
+	float reactionTimer = 0;
+	float lookAroundTimer = 0;
 };
 
 UCLASS()
@@ -28,9 +30,5 @@ public:
 
 private:
 	virtual uint16 GetInstanceMemorySize() const override;
-
-	float reactionTimer = 0;
-
-	float lookAroundTimer = 0;
 
 };

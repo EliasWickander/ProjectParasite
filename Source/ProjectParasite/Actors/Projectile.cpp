@@ -9,6 +9,9 @@
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 #include "DestructibleComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "ProjectParasite/Pawns/PawnEnemy.h"
+#include "ProjectParasite/Pawns/PawnParasite.h"
+#include "ProjectParasite/PlayerControllers/PlayerControllerBase.h"
 
 AProjectile::AProjectile()
 {
@@ -55,11 +58,30 @@ void AProjectile::OnOverlap(UPrimitiveComponent* overlappedComponent, AActor* ot
 	if(Cast<AProjectile>(otherActor))
 		return;
 
+	if(weaponRef == nullptr)
+		return;
+	
 	if(weaponRef->GetWeaponHolder() == nullptr)
 		return;
 	
 	if(otherActor == weaponRef->GetWeaponHolder())
 		return;
+
+	APawnEnemy* weaponHolder = Cast<APawnEnemy>(weaponRef->GetWeaponHolder());
+
+	APawnEnemy* possessedEnemy = weaponHolder->playerControllerRef->GetPlayer()->GetPossessedEnemy();
+	
+	//Make sure enemies can't shoot each other
+	if(weaponHolder)
+	{
+		if(possessedEnemy != weaponHolder)
+		{
+			if(otherActor != possessedEnemy && otherActor != weaponHolder->playerControllerRef->GetPlayer())
+			{
+				return;
+			}
+		} 
+	}
 	
 	UGameplayStatics::ApplyDamage(otherActor, damage, UGameplayStatics::GetPlayerController(GetWorld(), 0), weaponRef->GetWeaponHolder(), damageType);
 

@@ -21,8 +21,8 @@ EBTNodeResult::Type UBTTask_SearchNoise::ExecuteTask(UBehaviorTreeComponent& Own
 	BTTaskSearchNoiseMemory* instanceMemory = reinterpret_cast<BTTaskSearchNoiseMemory*>(NodeMemory);
 
 	instanceMemory->ownerEnemy = OwnerComp.GetAIOwner()->GetPawn<APawnEnemy>();
-	reactionTimer = 0;
-	lookAroundTimer = 0;
+	instanceMemory->reactionTimer = 0;
+	instanceMemory->lookAroundTimer = 0;
 
 	instanceMemory->ownerEnemy->SetMoveSpeed(instanceMemory->ownerEnemy->GetChaseSpeed());
 	return EBTNodeResult::InProgress;
@@ -37,9 +37,9 @@ void UBTTask_SearchNoise::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	AAIControllerBase* AIController = instanceMemory->ownerEnemy->GetAIController();
 	APawnEnemy* ownerEnemy = instanceMemory->ownerEnemy;
 	
-	if(reactionTimer < ownerEnemy->GetNoiseReactionTime())
+	if(instanceMemory->reactionTimer < ownerEnemy->GetNoiseReactionTime())
 	{
-		reactionTimer += DeltaSeconds;
+		instanceMemory->reactionTimer += DeltaSeconds;
 	}
 	else
 	{
@@ -59,9 +59,9 @@ void UBTTask_SearchNoise::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 
 	if(instanceMemory->reachedGoal)
 	{
-		if(reactionTimer < 1)
+		if(instanceMemory->reactionTimer < 1)
 		{
-			reactionTimer += DeltaSeconds;
+			instanceMemory->reactionTimer += DeltaSeconds;
 		}
 		else
 		{
