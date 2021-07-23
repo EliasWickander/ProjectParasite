@@ -45,6 +45,18 @@ public:
 
 	float GetKillScore() { return killScore; }
 
+	UFUNCTION(BlueprintCallable)
+	bool IsPlayerDashing();
+
+	UFUNCTION(BlueprintCallable)
+	bool IsPlayerIdle();
+
+	UFUNCTION(BlueprintCallable)
+	bool IsPlayerPossessing();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPossessedEnemy(APawnEnemy* enemyPossessed);
+
 protected:
 	virtual void BeginPlay() override;
 

@@ -75,26 +75,28 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 			if(backOffTimer < 0.2f)
 			{
 				backOffTimer += DeltaSeconds;
+				return;
 			}
 			else
 			{
 				FVector safePoint = ownerEnemy->GetActorLocation() - ownerEnemy->GetActorForwardVector() * ownerEnemy->GetAttackRange();
-
-				ownerEnemy->GetAIController()->MoveToLocation(safePoint, 0);
 				backOffTimer = 0;
-				return;	
+				
+				if(ownerEnemy->GetAIController()->MoveToLocation(safePoint, 0))
+					return;
 			}
+
 		}
 	}
 	
 	//If enemy is in attack range, rotate weapon and attack
 	if(IsInRange(NodeMemory))
 	{
-		// if(rotatedToTarget)
-		// {
-		// 	RotateWeaponToTarget(NodeMemory);	
-		// 	ownerEnemy->Attack();
-		// }
+		if(rotatedToTarget)
+		{
+			RotateWeaponToTarget(NodeMemory);	
+			ownerEnemy->Attack();
+		}
 	}
 	else
 	{
@@ -138,7 +140,7 @@ void UBTTask_Attack::OnTargetDeath(AActor* deadActor, uint8* nodeMemory)
 bool UBTTask_Attack::IsInRange(uint8* nodeMemory)
 {
 	BTTaskAttackMemory* instanceMemory = reinterpret_cast<BTTaskAttackMemory*>(nodeMemory);
-	
+		
 	UPathFollowingComponent* pathFollowingComponent = instanceMemory->ownerEnemy->GetAIController()->GetPathFollowingComponent();
 
 	return pathFollowingComponent->HasReached(*instanceMemory->targetActor, EPathFollowingReachMode::OverlapAgentAndGoal, instanceMemory->ownerEnemy->GetAttackRange(), true);;

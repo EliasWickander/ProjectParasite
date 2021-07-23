@@ -62,7 +62,7 @@ void APlayerControllerBase::SetupParasiteActions()
 
 void APlayerControllerBase::SetupEnemyActions()
 {
-	InputComponent->BindAction("Fire", IE_Pressed, this, &APlayerControllerBase::AttackInternal);
+	InputComponent->BindAction("Attack", IE_Pressed, this, &APlayerControllerBase::AttackInternal);
 }
 
 void APlayerControllerBase::MoveHorizontalInternal(float axis)
@@ -105,7 +105,7 @@ void APlayerControllerBase::PossessInternal()
 void APlayerControllerBase::AttackInternal()
 {
 	APawnEnemy* controlledEnemy = Cast<APawnEnemy>(controlledPawn);
-
+	
 	if(controlledEnemy != nullptr)
 	{
 		if(controlledEnemy->GetWeapon())
@@ -122,6 +122,5 @@ void APlayerControllerBase::OnGamePaused()
 
 void APlayerControllerBase::OnGameUnpaused()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Unpaused"));
 	EnableInput(this);
 }

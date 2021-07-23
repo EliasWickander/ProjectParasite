@@ -56,6 +56,9 @@ public:
 	
 	UFUNCTION()
 	virtual void OnTakeDamage(AActor* damagedActor, float damage, const UDamageType* damageType, AController* causerController, AActor* causerActor);
+
+	UFUNCTION(BlueprintCallable)
+	void ReportNoise(USoundBase* soundToPlay, float volume);
 	
 	void MoveHorizontal(float axis);
 	void MoveVertical(float axis);
@@ -76,7 +79,10 @@ protected:
 	UCapsuleComponent* capsuleCollider = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UStaticMeshComponent* baseMesh = nullptr;
+	USkeletalMeshComponent* skeletalMesh = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UPawnNoiseEmitterComponent* pawnNoiseEmitterComponent = nullptr;
 	
 	float horizontalAxis = 0;
 	float verticalAxis = 0;

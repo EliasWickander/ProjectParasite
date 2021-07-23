@@ -10,6 +10,7 @@
 class ATargetPoint;
 class AAIControllerBase;
 class APawnParasite;
+class UPawnSensingComponent;
 
 UCLASS()
 class PROJECTPARASITE_API APawnEnemy : public APawnBase
@@ -33,6 +34,9 @@ public:
 
 	virtual void OnTakeDamage(AActor* damagedActor, float damage, const UDamageType* damageType, AController* causerController, AActor* causerActor) override;
 
+	UFUNCTION()
+	void OnHearNoise(APawn* pawnInstigator, const FVector& location, float volume);
+	
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	virtual void SetWeapon(AWeaponBase* newWeapon);
 	AWeaponBase* GetWeapon() { return equippedWeapon; }
@@ -41,6 +45,7 @@ public:
 	float GetDetectionRange() { return detectionRange; }
 	float GetDetectionAngle() { return detectionAngle; }
 	float GetSightReactionTime() { return sightReactionTime; }
+	float GetNoiseReactionTime() { return noiseReactionTime; }
 
 	float GetPatrolSpeed() { return patrolSpeed; }
 	float GetChaseSpeed() { return chaseSpeed; }
@@ -51,11 +56,13 @@ public:
 	AAIControllerBase* GetAIController() { return AIController; }
 	
 	USceneComponent* GetNapeComponent() { return napeComponent; }
+	UPawnSensingComponent* GetPawnSensingComponent() { return pawnSensingComponent; }
 	TArray<ATargetPoint*> GetPatrolPoints() { return patrolPoints; }
 	TArray<ATargetPoint*> GetGuardPoints() { return guardPoints; }
 	float GetGuardTime() { return guardTime; }
 	float GetGuardTimeOffset() { return guardTimeOffset; }
 	bool GetIsStationary() { return isStationary; }
+	FVector GetLastHeardNoisePos() { return lastHeardNoisePos; }
 	
 protected:
 	virtual void BeginPlay() override;
@@ -67,6 +74,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USceneComponent* weaponSocket = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UPawnSensingComponent* pawnSensingComponent = nullptr;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 	AWeaponBase* equippedWeapon = nullptr;
@@ -113,7 +123,12 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Detection")
 	float sightReactionTime = 0.2f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Detection")
+	float noiseReactionTime = 0.4f;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 	bool isPossessed = false;
 	AAIControllerBase* AIController = nullptr;
+
+	FVector lastHeardNoisePos;
 };

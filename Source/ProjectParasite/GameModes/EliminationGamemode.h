@@ -36,6 +36,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Events")
 	void OnGameLost();
 
+	float GetLevelTimeLimit() { return levelTimeLimit; }
+
 	bool HasEliminatedAllEnemies();
 
 private:
@@ -49,7 +51,7 @@ private:
 	void OnGoalTriggered();
 
 	UFUNCTION(BlueprintCallable)
-	void AddScore(float scoreToAdd, bool allowCombo = true);
+	AGoalTrigger* FindGoalTrigger();
 
 	UGameManager* gameManagerRef = nullptr;
 	APawnParasite* playerRef = nullptr;
@@ -57,9 +59,6 @@ private:
 	TArray<AActor*> enemiesAlive = {};
 
 	AGoalTrigger* goalTrigger = nullptr;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Score", meta = (AllowPrivateAccess = "true"))
-	int currentScore = 0;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Score", meta = (AllowPrivateAccess = "true"))
 	float comboWindow = 4;
@@ -73,6 +72,5 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Time", meta = (AllowPrivateAccess = "true"))
 	float levelTimeLimit = 2;
-	float levelTimer = 0;
 	
 };

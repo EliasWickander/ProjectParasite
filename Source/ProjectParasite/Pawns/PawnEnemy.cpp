@@ -13,14 +13,17 @@
 #include "Kismet/GameplayStatics.h"
 #include "ProjectParasite/AIControllers/AIControllerBase.h"
 #include "ProjectParasite/DamageTypes/DamageType_Environmental.h"
+#include "Perception/PawnSensingComponent.h"
 
 APawnEnemy::APawnEnemy()
 {
 	napeComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Nape"));
-	napeComponent->SetupAttachment(baseMesh);
+	napeComponent->SetupAttachment(skeletalMesh);
 
 	weaponSocket = CreateDefaultSubobject<USceneComponent>(TEXT("Weapon Socket"));
-	weaponSocket->SetupAttachment(baseMesh);
+	weaponSocket->SetupAttachment(skeletalMesh);
+
+	pawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("Pawn Sensing"));
 }
 
 void APawnEnemy::BeginPlay()
@@ -34,6 +37,8 @@ void APawnEnemy::BeginPlay()
 	{
 		AIController->Possess(this);
 	}
+
+	pawnSensingComponent->OnHearNoise.AddDynamic(this, &APawnEnemy::OnHearNoise);
 }
 
 void APawnEnemy::UpdatePawnBehavior(float deltaSeconds)
@@ -62,6 +67,21 @@ void APawnEnemy::OnTakeDamage(AActor* damagedActor, float damage, const UDamageT
 	Super::OnTakeDamage(damagedActor, damage, damageType, causerController, causerActor);
 }
 
+void APawnEnemy::OnHearNoise(APawn* pawnInstigator, const FVector& location, float volume)
+{
+	if(pawnInstigator != this)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Heard noise from %s"), *pawnInstigator->GetName());
+
+		lastHeardNoisePos = location;
+
+		if(GetAIController()->GetCurrentState() == EnemyStates::State_Attack || GetAIController()->GetCurrentState() == EnemyStates::State_Stunned)
+			return;
+
+		GetAIController()->SetCurrentState(EnemyStates::State_NoiseSearch);
+	}
+}
+
 
 void APawnEnemy::SetWeapon(AWeaponBase* newWeapon)
 {
@@ -81,7 +101,7 @@ void APawnEnemy::SetWeapon(AWeaponBase* newWeapon)
 		newWeapon->AttachToComponent(weaponSocket, FAttachmentTransformRules::KeepWorldTransform);
 
 		newWeapon->weaponHolderRef = this;
-		newWeapon->isEquipped = true;	
+		newWeapon->isEquipped = true;
 	} 
 	
 	equippedWeapon = newWeapon;

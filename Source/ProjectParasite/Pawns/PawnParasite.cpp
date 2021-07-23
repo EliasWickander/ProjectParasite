@@ -3,6 +3,8 @@
 
 #include "PawnParasite.h"
 
+#include <Actor.h>
+
 #include "ProjectParasite/AIControllers/AIControllerBase.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 #include "EngineUtils.h"
@@ -72,7 +74,7 @@ void APawnParasite::PossessClosestEnemyInRadius()
 
  			float angle = FMath::RadiansToDegrees(acos(dotProduct));
 
- 			if(angle <= possessAngle)
+ 			if(angle <= possessAngle || enemy->GetAIController()->GetCurrentState() == EnemyStates::State_Stunned)
  			{
  				enemiesInRadius.Add(enemyFound);		
  			}
@@ -113,6 +115,7 @@ void APawnParasite::SetPossessed(APawnEnemy* actorToPossess)
 		actorToPossess->SetMoveSpeed(actorToPossess->GetPossessedSpeed());
 
 		actorToPossess->onStartDeathEvent.AddDynamic(this, &APawnParasite::OnPossessedEnemyDeath);
+		OnPossessedEnemy(actorToPossess);
 	}
 	else
 	{
@@ -121,6 +124,21 @@ void APawnParasite::SetPossessed(APawnEnemy* actorToPossess)
 	}
 	
 	possessedEnemy = actorToPossess;
+}
+
+bool APawnParasite::IsPlayerDashing()
+{
+	return stateMachine->currentState == dashState;
+}
+
+bool APawnParasite::IsPlayerIdle()
+{
+	return stateMachine->currentState == idleState;	
+}
+
+bool APawnParasite::IsPlayerPossessing()
+{
+	return stateMachine->currentState == possessState;
 }
 
 void APawnParasite::OnPossessedEnemyDeath(APawnBase* enemy, AActor* causerActor)

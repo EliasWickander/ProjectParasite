@@ -17,6 +17,7 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "Camera/CameraComponent.h"
 #include "Components/PostProcessComponent.h"
+#include "ProjectParasite/ScoreHandler.h"
 
 //Called on game state begin play (when a new level loads)
 void UGameManager::BeginPlay()
@@ -36,6 +37,11 @@ void UGameManager::BeginPlay()
 
 	isPaused = false;
 	beginPlayTriggered = true;
+
+	if(GetCurrentFloor() == 1)
+		OnLevelStart();
+	
+	OnBeginPlay();
 }
 
 void UGameManager::Tick(float DeltaSeconds)
@@ -87,6 +93,11 @@ void UGameManager::Tick(float DeltaSeconds)
 		//Transition from black to game
 	}
 
+	if(levelTimer < gamemodeRef->GetLevelTimeLimit())
+	{
+		levelTimer += DeltaSeconds;
+	}
+
 	OnTick(DeltaSeconds);
 }
 
@@ -118,6 +129,7 @@ void UGameManager::OpenLevel(int level, int floor)
 		{
 			UGameplayStatics::OpenLevel(GetWorld(), *levelName);	
 		}
+		
 	}
 	else
 	{
@@ -181,6 +193,12 @@ int UGameManager::GetCurrentLevel()
 	content.Split(TEXT("_"), &level, &floor);
 
 	return UKismetStringLibrary::Conv_StringToInt(level);
+}
+
+void UGameManager::OnLevelStart()
+{
+	scoreHandler = NewObject<UScoreHandler>();
+	levelTimer = 0;
 }
 
 void UGameManager::SetPaused(bool paused)

@@ -10,6 +10,7 @@
 #include "ProjectParasite/DamageTypes/DamageType_Environmental.h"
 #include "ProjectParasite/Actors/GoalTrigger.h"
 #include "ProjectParasite/GameManager.h"
+#include "ProjectParasite/ScoreHandler.h"
 
 AEliminationGamemode::AEliminationGamemode()
 {
@@ -33,11 +34,6 @@ void AEliminationGamemode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	if(levelTimer < levelTimeLimit)
-	{
-		levelTimer += DeltaSeconds;
-	}
-
 	if(comboTimer > 0)
 	{
 		comboTimer -= DeltaSeconds;
@@ -55,15 +51,8 @@ void AEliminationGamemode::OnFloorEnter(int floor)
 		Cast<APawnEnemy>(enemy)->onStartDeathEvent.AddDynamic(this, &AEliminationGamemode::OnEnemyDeath);
 	}
 	
-	TArray<AActor*> goalTriggers;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGoalTrigger::StaticClass(), goalTriggers);
-
-	UE_LOG(LogTemp, Warning, TEXT("%i"), goalTriggers.Num());
-	
-	if(goalTriggers.Num() > 0)
+	if(FindGoalTrigger())
 	{
-		goalTrigger = Cast<AGoalTrigger>(goalTriggers[0]);
-
 		goalTrigger->onGoalTriggered.AddDynamic(this, &AEliminationGamemode::OnGoalTriggered);	
 	}
 	else
@@ -116,7 +105,14 @@ void AEliminationGamemode::OnEnemyDeath(APawnBase* deadEnemy, AActor* causerActo
 			{
 				AWeaponBase* weapon = playerRef->GetPossessedEnemy()->GetWeapon();
 
-				AddScore(weapon->GetKillScore());
+				gameManagerRef->GetScoreHandler()->AddScore(UScoreHandler::Lethality, weapon->GetKillScore());
+
+				if(comboTimer > 0)
+				{
+					gameManagerRef->GetScoreHandler()->AddScore(UScoreHandler::Combo, comboScore);
+				}
+				
+				comboTimer = comboWindow;
 			}
 			else
 			{
@@ -125,7 +121,14 @@ void AEliminationGamemode::OnEnemyDeath(APawnBase* deadEnemy, AActor* causerActo
 		}
 		else if(Cast<APawnParasite>(causerActor))
 		{
-			AddScore(playerRef->GetKillScore());
+			gameManagerRef->GetScoreHandler()->AddScore(UScoreHandler::Lethality, playerRef->GetKillScore());
+
+			if(comboTimer > 0)
+			{
+				gameManagerRef->GetScoreHandler()->AddScore(UScoreHandler::Combo, comboScore);
+			}
+
+			comboTimer = comboWindow;
 		}
 		
 		if(HasEliminatedAllEnemies())
@@ -147,8 +150,10 @@ void AEliminationGamemode::OnPlayerDeath(APawnBase* deadPlayer, AActor* causerAc
 
 void AEliminationGamemode::OnGoalTriggered()
 {
+	//TODO: Refactor so all widgets are on gamemode blueprint, and transfer all this ongoaltriggered logic to blueprints instead
 	//if(HasEliminatedAllEnemies())
 	//{
+		UE_LOG(LogTemp, Warning, TEXT("SDADASD"));
 		if(!gameManagerRef->IsCurrentFloorLast())
 		{
 			gameManagerRef->LoadNextFloor();		
@@ -156,28 +161,26 @@ void AEliminationGamemode::OnGoalTriggered()
 		else
 		{
 			//Add score if player finished level before time limit
-			if(levelTimer < levelTimeLimit)
-				AddScore(finishOnTimeScore, false);
+			if(gameManagerRef->GetLevelTimer() < levelTimeLimit)
+			{
+				gameManagerRef->GetScoreHandler()->AddScore(UScoreHandler::TimeBonus, finishOnTimeScore);
+			}
 
-			UGameplayStatics::OpenLevel(GetWorld(), "Hideout");
+			gameManagerRef->OnFinishLevel();
+			//UGameplayStatics::OpenLevel(GetWorld(), "Hideout");
 		}
 	//}
 }
 
-void AEliminationGamemode::AddScore(float scoreToAdd, bool allowCombo)
+AGoalTrigger* AEliminationGamemode::FindGoalTrigger()
 {
-	currentScore += scoreToAdd;
+	TArray<AActor*> goalTriggers;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGoalTrigger::StaticClass(), goalTriggers);
 
-	UE_LOG(LogTemp, Warning, TEXT("Added %f score"), scoreToAdd);
-
-	if(allowCombo)
+	if(goalTriggers.Num() > 0)
 	{
-		if(comboTimer > 0)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Combo! Added %f score"), comboScore);
-			currentScore += comboScore;	
-		}
-
-		comboTimer = comboWindow;
+		goalTrigger = Cast<AGoalTrigger>(goalTriggers[0]);
 	}
+
+	return goalTrigger;
 }

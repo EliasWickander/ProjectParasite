@@ -12,7 +12,9 @@
 #include "GameFramework/DefaultPawn.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 #include "Components/PostProcessComponent.h"
-
+#include "Perception/PawnSensingComponent.h"
+#include "Components/PawnNoiseEmitterComponent.h"
+#include "Kismet/GameplayStatics.h"
 APawnBase::APawnBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -20,8 +22,8 @@ APawnBase::APawnBase()
 	capsuleCollider = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule Collider"));
 	RootComponent = capsuleCollider;
 
-	baseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Base Mesh"));
-	baseMesh->SetupAttachment(RootComponent);
+	skeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Skeletal Mesh"));
+	skeletalMesh->SetupAttachment(RootComponent);
 
 	springArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
 	springArm->SetupAttachment(RootComponent);
@@ -34,6 +36,8 @@ APawnBase::APawnBase()
 
 	movementComponent = CreateDefaultSubobject<UPawnMovementComponent, UFloatingPawnMovement>(ADefaultPawn::MovementComponentName);
 	movementComponent->UpdatedComponent = capsuleCollider;
+
+	pawnNoiseEmitterComponent = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("Pawn Noise Emitter"));
 
 	//Remove this later
 	springArm->bInheritPitch = false;
@@ -171,6 +175,16 @@ void APawnBase::OnTakeDamage(AActor* damagedActor, float damage, const UDamageTy
 		isPendingDeath = true;
 		onStartDeathEvent.Broadcast(this, causerActor);
 	}
+}
+
+void APawnBase::ReportNoise(USoundBase* soundToPlay, float volume)
+{
+	if(soundToPlay != nullptr)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), soundToPlay, GetActorLocation(), volume);
+ 
+	}
+	MakeNoise(volume, this, GetActorLocation());
 }
 
 void APawnBase::OnDeath(APawnBase* deadPawn, AActor* causerActor)

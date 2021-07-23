@@ -8,6 +8,8 @@
 #include "Engine/TargetPoint.h"
 #include "ProjectParasite/Utilities/DevUtils.h"
 #include "DrawDebugHelpers.h"
+#include "Perception/PawnSensingComponent.h"
+
 UBTTask_PatrolBetweenWaypoints::UBTTask_PatrolBetweenWaypoints()
 {
 	NodeName = TEXT("Patrol Between Waypoints");
@@ -22,9 +24,13 @@ EBTNodeResult::Type UBTTask_PatrolBetweenWaypoints::ExecuteTask(UBehaviorTreeCom
 
 	BTTaskPatrolBetweenWaypointsMemory* instanceMemory = reinterpret_cast<BTTaskPatrolBetweenWaypointsMemory*>(NodeMemory);
 
-	instanceMemory->currentWaypoint = FVector::ZeroVector;
-	instanceMemory->patrolPointQueue = new TQueue<FVector>();
-	instanceMemory->ownerEnemy = OwnerComp.GetAIOwner()->GetPawn<APawnEnemy>();
+	//if this is the first time this task is executed (to save current waypoint if patrolling is interrupted)
+	if(instanceMemory->ownerEnemy == nullptr)
+	{
+		instanceMemory->currentWaypoint = FVector::ZeroVector;
+		instanceMemory->patrolPointQueue = new TQueue<FVector>();
+		instanceMemory->ownerEnemy = OwnerComp.GetAIOwner()->GetPawn<APawnEnemy>();	
+	} 
 
 	instanceMemory->ownerEnemy->SetMoveSpeed(instanceMemory->ownerEnemy->GetPatrolSpeed());
 

@@ -4,6 +4,7 @@
 #include "RangedWeapon.h"
 
 #include "ProjectParasite/Actors/Projectile.h"
+#include "ProjectParasite/Pawns/PawnEnemy.h"
 
 // Sets default values
 ARangedWeapon::ARangedWeapon()
@@ -81,6 +82,8 @@ void ARangedWeapon::Fire()
 	spawnedProjectile->weaponRef = this;
 
 	currentAmmo--;
+
+	weaponHolderRef->ReportNoise(nullptr, 1);
 }
 
 void ARangedWeapon::Reload()

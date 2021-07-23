@@ -4,25 +4,24 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "BTTask_PatrolBetweenWaypoints.generated.h"
+#include "BTTask_SearchNoise.generated.h"
 
 class APawnEnemy;
-
-struct BTTaskPatrolBetweenWaypointsMemory
+struct BTTaskSearchNoiseMemory
 {
-	TQueue<FVector>* patrolPointQueue;
-	FVector currentWaypoint = FVector::ZeroVector;
 	APawnEnemy* ownerEnemy = nullptr;
-	bool reachedGoalLastFrame = false;
+	bool reachedGoal = false;
+	float reactionTimer = 0;
+	float lookAroundTimer = 0;
 };
 
 UCLASS()
-class PROJECTPARASITE_API UBTTask_PatrolBetweenWaypoints : public UBTTaskNode
+class PROJECTPARASITE_API UBTTask_SearchNoise : public UBTTaskNode
 {
 	GENERATED_BODY()
-
+	
 public:
-	UBTTask_PatrolBetweenWaypoints();
+	UBTTask_SearchNoise();
 
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
@@ -30,9 +29,6 @@ public:
 
 
 private:
-	void SetupPatrolPoints(BTTaskPatrolBetweenWaypointsMemory* instanceMemory);
-	void InitNextWaypoint(BTTaskPatrolBetweenWaypointsMemory* instanceMemory);
-	
 	virtual uint16 GetInstanceMemorySize() const override;
-	float timer = 0;
+
 };

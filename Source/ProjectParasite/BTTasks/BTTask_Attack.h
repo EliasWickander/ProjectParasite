@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
+#include "Perception/PawnSensingComponent.h"
 #include "BTTask_Attack.generated.h"
 
 class APawnEnemy;

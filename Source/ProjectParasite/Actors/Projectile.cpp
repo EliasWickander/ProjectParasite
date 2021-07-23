@@ -9,6 +9,9 @@
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 #include "DestructibleComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "ProjectParasite/Pawns/PawnEnemy.h"
+#include "ProjectParasite/Pawns/PawnParasite.h"
+#include "ProjectParasite/PlayerControllers/PlayerControllerBase.h"
 
 AProjectile::AProjectile()
 {
@@ -46,28 +49,56 @@ void AProjectile::Tick(float DeltaTime)
 
 void AProjectile::OnOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& sweepResult)
 {
-	//TODO: Change this to OnOverlap instead to support shooting through glass panels
-	
-	//Consider bullet hit if hit actor isn't itself, the owning actor (the shooter), or another bullet
-	if(otherActor != this && otherActor != GetOwner() && Cast<AProjectile>(otherActor) == nullptr)
-	{
-		UGameplayStatics::ApplyDamage(otherActor, damage, UGameplayStatics::GetPlayerController(GetWorld(), 0), weaponRef->GetWeaponHolder(), damageType);
+	if(otherActor == this)
+		return;
 
-		UDestructibleComponent* destructibleComponent = Cast<UDestructibleComponent>(otherComp);
+	if(otherActor == GetOwner())
+		return;
+
+	if(Cast<AProjectile>(otherActor))
+		return;
+
+	if(weaponRef == nullptr)
+		return;
+	
+	if(weaponRef->GetWeaponHolder() == nullptr)
+		return;
+	
+	if(otherActor == weaponRef->GetWeaponHolder())
+		return;
+
+	APawnEnemy* weaponHolder = Cast<APawnEnemy>(weaponRef->GetWeaponHolder());
+
+	APawnEnemy* possessedEnemy = weaponHolder->playerControllerRef->GetPlayer()->GetPossessedEnemy();
+	
+	//Make sure enemies can't shoot each other
+	if(weaponHolder)
+	{
+		if(possessedEnemy != weaponHolder)
+		{
+			if(otherActor != possessedEnemy && otherActor != weaponHolder->playerControllerRef->GetPlayer())
+			{
+				return;
+			}
+		} 
+	}
+	
+	UGameplayStatics::ApplyDamage(otherActor, damage, UGameplayStatics::GetPlayerController(GetWorld(), 0), weaponRef->GetWeaponHolder(), damageType);
+
+	UDestructibleComponent* destructibleComponent = Cast<UDestructibleComponent>(otherComp);
+	
+	if(!destructibleComponent)
+	{
+		//Destroy bullet on hit
+		Destroy();	
+	}
+	else
+	{
+		FVector impulseDir = destructibleComponent->GetComponentLocation() - GetActorLocation();
+		impulseDir.Z = 0;
+		impulseDir.Normalize();
 		
-		if(!destructibleComponent)
-		{
-			//Destroy bullet on hit
-			Destroy();	
-		}
-		else
-		{
-			FVector impulseDir = destructibleComponent->GetComponentLocation() - GetActorLocation();
-			impulseDir.Z = 0;
-			impulseDir.Normalize();
-			
-			destructibleComponent->ApplyDamage(damage, destructibleComponent->GetComponentLocation(), impulseDir, 10);
-		}
+		destructibleComponent->ApplyDamage(damage, destructibleComponent->GetComponentLocation(), impulseDir, 10);
 	}
 }
 

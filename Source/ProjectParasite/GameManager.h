@@ -9,6 +9,7 @@
 class APawnParasite;
 class AEliminationGamemode;
 class APawnEnemy;
+class UScoreHandler;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFloorEnterEvent, int, floor);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFloorExitEvent, int, floor);
@@ -22,6 +23,7 @@ enum GameState
 	FloorEnter,
 	FloorExit,
 };
+
 UCLASS()
 class PROJECTPARASITE_API UGameManager : public UGameInstance
 {
@@ -31,22 +33,30 @@ public:
 	void BeginPlay();
 	void Tick(float DeltaSeconds);
 
+	UScoreHandler* GetScoreHandler() { return scoreHandler; }
+	float GetLevelTimer() { return levelTimer; }
 	UFUNCTION(BlueprintCallable)
 	void OpenLevel(int level, int floor);
 	
 	UFUNCTION(BlueprintCallable)
 	bool DoesLevelExist(int level, int floor);
 
+	UFUNCTION(BlueprintCallable)
 	bool IsCurrentFloorLast();
 
+	UFUNCTION(BlueprintCallable)
 	void LoadNextFloor();
 
+	UFUNCTION(BlueprintCallable)
 	bool IsOnFloorLevel();
 	
 	UFUNCTION(BlueprintCallable)
 	void RestartLevel();
 
+	UFUNCTION(BlueprintCallable)
 	int GetCurrentFloor();
+
+	UFUNCTION(BlueprintCallable)
 	int GetCurrentLevel();
 
 	UFUNCTION(BlueprintImplementableEvent)
@@ -62,7 +72,15 @@ public:
 	void OnUnpauseGame();
 
 	UFUNCTION(BlueprintImplementableEvent)
+	void OnBeginPlay();
+	
+	UFUNCTION(BlueprintImplementableEvent)
 	void OnTick(float deltaTime);
+
+	void OnLevelStart();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnFinishLevel();
 
 	bool GetPaused() {return isPaused; }
 	void SetPaused(bool paused);
@@ -72,6 +90,8 @@ public:
 	FOnUnpauseGameEvent OnUnpauseGameEvent;
 
 private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UScoreHandler* scoreHandler = nullptr;
 	bool loadingFirstFloor = false;
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -104,4 +124,6 @@ private:
 	bool beginPlayTriggered = false;
 
 	bool isPaused = false;
+
+	float levelTimer = 0;
 };
