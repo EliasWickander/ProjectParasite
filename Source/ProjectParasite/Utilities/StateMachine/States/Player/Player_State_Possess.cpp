@@ -88,16 +88,17 @@ void UPlayer_State_Possess::HandlePossessionLoop()
 		}
 	case PossessState::PostPossess:
 		{
-			detachTimer = FMath::Clamp<float>(detachTimer += playerRef->detachLocationLerpSpeed * GetWorld()->GetDeltaSeconds(), 0, 1);
-			
-			FVector newLocation = FMath::Lerp(playerRef->GetActorLocation(), targetDetachPoint, detachTimer);
-
-			bool locationSet = playerRef->SetActorLocation(newLocation, true);
-
-			if(!locationSet || FVector::Dist(playerRef->GetActorLocation(), targetDetachPoint) <= 0.3f)
-			{
-				stateMachine->SetState("State_Idle");		
-			}
+			stateMachine->SetState("State_Dash");
+			// detachTimer = FMath::Clamp<float>(detachTimer += playerRef->detachLocationLerpSpeed * GetWorld()->GetDeltaSeconds(), 0, 1);
+			//
+			// FVector newLocation = FMath::Lerp(playerRef->GetActorLocation(), targetDetachPoint, detachTimer);
+			//
+			// bool locationSet = playerRef->SetActorLocation(newLocation, true);
+			//
+			// if(!locationSet || FVector::Dist(playerRef->GetActorLocation(), targetDetachPoint) <= 0.3f)
+			// {
+			// 	stateMachine->SetState("State_Idle");		
+			// }
 			
 			break;
 		}
