@@ -19,6 +19,11 @@ struct BTTaskAttackMemory
 	AAIControllerBase* enemyAIController = nullptr;
 	
 	APawnBase* targetActor = nullptr;
+
+	float backOffTimer = 0;
+
+	float attackTimer = 0;
+	bool preparingAttack = false;
 };
 
 UCLASS()
@@ -43,9 +48,11 @@ private:
 	bool IsInRange(uint8* nodeMemory);
 	void RotateWeaponToTarget(uint8* nodeMemory);
 
+	bool Retreat(uint8* nodeMemory);
+
 	UBehaviorTreeComponent* behaviorTreeComponent = nullptr;
 
 	APawnBase* playerRef = nullptr;
 
-	float backOffTimer = 0;
+	void OnTargetDeath(APawnBase* deadPawn, AActor* causerActor);
 };

@@ -160,7 +160,6 @@ void APawnBase::HandlePendingDeath()
 void APawnBase::OnTakeDamage(AActor* damagedActor, float damage, const UDamageType* damageType, AController* causerController,
                              AActor* causerActor)
 {
-	
 	currentHealth -= damage;
 
 	UE_LOG(LogTemp, Warning, TEXT("Took %f damage"), damage);

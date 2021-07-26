@@ -3,7 +3,9 @@
 
 #include "BTTask_Attack.h"
 
+#include "NavigationSystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectParasite/Actors/Weapons/WeaponBase.h"
 #include "ProjectParasite/AIControllers/AIControllerBase.h"
@@ -44,7 +46,9 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	SetTarget(playerRef, NodeMemory);
 
 	instanceMemory->ownerEnemy->SetMoveSpeed(instanceMemory->ownerEnemy->GetAttackMoveSpeed());
-	
+
+	instanceMemory->attackTimer = 0;
+	instanceMemory->preparingAttack = false;
 	return EBTNodeResult::InProgress;
 }
 
@@ -63,8 +67,6 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		OnTargetDeath(targetActor, NodeMemory);
 	}
 
-	bool rotatedToTarget = SetFocusExtended(ownerEnemy->GetAIController(), targetActor, ownerEnemy->GetTurnRate(), 0.2f);
-
 	if(Cast<ARangedPawnEnemy>(instanceMemory->ownerEnemy))
 	{
 		FVector dirToTarget = targetActor->GetActorLocation() - ownerEnemy->GetActorLocation();
@@ -72,36 +74,51 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 
 		if(dirToTarget.Size() < ownerEnemy->GetAttackRange())
 		{
-			if(backOffTimer < 0.2f)
-			{
-				backOffTimer += DeltaSeconds;
-				return;
-			}
-			else
-			{
-				FVector safePoint = ownerEnemy->GetActorLocation() - ownerEnemy->GetActorForwardVector() * ownerEnemy->GetAttackRange();
-				backOffTimer = 0;
-				
-				if(ownerEnemy->GetAIController()->MoveToLocation(safePoint, 0))
-					return;
-			}
+			bool finishedRetreating = Retreat(NodeMemory);
 
+			if(!finishedRetreating)
+				return;
 		}
 	}
-	
-	//If enemy is in attack range, rotate weapon and attack
-	if(IsInRange(NodeMemory))
+
+	bool rotatedToTarget = SetFocusExtended(ownerEnemy->GetAIController(), targetActor, ownerEnemy->GetTurnRate(), 0.2f);
+
+	if(instanceMemory->preparingAttack)
 	{
-		if(rotatedToTarget)
+		if(instanceMemory->attackTimer > 0)
 		{
-			RotateWeaponToTarget(NodeMemory);	
+			instanceMemory->attackTimer -= DeltaSeconds;
+		}
+		else
+		{
+			instanceMemory->preparingAttack = false;
+			instanceMemory->attackTimer = 0;
 			ownerEnemy->Attack();
 		}
 	}
 	else
 	{
-		//If not, transition back to chase state
+		if(rotatedToTarget)
+		{
+			RotateWeaponToTarget(NodeMemory);	
+			instanceMemory->preparingAttack = true;
+			instanceMemory->attackTimer = ownerEnemy->GetAttackRate();
+		}
+	}
+	
+	//If enemy is not in attack range, transition back to chase state
+	if(!IsInRange(NodeMemory))
+	{
 		instanceMemory->enemyAIController->SetCurrentState(EnemyStates::State_Chase);	
+	}
+
+	if(instanceMemory->targetActor->GetIsPendingDeath())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Target died"));
+		if(playerRef != nullptr)
+		{
+			SetTarget(playerRef, NodeMemory);
+		}
 	}
 }
 
@@ -122,8 +139,6 @@ void UBTTask_Attack::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* No
 void UBTTask_Attack::SetTarget(APawnBase* target, uint8* nodeMemory)
 {
 	BTTaskAttackMemory* instanceMemory = reinterpret_cast<BTTaskAttackMemory*>(nodeMemory);
-	
-	//instanceMemory->ownerEnemy->GetAIController()->SetFocus(target);
 
 	instanceMemory->targetActor = target;
 }
@@ -157,6 +172,44 @@ void UBTTask_Attack::RotateWeaponToTarget(uint8* nodeMemory)
 	FVector dirToTarget = instanceMemory->targetActor->GetActorLocation() - weapon->GetActorLocation();
 
 	weapon->SetActorRotation(dirToTarget.Rotation());
+}
+
+bool UBTTask_Attack::Retreat(uint8* nodeMemory)
+{
+	BTTaskAttackMemory* instanceMemory = reinterpret_cast<BTTaskAttackMemory*>(nodeMemory);
+
+	APawnEnemy* ownerEnemy = instanceMemory->ownerEnemy;
+	APawnBase* targetActor = instanceMemory->targetActor;
+
+	//Check if there is obstacle behind enemy
+	FHitResult hitResult;
+	GetWorld()->LineTraceSingleByObjectType(
+		hitResult,
+		ownerEnemy->GetActorLocation(),
+		ownerEnemy->GetActorLocation() - ownerEnemy->GetActorForwardVector() * 200,
+		ECollisionChannel::ECC_WorldStatic);
+
+	if(hitResult.GetActor() == nullptr)
+	{
+		if(instanceMemory->backOffTimer < 0.2f)
+		{
+			instanceMemory->backOffTimer += GetWorld()->GetDeltaSeconds();
+		}
+		else
+		{
+			FVector safePoint = ownerEnemy->GetActorLocation() - ownerEnemy->GetActorForwardVector() * ownerEnemy->GetAttackRange();
+			instanceMemory->backOffTimer = 0;
+
+			ownerEnemy->GetAIController()->MoveToLocation(safePoint);
+			ownerEnemy->GetAIController()->SetFocus(targetActor);
+		}
+	}
+	else
+	{
+		return true;
+	}
+
+	return false;
 }
 
 uint16 UBTTask_Attack::GetInstanceMemorySize() const

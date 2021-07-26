@@ -72,15 +72,16 @@ void AProjectile::OnOverlap(UPrimitiveComponent* overlappedComponent, AActor* ot
 	APawnEnemy* possessedEnemy = weaponHolder->playerControllerRef->GetPlayer()->GetPossessedEnemy();
 	
 	//Make sure enemies can't shoot each other
-	if(weaponHolder)
+
+	if(Cast<APawnEnemy>(otherActor))
 	{
+		//If the one shooting is an unpossessed enemy
 		if(possessedEnemy != weaponHolder)
 		{
-			if(otherActor != possessedEnemy && otherActor != weaponHolder->playerControllerRef->GetPlayer())
-			{
+			//If the one hit is another unpossessed enemy, return
+			if(otherActor != possessedEnemy)
 				return;
-			}
-		} 
+		}
 	}
 	
 	UGameplayStatics::ApplyDamage(otherActor, damage, UGameplayStatics::GetPlayerController(GetWorld(), 0), weaponRef->GetWeaponHolder(), damageType);
