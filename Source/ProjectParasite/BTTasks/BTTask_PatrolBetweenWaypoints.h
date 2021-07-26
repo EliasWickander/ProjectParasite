@@ -34,5 +34,4 @@ private:
 	void InitNextWaypoint(BTTaskPatrolBetweenWaypointsMemory* instanceMemory);
 	
 	virtual uint16 GetInstanceMemorySize() const override;
-	float timer = 0;
 };

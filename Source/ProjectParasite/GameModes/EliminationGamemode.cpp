@@ -150,9 +150,8 @@ void AEliminationGamemode::OnPlayerDeath(APawnBase* deadPlayer, AActor* causerAc
 
 void AEliminationGamemode::OnGoalTriggered()
 {
-	//TODO: Refactor so all widgets are on gamemode blueprint, and transfer all this ongoaltriggered logic to blueprints instead
-	//if(HasEliminatedAllEnemies())
-	//{
+	if(HasEliminatedAllEnemies())
+	{
 		UE_LOG(LogTemp, Warning, TEXT("SDADASD"));
 		if(!gameManagerRef->IsCurrentFloorLast())
 		{
@@ -169,7 +168,7 @@ void AEliminationGamemode::OnGoalTriggered()
 			gameManagerRef->OnFinishLevel();
 			//UGameplayStatics::OpenLevel(GetWorld(), "Hideout");
 		}
-	//}
+	}
 }
 
 AGoalTrigger* AEliminationGamemode::FindGoalTrigger()
