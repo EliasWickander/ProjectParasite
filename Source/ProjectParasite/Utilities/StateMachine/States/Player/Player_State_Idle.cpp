@@ -13,6 +13,19 @@ void UPlayer_State_Idle::Start()
 void UPlayer_State_Idle::Update()
 {
 	playerRef->RotateToMouseCursor();
+
+	if(playerRef->GetActorLocation().Z != playerRef->GetPlayerStartPos().Z)
+	{
+		FVector targetPos = playerRef->GetActorLocation();
+		targetPos.Z = playerRef->GetPlayerStartPos().Z;
+
+		if(FVector::Dist(playerRef->GetActorLocation(), targetPos) > 0.05f)
+		{
+			FVector currentLocation = FMath::Lerp(playerRef->GetActorLocation(), targetPos, 5 * GetWorld()->GetDeltaSeconds());
+
+			playerRef->SetActorLocation(currentLocation);
+		}
+	}
 }
 
 void UPlayer_State_Idle::Exit()

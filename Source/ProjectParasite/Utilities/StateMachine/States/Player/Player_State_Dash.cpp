@@ -34,6 +34,14 @@ void UPlayer_State_Dash::Update()
 	{
 		dashTimer += playerRef->GetWorld()->DeltaTimeSeconds;
 
+		if(playerRef->GetActorLocation().Z != playerRef->GetPlayerStartPos().Z)
+		{
+			if(dashTimer > playerRef->dashTime * 0.5f)
+			{
+				dashDir = FMath::Lerp(dashDir, FVector::DownVector, 10 * GetWorld()->GetDeltaSeconds());
+			}
+		}
+		
 		playerRef->AddMovementInput(dashDir);	
 
 		//if there are enemies close enough, possess

@@ -133,7 +133,7 @@ void AEliminationGamemode::OnEnemyDeath(APawnBase* deadEnemy, AActor* causerActo
 		
 		if(HasEliminatedAllEnemies())
 		{
-			OnGameWon();
+			OnFloorFinished();
 		}	
 	}
 	else
@@ -144,8 +144,7 @@ void AEliminationGamemode::OnEnemyDeath(APawnBase* deadEnemy, AActor* causerActo
 
 void AEliminationGamemode::OnPlayerDeath(APawnBase* deadPlayer, AActor* causerActor)
 {
-	//When player dies, game is lost
-	OnGameLost();
+	OnPlayerDied();
 }
 
 void AEliminationGamemode::OnGoalTriggered()

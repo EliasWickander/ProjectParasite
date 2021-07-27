@@ -31,10 +31,10 @@ public:
 	void OnFloorExit(int floor);
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = "Events")
-	void OnGameWon();
+	void OnFloorFinished();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Events")
-	void OnGameLost();
+	void OnPlayerDied();
 
 	float GetLevelTimeLimit() { return levelTimeLimit; }
 

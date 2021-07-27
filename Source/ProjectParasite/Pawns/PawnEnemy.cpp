@@ -14,6 +14,7 @@
 #include "ProjectParasite/AIControllers/AIControllerBase.h"
 #include "ProjectParasite/DamageTypes/DamageType_Environmental.h"
 #include "Perception/PawnSensingComponent.h"
+#include "ProjectParasite/Utilities/StateMachine/StateMachine.h"
 
 APawnEnemy::APawnEnemy()
 {
@@ -59,6 +60,11 @@ void APawnEnemy::OnDeath(APawnBase* deadPawn, AActor* causerActor)
 
 	//Drop weapon
 	SetWeapon(nullptr);
+
+	if(Cast<APawnEnemy>(causerActor))
+	{
+		playerControllerRef->GetPlayer()->GetStateMachine()->SetState("State_Idle");
+	}
 }
 
 void APawnEnemy::OnTakeDamage(AActor* damagedActor, float damage, const UDamageType* damageType,

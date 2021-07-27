@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "ProjectParasite/AIControllers/AIControllerBase.h"
+#include "ApexDestruction/Public/DestructibleActor.h"
 
 UBTTask_Detect::UBTTask_Detect()
 {
@@ -111,9 +112,9 @@ void UBTTask_Detect::Detect(BTTaskDetectMemory* instanceMemory)
 		//Check if something is obstructing the vision of actor
 		if(GetWorld()->LineTraceSingleByChannel(hitResult,instanceMemory->ownerEnemy->GetActorLocation(),actorToDetect->GetActorLocation(), ECC_Visibility, params))
 		{
-
+			UE_LOG(LogTemp, Warning, TEXT("%s"), *hitResult.GetActor()->GetName());
 			//If nothing is obstructing the vision
-			if(hitResult.GetActor() == actorToDetect)
+			if(hitResult.GetActor() == actorToDetect || Cast<ADestructibleActor>(hitResult.GetActor()))
 			{
 				instanceMemory->ownerEnemy->GetAIController()->StopMovement();
 				

@@ -79,7 +79,7 @@ void UPlayer_State_Possess::HandlePossessionLoop()
 			if(playerRef->IsPlayerControlled())
 			{
 				playerRef->GetCollider()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-				targetDetachPoint = playerRef->GetActorLocation() - playerRef->GetActorForwardVector() * playerRef->detachTargetDist;
+				targetDetachPoint = playerRef->GetActorLocation() + playerRef->GetActorForwardVector() * playerRef->detachTargetDist;
 				targetDetachPoint.Z = playerOriginPos.Z;
 
 				currentState = PossessState::PostPossess;
@@ -97,7 +97,7 @@ void UPlayer_State_Possess::HandlePossessionLoop()
 			//
 			// if(!locationSet || FVector::Dist(playerRef->GetActorLocation(), targetDetachPoint) <= 0.3f)
 			// {
-			// 	stateMachine->SetState("State_Idle");		
+			// 	stateMachine->SetState("State_Dash");		
 			// }
 			
 			break;

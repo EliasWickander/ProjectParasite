@@ -38,7 +38,8 @@ APawnParasite::APawnParasite()
 void APawnParasite::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	playerStartPos = GetActorLocation();
 	SetMoveSpeed(baseMoveSpeed);
 	stateMachine->SetState("State_Idle");
 }
