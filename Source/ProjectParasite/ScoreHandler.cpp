@@ -25,4 +25,6 @@ void UScoreHandler::AddScore(ScoreType type, float score)
 	}
 
 	totalScore += score;
+
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Totalscore: %i"), totalScore));
 }

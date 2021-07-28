@@ -61,7 +61,7 @@ void APawnEnemy::OnDeath(APawnBase* deadPawn, AActor* causerActor)
 	//Drop weapon
 	SetWeapon(nullptr);
 
-	if(Cast<APawnEnemy>(causerActor))
+	if(Cast<APawnEnemy>(causerActor) && playerControllerRef->GetPlayer()->GetPossessedEnemy() == this)
 	{
 		playerControllerRef->GetPlayer()->GetStateMachine()->SetState("State_Idle");
 	}

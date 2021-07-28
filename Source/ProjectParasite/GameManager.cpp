@@ -38,6 +38,11 @@ void UGameManager::BeginPlay()
 	isPaused = false;
 	beginPlayTriggered = true;
 
+	if(totalScoreHandler == nullptr)
+	{
+		totalScoreHandler = NewObject<UScoreHandler>();	
+	}
+	
 	if(GetCurrentFloor() == 1)
 		OnLevelStart();
 	
@@ -197,8 +202,8 @@ int UGameManager::GetCurrentLevel()
 
 void UGameManager::OnLevelStart()
 {
-	scoreHandler = NewObject<UScoreHandler>();
 	levelTimer = 0;
+	totalScoreHandler = NewObject<UScoreHandler>();	
 }
 
 void UGameManager::SetPaused(bool paused)

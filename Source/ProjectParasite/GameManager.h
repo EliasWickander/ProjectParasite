@@ -33,7 +33,7 @@ public:
 	void BeginPlay();
 	void Tick(float DeltaSeconds);
 
-	UScoreHandler* GetScoreHandler() { return scoreHandler; }
+	UScoreHandler* GetScoreHandler() { return totalScoreHandler; }
 	float GetLevelTimer() { return levelTimer; }
 	UFUNCTION(BlueprintCallable)
 	void OpenLevel(int level, int floor);
@@ -91,7 +91,8 @@ public:
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	UScoreHandler* scoreHandler = nullptr;
+	UScoreHandler* totalScoreHandler = nullptr;
+
 	bool loadingFirstFloor = false;
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
