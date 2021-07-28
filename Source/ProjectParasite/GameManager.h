@@ -16,6 +16,11 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFloorExitEvent, int, floor);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPauseGameEvent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnpauseGameEvent);
 
+struct EnemyTransitionData
+{
+	UClass* enemyToTransition = nullptr;
+	int weaponAmmo = 0;
+};
 enum GameState
 {
 	Playing,
@@ -108,7 +113,8 @@ private:
 	
 	FString currentWorldName = "";
 
-	UClass* possessedEnemyToTransition = nullptr;
+	EnemyTransitionData possessedEnemyToTransition;
+	
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	bool transitionOutOfLevel = false;

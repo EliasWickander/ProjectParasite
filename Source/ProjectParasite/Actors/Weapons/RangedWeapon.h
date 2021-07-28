@@ -26,6 +26,7 @@ public:
 
 	int GetCurrentAmmo() { return currentAmmo; }
 	int GetMaxAmmo() { return maxAmmo; }
+	void SetCurrentAmmo(int ammo) { currentAmmo = ammo; }
 
 protected:
 	virtual void BeginPlay() override;

@@ -134,6 +134,11 @@ void AEliminationGamemode::OnEnemyDeath(APawnBase* deadEnemy, AActor* causerActo
 		if(HasEliminatedAllEnemies())
 		{
 			OnFloorFinished();
+
+			if(gameManagerRef->IsCurrentFloorLast())
+			{
+				gameManagerRef->OnFinishLevel();
+			}
 		}	
 	}
 	else

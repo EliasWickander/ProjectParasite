@@ -4,6 +4,7 @@
 #include "GameManager.h"
 
 #include "AIController.h"
+#include "Actors/Weapons/RangedWeapon.h"
 #include "Engine/LevelStreaming.h"
 #include "GameFramework/PlayerStart.h"
 #include "ProjectParasite/GameModes/EliminationGamemode.h"
@@ -56,11 +57,20 @@ void UGameManager::Tick(float DeltaSeconds)
 		//Handle enemy transition after the first frame to prevent conflicts
 		if(IsOnFloorLevel())
 		{	
-			if(possessedEnemyToTransition != nullptr)
+			if(possessedEnemyToTransition.enemyToTransition != nullptr)
 			{
-				AActor* spawnedClone = GetWorld()->SpawnActor<AActor>(possessedEnemyToTransition, playerRef->GetActorLocation(), playerRef->GetActorRotation());
+				AActor* spawnedClone = GetWorld()->SpawnActor<AActor>(possessedEnemyToTransition.enemyToTransition, playerRef->GetActorLocation(), playerRef->GetActorRotation());
 				
 				APawnEnemy* spawnedCloneAsEnemy = Cast<APawnEnemy>(spawnedClone);
+
+				AWeaponBase* weapon = spawnedCloneAsEnemy->GetWeapon();
+				if(weapon)
+				{
+					if(Cast<ARangedWeapon>(weapon))
+					{
+						Cast<ARangedWeapon>(weapon)->SetCurrentAmmo(possessedEnemyToTransition.weaponAmmo);
+					}
+				}
 
 				if(spawnedCloneAsEnemy)
 				{
@@ -115,7 +125,19 @@ void UGameManager::OpenLevel(int level, int floor)
 		
 		//If a player is possessing an enemy when loading new level, save reference to that enemy
 		if(playerRef->GetPossessedEnemy())
-			possessedEnemyToTransition = playerRef->GetPossessedEnemy()->GetClass();
+		{
+			possessedEnemyToTransition.enemyToTransition = playerRef->GetPossessedEnemy()->GetClass();
+
+			AWeaponBase* weapon = playerRef->GetPossessedEnemy()->GetWeapon();
+			
+			if(weapon)
+			{
+				if(Cast<ARangedWeapon>(weapon))
+				{
+					possessedEnemyToTransition.weaponAmmo = Cast<ARangedWeapon>(weapon)->GetCurrentAmmo();
+				}
+			}
+		}
 
 		//If player is exiting a floor level, call exit event
 		if(IsOnFloorLevel())
