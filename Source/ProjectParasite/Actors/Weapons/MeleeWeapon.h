@@ -12,12 +12,14 @@ class PROJECTPARASITE_API AMeleeWeapon : public AWeaponBase
 	GENERATED_BODY()
 
 public:
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void Use() override;
 
 	TArray<AActor*> GetHitActors();
 
+	void SetAttackConeRange(float range) { attackConeRange = range; }
 	float GetAttackConeRange() { return attackConeRange; }
 	float GetAttackConeAngle() { return attackConeAngle; }
 	FVector GetAttackConeOffset() { return attackConeOriginOffsetLocal; }

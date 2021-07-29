@@ -26,7 +26,6 @@ protected:
 	virtual void BeginPlay() override;
 
 	AWeaponBase* weaponRef = nullptr;
-	void DrawAttackCone();
 	
 	UPROPERTY(EditDefaultsOnly, Category = "General")
 	bool debugEnabled = true;

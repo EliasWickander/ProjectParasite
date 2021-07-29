@@ -9,6 +9,11 @@
 #include "Kismet/GameplayStatics.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
 
+void AMeleeWeapon::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 void AMeleeWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -39,8 +44,10 @@ TArray<AActor*> AMeleeWeapon::GetHitActors()
 		weaponHolderRef->GetActorRotation().Quaternion(),
 		attackConeAngle,
 		enemyColBounds.BoxExtent.Z * 2,
-		attackConeRange
+		GetAttackConeRange()
 	};
+
+	UE_LOG(LogTemp, Warning, TEXT("%f"), GetAttackConeRange());
 
 	TArray<TEnumAsByte<EObjectTypeQuery>> objectTypes;
 	UClass* classFilter = APawnBase::StaticClass();

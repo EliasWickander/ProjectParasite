@@ -14,6 +14,7 @@
 #include "ProjectParasite/AIControllers/AIControllerBase.h"
 #include "ProjectParasite/DamageTypes/DamageType_Environmental.h"
 #include "Perception/PawnSensingComponent.h"
+#include "ProjectParasite/Actors/Weapons/MeleeWeapon.h"
 #include "ProjectParasite/Utilities/StateMachine/StateMachine.h"
 
 APawnEnemy::APawnEnemy()
@@ -108,6 +109,11 @@ void APawnEnemy::SetWeapon(AWeaponBase* newWeapon)
 
 		newWeapon->weaponHolderRef = this;
 		newWeapon->isEquipped = true;
+		
+		if(Cast<AMeleeWeapon>(newWeapon))
+		{
+			Cast<AMeleeWeapon>(newWeapon)->SetAttackConeRange(attackRange);
+		}
 	} 
 	
 	equippedWeapon = newWeapon;

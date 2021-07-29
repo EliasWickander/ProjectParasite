@@ -23,7 +23,7 @@ void UPlayer_State_Idle::Update()
 		{
 			FVector currentLocation = FMath::Lerp(playerRef->GetActorLocation(), targetPos, 5 * GetWorld()->GetDeltaSeconds());
 
-			playerRef->SetActorLocation(currentLocation);
+			playerRef->SetActorLocation(currentLocation, true);
 		}
 	}
 }

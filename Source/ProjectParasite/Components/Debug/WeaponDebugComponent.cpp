@@ -34,32 +34,4 @@ void UWeaponDebugComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 
 	if(!debugEnabled)
 		return;
-
-	if(Cast<AMeleeWeapon>(weaponRef))
-	{
-		DrawAttackCone();	
-	}
-}
-
-void UWeaponDebugComponent::DrawAttackCone()
-{
-	AMeleeWeapon* meleeWeaponRef = Cast<AMeleeWeapon>(weaponRef);
-	
-	APawnEnemy* enemyRef = meleeWeaponRef->GetWeaponHolder();
-
-	if(enemyRef)
-	{
-		FBoxSphereBounds enemyColBounds = enemyRef->GetCollider()->Bounds;
-
-		SCone coneData
-		{
-			enemyColBounds.Origin + enemyRef->GetTransform().TransformVector(meleeWeaponRef->GetAttackConeOffset()),
-			enemyRef->GetActorRotation().Quaternion(),
-			meleeWeaponRef->GetAttackConeAngle(),
-			enemyColBounds.BoxExtent.Z * 2,
-			meleeWeaponRef->GetAttackConeRange()
-		};
-
-		DrawCone(coneData, GetWorld(), FColor::Red);	
-	}
 }
