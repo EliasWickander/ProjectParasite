@@ -58,7 +58,7 @@ void UBTTask_Chase::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
 	if(instanceMemory->targetActor != nullptr)
 	{
 		SetFocusExtended(instanceMemory->enemyAIController, instanceMemory->targetActor, instanceMemory->ownerEnemy->GetTurnRate(), 0.2f);
-		
+
 		//Chase the player
 		instanceMemory->enemyAIController->MoveToActor(instanceMemory->targetActor, instanceMemory->ownerEnemy->GetAttackRange());
 
