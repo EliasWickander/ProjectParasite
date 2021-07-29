@@ -25,7 +25,7 @@ void AMeleePawnEnemy::Attack()
 	if(equippedWeapon)
 	{
 		AMeleeWeapon* meleeWeapon = Cast<AMeleeWeapon>(equippedWeapon);
-		
+
 		if(meleeWeapon)
 		{
 			//Fire weapon

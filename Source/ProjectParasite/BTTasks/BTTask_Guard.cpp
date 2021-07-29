@@ -53,15 +53,14 @@ void UBTTask_Guard::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
 
 	if(finishedRotating)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%f"), guardTimer);
-		if(guardTimer <= 0)
+		if(instanceMemory->guardTimer <= 0)
 		{
 			instanceMemory->guardPointQueue->Enqueue(instanceMemory->currentGuardPoint);
 			InitNextGuardPoint(instanceMemory);
 		}
 		else
 		{
-			guardTimer -= DeltaSeconds;
+			instanceMemory->guardTimer -= DeltaSeconds;
 		}
 	}
 }
@@ -76,7 +75,7 @@ void UBTTask_Guard::InitNextGuardPoint(BTTaskGuardMemory* instanceMemory)
 	float guardTime = instanceMemory->ownerEnemy->GetGuardTime();
 	float offset = instanceMemory->ownerEnemy->GetGuardTimeOffset();
 	
-	guardTimer = FMath::RandRange(guardTime - offset, guardTime + offset);
+	instanceMemory->guardTimer = FMath::RandRange(guardTime - offset, guardTime + offset);
 	//UE_LOG(LogTemp, Warning, TEXT("%s"), *instanceMemory->currentWaypoint.ToString());
 }
 

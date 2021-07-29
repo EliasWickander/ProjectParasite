@@ -112,13 +112,15 @@ void UBTTask_Detect::Detect(BTTaskDetectMemory* instanceMemory)
 		//Check if something is obstructing the vision of actor
 		if(GetWorld()->LineTraceSingleByChannel(hitResult,instanceMemory->ownerEnemy->GetActorLocation(),actorToDetect->GetActorLocation(), ECC_Visibility, params))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("%s"), *hitResult.GetActor()->GetName());
-			//If nothing is obstructing the vision
-			if(hitResult.GetActor() == actorToDetect || Cast<ADestructibleActor>(hitResult.GetActor()))
+			if(hitResult.GetActor())
 			{
-				instanceMemory->ownerEnemy->GetAIController()->StopMovement();
+				//If nothing is obstructing the vision
+				if(hitResult.GetActor() == actorToDetect || Cast<ADestructibleActor>(hitResult.GetActor()))
+				{
+					instanceMemory->ownerEnemy->GetAIController()->StopMovement();
 				
-				instanceMemory->hasDetected = true;
+					instanceMemory->hasDetected = true;
+				}	
 			}
 		}
 		else

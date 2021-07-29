@@ -13,6 +13,7 @@ struct BTTaskGuardMemory
 	TQueue<FVector>* guardPointQueue;
 	FVector currentGuardPoint = FVector::ZeroVector;
 	APawnEnemy* ownerEnemy = nullptr;
+	float guardTimer = 0;
 };
 
 UCLASS()
@@ -32,6 +33,4 @@ private:
 	void InitNextGuardPoint(BTTaskGuardMemory* instanceMemory);
 	
 	virtual uint16 GetInstanceMemorySize() const override;
-
-	float guardTimer = 0;
 };
