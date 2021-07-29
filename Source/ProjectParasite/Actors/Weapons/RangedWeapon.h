@@ -48,4 +48,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ammo")
 	float timeToReload = 1;
 	float reloadTimer = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
+	USoundBase* shootSound = nullptr;
 };

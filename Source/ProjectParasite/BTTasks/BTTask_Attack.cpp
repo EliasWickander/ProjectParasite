@@ -83,27 +83,10 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 
 	bool rotatedToTarget = SetFocusExtended(ownerEnemy->GetAIController(), targetActor, ownerEnemy->GetTurnRate(), 0.2f);
 
-	if(instanceMemory->preparingAttack)
+	if(rotatedToTarget)
 	{
-		if(instanceMemory->attackTimer > 0)
-		{
-			instanceMemory->attackTimer -= DeltaSeconds;
-		}
-		else
-		{
-			instanceMemory->preparingAttack = false;
-			instanceMemory->attackTimer = 0;
-			ownerEnemy->Attack();
-		}
-	}
-	else
-	{
-		if(rotatedToTarget)
-		{
-			RotateWeaponToTarget(NodeMemory);	
-			instanceMemory->preparingAttack = true;
-			instanceMemory->attackTimer = ownerEnemy->GetAttackRate();
-		}
+		RotateWeaponToTarget(NodeMemory);	
+		ownerEnemy->Attack();
 	}
 	
 	//If enemy is not in attack range, transition back to chase state
