@@ -28,3 +28,11 @@ void UScoreHandler::AddScore(ScoreType type, float score)
 
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Totalscore: %i"), totalScore));
 }
+
+void UScoreHandler::Copy(UScoreHandler* scoreHandler)
+{
+	lethalityScore = scoreHandler->lethalityScore;
+	comboScore = scoreHandler->comboScore;
+	timeBonusScore = scoreHandler->timeBonusScore;
+	totalScore = scoreHandler->totalScore;
+}

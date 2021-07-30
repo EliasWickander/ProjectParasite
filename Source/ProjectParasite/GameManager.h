@@ -98,6 +98,8 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UScoreHandler* totalScoreHandler = nullptr;
 
+	UScoreHandler* scoreOnFloorStart = nullptr;
+
 	bool loadingFirstFloor = false;
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

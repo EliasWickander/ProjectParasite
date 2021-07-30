@@ -160,9 +160,10 @@ void APawnBase::HandlePendingDeath()
 void APawnBase::OnTakeDamage(AActor* damagedActor, float damage, const UDamageType* damageType, AController* causerController,
                              AActor* causerActor)
 {
+	if(Cast<APawnParasite>(damagedActor) && causerActor == playerControllerRef->GetPlayer()->GetPossessedEnemy())
+		return;
+	
 	currentHealth -= damage;
-
-	UE_LOG(LogTemp, Warning, TEXT("Took %f damage"), damage);
 
 	if(Cast<APawnEnemy>(causerActor))
 	{

@@ -14,6 +14,7 @@ class PROJECTPARASITE_API UScoreHandler : public UObject
 {
 	GENERATED_BODY()
 
+	friend class UGameManager;
 public:
 	enum ScoreType
 	{
@@ -23,6 +24,7 @@ public:
 	};
 
 	void AddScore(ScoreType type, float score);
+	void Copy(UScoreHandler* scoreHandler);
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
