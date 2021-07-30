@@ -18,6 +18,8 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "Camera/CameraComponent.h"
 #include "Components/PostProcessComponent.h"
+#include "Pawns/MeleePawnEnemy.h"
+#include "Pawns/PawnShooter.h"
 #include "ProjectParasite/ScoreHandler.h"
 
 //Called on game state begin play (when a new level loads)
@@ -51,18 +53,27 @@ void UGameManager::BeginPlay()
 		OnLevelStart();
 	
 	OnBeginPlay();
+
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Begin pla")));
 }
 
 void UGameManager::Tick(float DeltaSeconds)
 {
 	if(beginPlayTriggered)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Tick")));
+
 		//Handle enemy transition after the first frame to prevent conflicts
 		if(IsOnFloorLevel())
 		{	
-			if(possessedEnemyToTransition.enemyToTransition != nullptr)
+			if(possessedEnemyToTransition.enemyType != Invalid)
 			{
-				AActor* spawnedClone = GetWorld()->SpawnActor<AActor>(possessedEnemyToTransition.enemyToTransition, playerRef->GetActorLocation(), playerRef->GetActorRotation());
+				AActor* spawnedClone;
+
+				if(possessedEnemyToTransition.enemyType == Shooter)
+					spawnedClone = GetWorld()->SpawnActor<AActor>(shooterBPRef, playerRef->GetActorLocation(), playerRef->GetActorRotation());
+				else
+					spawnedClone = GetWorld()->SpawnActor<AActor>(meleeBPRef, playerRef->GetActorLocation(), playerRef->GetActorRotation());
 				
 				APawnEnemy* spawnedCloneAsEnemy = Cast<APawnEnemy>(spawnedClone);
 
@@ -131,8 +142,11 @@ void UGameManager::OpenLevel(int level, int floor)
 			//If a player is possessing an enemy when loading new level, save reference to that enemy
 			if(playerRef->GetPossessedEnemy())
 			{
-				possessedEnemyToTransition.enemyToTransition = playerRef->GetPossessedEnemy()->GetClass();
-
+				if(Cast<APawnShooter>(playerRef->GetPossessedEnemy()))
+					possessedEnemyToTransition.enemyType = Shooter;
+				else
+					possessedEnemyToTransition.enemyType = Melee;
+				
 				AWeaponBase* weapon = playerRef->GetPossessedEnemy()->GetWeapon();
 			
 				if(weapon)
@@ -160,12 +174,14 @@ void UGameManager::OpenLevel(int level, int floor)
 		}
 		else
 		{
+			
 			UGameplayStatics::OpenLevel(GetWorld(), *levelName);	
 		}
 		
 	}
 	else
 	{
+
 		UE_LOG(LogTemp, Error, TEXT("Trying to open level %i floor %i that doesn't exist"), level, floor);
 	}
 }
@@ -196,7 +212,7 @@ void UGameManager::LoadNextFloor()
 
 bool UGameManager::IsOnFloorLevel()
 {
-	return GetCurrentLevel() != 0;
+	return GetWorld()->GetName() != TEXT("Main_Menu_Scene");
 }
 
 int UGameManager::GetCurrentFloor()

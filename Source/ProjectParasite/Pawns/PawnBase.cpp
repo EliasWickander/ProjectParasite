@@ -2,6 +2,7 @@
 
 #include "PawnBase.h"
 
+#include "DrawDebugHelpers.h"
 #include "PawnParasite.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"

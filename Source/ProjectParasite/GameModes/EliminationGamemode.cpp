@@ -131,8 +131,8 @@ void AEliminationGamemode::OnEnemyDeath(APawnBase* deadEnemy, AActor* causerActo
 			comboTimer = comboWindow;
 		}
 		
-		if(HasEliminatedAllEnemies())
-		{
+		 if(HasEliminatedAllEnemies())
+		 {
 			OnFloorFinished();
 
 			if(gameManagerRef->IsCurrentFloorLast())
@@ -154,8 +154,8 @@ void AEliminationGamemode::OnPlayerDeath(APawnBase* deadPlayer, AActor* causerAc
 
 void AEliminationGamemode::OnGoalTriggered()
 {
-	if(HasEliminatedAllEnemies())
-	{
+	 if(HasEliminatedAllEnemies())
+	 {
 		UE_LOG(LogTemp, Warning, TEXT("SDADASD"));
 		if(!gameManagerRef->IsCurrentFloorLast())
 		{

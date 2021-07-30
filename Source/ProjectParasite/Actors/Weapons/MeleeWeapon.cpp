@@ -108,8 +108,6 @@ void AMeleeWeapon::Attack()
 				impulseDir.Normalize();
 
 				destructibleComponent->ApplyDamage(damage, destructibleComponent->GetComponentLocation(), impulseDir, 10);
-				
-				UE_LOG(LogTemp, Warning, TEXT("%s"), *actor->GetName());
 			}
 		}
 	}

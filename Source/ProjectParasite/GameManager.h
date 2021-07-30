@@ -16,9 +16,16 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFloorExitEvent, int, floor);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPauseGameEvent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnpauseGameEvent);
 
+enum EnemyType
+{
+	Invalid,
+	Shooter,
+	Melee
+};
+
 struct EnemyTransitionData
 {
-	UClass* enemyToTransition = nullptr;
+	EnemyType enemyType = Invalid;
 	int weaponAmmo = 0;
 };
 enum GameState
@@ -116,8 +123,13 @@ private:
 	FString currentWorldName = "";
 
 	EnemyTransitionData possessedEnemyToTransition;
-	
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APawnEnemy> shooterBPRef;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APawnEnemy> meleeBPRef;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	bool transitionOutOfLevel = false;
 
