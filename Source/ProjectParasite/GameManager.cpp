@@ -53,16 +53,12 @@ void UGameManager::BeginPlay()
 		OnLevelStart();
 	
 	OnBeginPlay();
-
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Begin pla")));
 }
 
 void UGameManager::Tick(float DeltaSeconds)
 {
 	if(beginPlayTriggered)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Tick")));
-
 		//Handle enemy transition after the first frame to prevent conflicts
 		if(IsOnFloorLevel())
 		{	
