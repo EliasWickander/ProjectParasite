@@ -12,6 +12,7 @@
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
 #include "ProjectParasite/Pawns/RangedPawnEnemy.h"
+#include "ProjectParasite/PlayerControllers/PlayerControllerBase.h"
 #include "ProjectParasite/Utilities/DevUtils.h"
 
 UBTTask_Attack::UBTTask_Attack()
@@ -98,9 +99,9 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 	if(instanceMemory->targetActor->GetIsPendingDeath())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Target died"));
-		if(playerRef != nullptr)
+		if(ownerEnemy->playerControllerRef->GetPlayer() != nullptr)
 		{
-			SetTarget(playerRef, NodeMemory);
+			SetTarget(ownerEnemy->playerControllerRef->GetPlayer(), NodeMemory);
 		}
 	}
 }
