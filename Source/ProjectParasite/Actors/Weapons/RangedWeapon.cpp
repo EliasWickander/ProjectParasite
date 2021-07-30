@@ -83,7 +83,7 @@ void ARangedWeapon::Fire()
 
 	currentAmmo--;
 
-	weaponHolderRef->ReportNoise(nullptr, 1);
+	weaponHolderRef->ReportNoise(shootSound, 1);
 }
 
 void ARangedWeapon::Reload()

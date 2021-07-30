@@ -8,6 +8,8 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
+#include "DestructibleActor.h"
+#include "DestructibleComponent.h"
 
 void AMeleeWeapon::BeginPlay()
 {
@@ -47,10 +49,8 @@ TArray<AActor*> AMeleeWeapon::GetHitActors()
 		GetAttackConeRange()
 	};
 
-	UE_LOG(LogTemp, Warning, TEXT("%f"), GetAttackConeRange());
-
 	TArray<TEnumAsByte<EObjectTypeQuery>> objectTypes;
-	UClass* classFilter = APawnBase::StaticClass();
+	UClass* classFilter = nullptr;
 	TArray<AActor*> actorsToIgnore { };
 	TArray<AActor*> outActors;
 	
@@ -67,35 +67,49 @@ void AMeleeWeapon::Attack()
 	{
 		for(AActor* actor : hitActors)
 		{
-			
-			//Find the first pawn overlapped and apply damage to it
-			APawnBase* hitPawn = Cast<APawnBase>(actor);
-
-			APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-
-			//If weapon holder is controlled by player
-			if(weaponHolderRef->GetController() == playerController)
+			if(Cast<APawnBase>(actor))
 			{
-				bool hitPawnIsParasite = Cast<APawnParasite>(hitPawn) != nullptr;
-				
-				//Only hit units that aren't controlled by player
-				if(hitPawn->GetController() != playerController && !hitPawnIsParasite)
+				//Find the first pawn overlapped and apply damage to it
+				APawnBase* hitPawn = Cast<APawnBase>(actor);
+
+				APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+
+				//If weapon holder is controlled by player
+				if(weaponHolderRef->GetController() == playerController)
 				{
-					UE_LOG(LogTemp, Warning, TEXT("Hit %s, %s"), *actor->GetName(), *hitPawn->StaticClass()->GetName());
-					UGameplayStatics::ApplyDamage(hitPawn, damage, playerController, weaponHolderRef, damageType);
+					bool hitPawnIsParasite = Cast<APawnParasite>(hitPawn) != nullptr;
+				
+					//Only hit units that aren't controlled by player
+					if(hitPawn->GetController() != playerController && !hitPawnIsParasite)
+					{
+						UE_LOG(LogTemp, Warning, TEXT("Hit %s, %s"), *actor->GetName(), *hitPawn->StaticClass()->GetName());
+						UGameplayStatics::ApplyDamage(hitPawn, damage, playerController, weaponHolderRef, damageType);
+					}	
+				}
+				else
+				{
+					//If weapon holder is not controlled by player
+					if(weaponHolderRef->GetController() != playerController)
+					{
+						//Only hit units that are controlled by player
+						if(hitPawn->GetController() == playerController)
+						{
+							UGameplayStatics::ApplyDamage(hitPawn, damage, playerController, weaponHolderRef, damageType);	
+						}
+					}
 				}	
 			}
-			else
+			else if(Cast<ADestructibleActor>(actor))
 			{
-				//If weapon holder is not controlled by player
-				if(weaponHolderRef->GetController() != playerController)
-				{
-					//Only hit units that are controlled by player
-					if(hitPawn->GetController() == playerController)
-					{
-						UGameplayStatics::ApplyDamage(hitPawn, damage, playerController, weaponHolderRef, damageType);	
-					}
-				}
+				UDestructibleComponent* destructibleComponent = Cast<ADestructibleActor>(actor)->GetDestructibleComponent();
+
+				FVector impulseDir = destructibleComponent->GetComponentLocation() - GetActorLocation();
+				impulseDir.Z = 0;
+				impulseDir.Normalize();
+
+				destructibleComponent->ApplyDamage(damage, destructibleComponent->GetComponentLocation(), impulseDir, 10);
+				
+				UE_LOG(LogTemp, Warning, TEXT("%s"), *actor->GetName());
 			}
 		}
 	}

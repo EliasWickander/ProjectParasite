@@ -14,13 +14,13 @@ AWeaponBase::AWeaponBase()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	pickupTrigger = CreateDefaultSubobject<USphereComponent>(TEXT("Pickup Trigger"));
+	RootComponent = pickupTrigger;
+	
 	baseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon Base Mesh"));
-	RootComponent = baseMesh;
+	baseMesh->SetupAttachment(pickupTrigger);
 
 	debugComponent = CreateDefaultSubobject<UWeaponDebugComponent>("Debug Component");
-
-	pickupTrigger = CreateDefaultSubobject<USphereComponent>(TEXT("Pickup Trigger"));
-	pickupTrigger->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned

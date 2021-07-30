@@ -112,7 +112,7 @@ void APawnEnemy::SetWeapon(AWeaponBase* newWeapon)
 		
 		if(Cast<AMeleeWeapon>(newWeapon))
 		{
-			Cast<AMeleeWeapon>(newWeapon)->SetAttackConeRange(attackRange);
+			Cast<AMeleeWeapon>(newWeapon)->SetAttackConeRange(attackRange * 4);
 		}
 	} 
 	

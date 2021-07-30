@@ -41,8 +41,11 @@ void UGameManager::BeginPlay()
 
 	if(totalScoreHandler == nullptr)
 	{
-		totalScoreHandler = NewObject<UScoreHandler>();	
+		totalScoreHandler = NewObject<UScoreHandler>();
 	}
+
+	 scoreOnFloorStart = NewObject<UScoreHandler>();
+	 scoreOnFloorStart->Copy(totalScoreHandler);
 	
 	if(GetCurrentFloor() == 1)
 		OnLevelStart();
@@ -122,21 +125,24 @@ void UGameManager::OpenLevel(int level, int floor)
 	if(DoesLevelExist(level, floor))
 	{
 		FString levelName = FString::Printf(TEXT("Level_%i_%i"), level, floor);
-		
-		//If a player is possessing an enemy when loading new level, save reference to that enemy
-		if(playerRef->GetPossessedEnemy())
-		{
-			possessedEnemyToTransition.enemyToTransition = playerRef->GetPossessedEnemy()->GetClass();
 
-			AWeaponBase* weapon = playerRef->GetPossessedEnemy()->GetWeapon();
-			
-			if(weapon)
+		 if(playerRef)
+		 {
+			//If a player is possessing an enemy when loading new level, save reference to that enemy
+			if(playerRef->GetPossessedEnemy())
 			{
-				if(Cast<ARangedWeapon>(weapon))
+				possessedEnemyToTransition.enemyToTransition = playerRef->GetPossessedEnemy()->GetClass();
+
+				AWeaponBase* weapon = playerRef->GetPossessedEnemy()->GetWeapon();
+			
+				if(weapon)
 				{
-					possessedEnemyToTransition.weaponAmmo = Cast<ARangedWeapon>(weapon)->GetCurrentAmmo();
+					if(Cast<ARangedWeapon>(weapon))
+					{
+						possessedEnemyToTransition.weaponAmmo = Cast<ARangedWeapon>(weapon)->GetCurrentAmmo();
+					}
 				}
-			}
+			}	
 		}
 
 		//If player is exiting a floor level, call exit event
@@ -166,6 +172,7 @@ void UGameManager::OpenLevel(int level, int floor)
 
 void UGameManager::RestartLevel()
 {
+	totalScoreHandler->Copy(scoreOnFloorStart);
 	UGameplayStatics::OpenLevel(GetWorld(), *currentWorldName);
 }
 
