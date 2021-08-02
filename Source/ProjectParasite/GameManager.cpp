@@ -138,7 +138,7 @@ void UGameManager::OpenLevel(int level, int floor)
 			//If a player is possessing an enemy when loading new level, save reference to that enemy
 			if(playerRef->GetPossessedEnemy())
 			{
-				if(Cast<APawnShooter>(playerRef->GetPossessedEnemy()))
+				if(Cast<ARangedWeapon>(playerRef->GetPossessedEnemy()->GetWeapon()))
 					possessedEnemyToTransition.enemyType = Shooter;
 				else
 					possessedEnemyToTransition.enemyType = Melee;

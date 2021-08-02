@@ -111,11 +111,6 @@ void APawnEnemy::SetWeapon(AWeaponBase* newWeapon)
 
 		newWeapon->weaponHolderRef = this;
 		newWeapon->isEquipped = true;
-		
-		if(Cast<AMeleeWeapon>(newWeapon))
-		{
-			Cast<AMeleeWeapon>(newWeapon)->SetAttackConeRange(attackRange * 4);
-		}
 	} 
 	
 	equippedWeapon = newWeapon;
