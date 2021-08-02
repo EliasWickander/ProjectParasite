@@ -32,12 +32,14 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetCurrentState(EnemyStates state);
+	
 	EnemyStates GetCurrentState() { return currentState; }
 
 	protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "States")
 	EnemyStates currentState;
 
 private:

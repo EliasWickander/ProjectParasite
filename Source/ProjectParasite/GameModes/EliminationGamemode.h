@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+
 #include "EliminationGamemode.generated.h"
 
 class APawnEnemy;
@@ -39,6 +40,7 @@ public:
 	float GetLevelTimeLimit() { return levelTimeLimit; }
 
 	bool HasEliminatedAllEnemies();
+
 
 private:
 	UFUNCTION()
