@@ -53,8 +53,8 @@ public:
 	float GetAttackMoveSpeed() { return attackMoveSpeed; }
 	float GetTurnRate() { return turnRate; }
 	float GetAttackRate() { return attackRate; }
-	
-	AAIControllerBase* GetAIController() { return AIController; }
+
+	AAIControllerBase* GetAIController() { return enemyAIController; }
 	
 	USceneComponent* GetNapeComponent() { return napeComponent; }
 	UPawnSensingComponent* GetPawnSensingComponent() { return pawnSensingComponent; }
@@ -132,7 +132,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 	bool isPossessed = false;
-	AAIControllerBase* AIController = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
+	AAIControllerBase* enemyAIController = nullptr;
 
 	FVector lastHeardNoisePos;
 };

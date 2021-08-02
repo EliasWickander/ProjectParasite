@@ -286,3 +286,9 @@ void UGameManager::SetPaused(bool paused)
 
 	isPaused = paused;
 }
+
+void UGameManager::ResetTransitionData()
+{
+	possessedEnemyToTransition.enemyType = Invalid;
+	possessedEnemyToTransition.weaponAmmo = 0;
+}

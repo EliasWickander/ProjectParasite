@@ -69,7 +69,12 @@ void AProjectile::OnOverlap(UPrimitiveComponent* overlappedComponent, AActor* ot
 
 	APawnEnemy* weaponHolder = Cast<APawnEnemy>(weaponRef->GetWeaponHolder());
 
-	APawnEnemy* possessedEnemy = weaponHolder->playerControllerRef->GetPlayer()->GetPossessedEnemy();
+	APawnParasite* playerRef =weaponHolder->playerControllerRef->GetPlayer();
+		
+	APawnEnemy* possessedEnemy = playerRef->GetPossessedEnemy();
+
+	if(weaponHolder == possessedEnemy && otherActor == playerRef)
+		return;
 	
 	//Make sure enemies can't shoot each other
 

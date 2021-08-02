@@ -86,7 +86,8 @@ protected:
 	
 	float horizontalAxis = 0;
 	float verticalAxis = 0;
-	
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
 	bool isPendingDeath = false;
 
 private:

@@ -96,6 +96,11 @@ public:
 
 	bool GetPaused() {return isPaused; }
 	void SetPaused(bool paused);
+
+	void ResetTransitionData();
+	
+	EnemyTransitionData GetTransitionData() { return possessedEnemyToTransition; }
+	
 	FOnFloorEnterEvent OnFloorEnterEvent;
 	FOnFloorExitEvent OnFloorExitEvent;
 	FOnPauseGameEvent OnPauseGameEvent;
