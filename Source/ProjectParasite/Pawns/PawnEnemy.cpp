@@ -33,11 +33,11 @@ void APawnEnemy::BeginPlay()
 	Super::BeginPlay();
 
 	//AIController = Cast<AAIControllerBase>(GetController());
-	AIController = GetWorld()->SpawnActor<AAIControllerBase>(AIControllerClass, GetActorLocation(), GetActorRotation());
+	enemyAIController = GetWorld()->SpawnActor<AAIControllerBase>(AIControllerClass, GetActorLocation(), GetActorRotation());
 	
 	if(!Cast<APlayerControllerBase>(GetController()))
 	{
-		AIController->Possess(this);
+		enemyAIController->Possess(this);
 	}
 
 	pawnSensingComponent->OnHearNoise.AddDynamic(this, &APawnEnemy::OnHearNoise);
@@ -82,7 +82,9 @@ void APawnEnemy::OnHearNoise(APawn* pawnInstigator, const FVector& location, flo
 
 		lastHeardNoisePos = location;
 
-		if(GetAIController()->GetCurrentState() == EnemyStates::State_Attack || GetAIController()->GetCurrentState() == EnemyStates::State_Stunned)
+		EnemyStates currentState = GetAIController()->GetCurrentState();
+		
+		if(currentState == EnemyStates::State_Attack || currentState == EnemyStates::State_Stunned || currentState == EnemyStates::State_Chase)
 			return;
 
 		GetAIController()->SetCurrentState(EnemyStates::State_NoiseSearch);

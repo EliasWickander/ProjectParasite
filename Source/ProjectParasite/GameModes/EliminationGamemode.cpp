@@ -130,13 +130,15 @@ void AEliminationGamemode::OnEnemyDeath(APawnBase* deadEnemy, AActor* causerActo
 
 			comboTimer = comboWindow;
 		}
-		
+
 		 if(HasEliminatedAllEnemies())
 		 {
 			OnFloorFinished();
 
 			if(gameManagerRef->IsCurrentFloorLast())
 			{
+				gameManagerRef->ResetTransitionData();
+				
 				gameManagerRef->OnFinishLevel();
 			}
 		}	
@@ -156,7 +158,6 @@ void AEliminationGamemode::OnGoalTriggered()
 {
 	 if(HasEliminatedAllEnemies())
 	 {
-		UE_LOG(LogTemp, Warning, TEXT("SDADASD"));
 		if(!gameManagerRef->IsCurrentFloorLast())
 		{
 			gameManagerRef->LoadNextFloor();		
