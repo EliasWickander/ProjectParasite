@@ -22,8 +22,6 @@ UBTTask_Chase::UBTTask_Chase()
 EBTNodeResult::Type UBTTask_Chase::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
-
-	UE_LOG(LogTemp, Warning, TEXT("Start chase"));
 	
 	BTTaskChaseMemory* instanceMemory = reinterpret_cast<BTTaskChaseMemory*>(NodeMemory);
 
@@ -76,8 +74,6 @@ void UBTTask_Chase::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
 
 void UBTTask_Chase::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)
 {
-
-	UE_LOG(LogTemp, Warning, TEXT("Exit Chase"));
 	
 	OwnerComp.GetAIOwner()->StopMovement();
 	OwnerComp.GetAIOwner()->ClearFocus(EAIFocusPriority::Gameplay);

@@ -16,7 +16,7 @@ void UPlayer_State_Possess::Start()
 	playerRef = Cast<APawnParasite>(stateMachine->GetOwner());
 	
 	//While player is attached, remove its collision
-	playerRef->GetCollider()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	playerRef->GetCollider()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 
 	playerRef->SetCanMove(false);
 
