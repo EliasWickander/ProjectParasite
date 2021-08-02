@@ -30,6 +30,19 @@ void ARangedWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if(weaponHolderRef)
+	{
+		if(attackingTimer > 0)
+		{
+			attackingTimer -= DeltaTime;
+		}
+		else
+		{
+			weaponHolderRef->SetIsAttacking(false);
+			attackingTimer = 0;
+		}	
+	}
+	
 	//If enemy doesn't have to reload, handle attack timer
 	if(reloadTimer <= 0)
 	{
@@ -72,6 +85,9 @@ void ARangedWeapon::Use()
 
 void ARangedWeapon::Fire()
 {
+	OnFireEvent();
+	weaponHolderRef->SetIsAttacking(true);
+	attackingTimer = 0.2f;
 	//Fire from weapon socket
 	FVector spawnPos = weaponSocket->GetComponentLocation();
 	FRotator spawnRot = weaponSocket->GetComponentRotation();

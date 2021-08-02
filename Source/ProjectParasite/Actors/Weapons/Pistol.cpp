@@ -3,3 +3,5 @@
 
 #include "Pistol.h"
 
+#include "ProjectParasite/Pawns/PawnEnemy.h"
+

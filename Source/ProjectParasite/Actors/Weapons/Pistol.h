@@ -10,5 +10,4 @@ UCLASS()
 class PROJECTPARASITE_API APistol : public ARangedWeapon
 {
 	GENERATED_BODY()
-	
 };

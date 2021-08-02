@@ -42,5 +42,5 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
 	FVector attackConeOriginOffsetLocal = FVector(0, 0, -50);
 
-	
+	float attackingTimer = 0;
 };

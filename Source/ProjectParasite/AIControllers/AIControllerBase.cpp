@@ -59,6 +59,14 @@ void AAIControllerBase::OnPossess(APawn* InPawn)
 	}
 }
 
+void AAIControllerBase::StopAIBehavior()
+{
+	if(behaviorTree != nullptr)
+	{
+		blackboard->GetBrainComponent()->StopLogic("AI Died");	
+	}
+}
+
 void AAIControllerBase::StartAIBehavior()
 {
 	if(behaviorTree != nullptr)

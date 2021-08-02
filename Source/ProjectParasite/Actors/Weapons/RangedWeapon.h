@@ -28,6 +28,9 @@ public:
 	int GetMaxAmmo() { return maxAmmo; }
 	void SetCurrentAmmo(int ammo) { currentAmmo = ammo; }
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnFireEvent();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -51,4 +54,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
 	USoundBase* shootSound = nullptr;
+
+	float attackingTimer = 0;
 };

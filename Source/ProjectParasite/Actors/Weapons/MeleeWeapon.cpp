@@ -20,6 +20,19 @@ void AMeleeWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if(weaponHolderRef)
+	{
+		if(attackingTimer > 0)
+		{
+			attackingTimer -= DeltaTime;
+		}
+		else
+		{
+			weaponHolderRef->SetIsAttacking(false);
+			attackingTimer = 0;
+		}	
+	}
+	
 	//Handle attack timer
 	attackTimer = FMath::Clamp<float>(attackTimer - DeltaTime, 0, attackRate);
 }
@@ -62,7 +75,10 @@ TArray<AActor*> AMeleeWeapon::GetHitActors()
 void AMeleeWeapon::Attack()
 {
 	TArray<AActor*> hitActors = GetHitActors();
-		
+
+	weaponHolderRef->SetIsAttacking(true);
+	attackingTimer = 0.2f;
+	
 	if(hitActors.Num() > 0)
 	{
 		for(AActor* actor : hitActors)

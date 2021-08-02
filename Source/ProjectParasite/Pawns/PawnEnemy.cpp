@@ -57,7 +57,7 @@ void APawnEnemy::OnDeath(APawnBase* deadPawn, AActor* causerActor)
 
 	APawnEnemy* deadEnemy = Cast<APawnEnemy>(deadPawn);
 
-	Cast<AAIControllerBase>(deadEnemy->GetAIController())->SetCurrentState(EnemyStates::State_Idle);
+	Cast<AAIControllerBase>(deadEnemy->GetAIController())->StopAIBehavior();
 
 	//Drop weapon
 	SetWeapon(nullptr);

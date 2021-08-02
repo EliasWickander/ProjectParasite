@@ -37,6 +37,7 @@ public:
 	UCapsuleComponent* GetCollider() { return capsuleCollider; }
 	UCameraComponent* GetCamera() { return cameraComponent; }
 	UPostProcessComponent* GetPostProcessComponent() { return postProcessComponent; }
+	USkeletalMeshComponent* GetSkeletalMesh() { return skeletalMesh; }
 	
 	void SetMoveSpeed(float speed);
 	float GetMoveSpeed() { return currentMoveSpeed; }

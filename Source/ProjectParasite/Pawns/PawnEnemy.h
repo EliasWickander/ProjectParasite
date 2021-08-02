@@ -54,6 +54,9 @@ public:
 	float GetTurnRate() { return turnRate; }
 	float GetAttackRate() { return attackRate; }
 
+	void SetIsAttacking(bool enabled) { isAttacking = enabled; }
+	float GetIsAttacking() { return isAttacking; }
+
 	AAIControllerBase* GetAIController() { return enemyAIController; }
 	
 	USceneComponent* GetNapeComponent() { return napeComponent; }
@@ -132,6 +135,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 	bool isPossessed = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+	bool isAttacking = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
 	AAIControllerBase* enemyAIController = nullptr;

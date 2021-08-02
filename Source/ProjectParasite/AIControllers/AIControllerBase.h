@@ -15,7 +15,7 @@ enum class EnemyStates : uint8
 	State_Chase UMETA(DisplayName = "Chase"),
 	State_Attack UMETA(DisplayName = "Attack"),
 	State_Stunned UMETA(DisplayName = "Stunned"),
-	State_NoiseSearch UMETA(DisplayName = "NoiseSearch")
+	State_NoiseSearch UMETA(DisplayName = "NoiseSearch"),
 };
 
 class AGameStateCustom;
@@ -35,9 +35,11 @@ public:
 	
 	EnemyStates GetCurrentState() { return currentState; }
 
-	protected:
+	void StopAIBehavior();
+protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
+
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "States")
 	EnemyStates currentState;

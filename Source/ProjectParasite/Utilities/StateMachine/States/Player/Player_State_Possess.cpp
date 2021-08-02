@@ -39,6 +39,8 @@ void UPlayer_State_Possess::Exit()
 	
 	//playerRef->SetActorLocation(possessedEnemy->GetActorLocation() - possessedEnemy->GetActorForwardVector() * 200);
 
+	playerRef->GetCollider()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+	
 	playerRef->SetCanMove(true);
 }
 
@@ -78,7 +80,6 @@ void UPlayer_State_Possess::HandlePossessionLoop()
 			//TODO: Find better solution to this
 			if(playerRef->IsPlayerControlled())
 			{
-				playerRef->GetCollider()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 				targetDetachPoint = playerRef->GetActorLocation() + playerRef->GetActorForwardVector() * playerRef->detachTargetDist;
 				targetDetachPoint.Z = playerOriginPos.Z;
 

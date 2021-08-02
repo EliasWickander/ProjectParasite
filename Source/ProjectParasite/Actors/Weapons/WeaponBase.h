@@ -50,6 +50,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Score")
 	float killScore = 200;
-	
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	APawnEnemy* weaponHolderRef = nullptr;
 };
