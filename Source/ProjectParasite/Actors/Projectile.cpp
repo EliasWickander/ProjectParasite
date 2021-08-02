@@ -73,6 +73,9 @@ void AProjectile::OnOverlap(UPrimitiveComponent* overlappedComponent, AActor* ot
 		
 	APawnEnemy* possessedEnemy = playerRef->GetPossessedEnemy();
 
+	if(otherActor == playerRef)
+		return;
+	
 	if(weaponHolder == possessedEnemy && otherActor == playerRef)
 		return;
 	
