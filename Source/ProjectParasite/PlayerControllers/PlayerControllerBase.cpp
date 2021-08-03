@@ -67,12 +67,16 @@ void APlayerControllerBase::SetupEnemyActions()
 
 void APlayerControllerBase::MoveHorizontalInternal(float axis)
 {
-	controlledPawn->MoveHorizontal(axis);	
+	inputVelocity.Y = axis;
+	
+	//controlledPawn->MoveHorizontal(axis);	
 }
 
 void APlayerControllerBase::MoveVerticalInternal(float axis)
 {
-	controlledPawn->MoveVertical(axis);	
+	inputVelocity.X = axis;
+	
+	//controlledPawn->MoveVertical(axis);	
 }
 
 void APlayerControllerBase::DashInternal()

@@ -66,6 +66,7 @@ public:
 
 	FOnDeathEvent onStartDeathEvent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	APlayerControllerBase* playerControllerRef = nullptr;
     	
 protected:

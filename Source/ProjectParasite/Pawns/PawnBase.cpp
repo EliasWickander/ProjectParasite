@@ -65,6 +65,14 @@ void APawnBase::Tick(float DeltaSeconds)
 {	
 	Super::Tick(DeltaSeconds);
 
+	if(GetController() == playerControllerRef)
+	{
+		if(canMove)
+		{
+			AddMovementInput(playerControllerRef->GetInputVelocity());		
+		}
+	}
+	
 	if(isPendingDeath)
 	{
 		HandlePendingDeath();
