@@ -71,6 +71,9 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPossessed();
+
 	void SetWeaponOfType(TSubclassOf<AWeaponBase> weaponType);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")

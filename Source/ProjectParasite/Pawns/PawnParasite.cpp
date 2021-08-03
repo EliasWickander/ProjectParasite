@@ -109,6 +109,7 @@ void APawnParasite::SetPossessed(APawnEnemy* actorToPossess)
 	if(actorToPossess != nullptr)
 	{
 		actorToPossess->isPossessed = true;
+		actorToPossess->OnPossessed();
 		
 		playerControllerRef->Possess(actorToPossess);
 
