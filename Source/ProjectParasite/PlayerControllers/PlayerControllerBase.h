@@ -18,6 +18,8 @@ class PROJECTPARASITE_API APlayerControllerBase : public APlayerController
 
 public:
 	APawnParasite* GetPlayer() { return playerRef; }
+
+	FVector GetInputVelocity() { return inputVelocity; }
 	
 protected:
 	virtual void BeginPlay() override;
@@ -35,6 +37,9 @@ protected:
 	void AttackInternal();
 	void DashInternal();
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Input")
+	FVector inputVelocity;
+	
 	UFUNCTION()
 	void OnGamePaused();
 	
