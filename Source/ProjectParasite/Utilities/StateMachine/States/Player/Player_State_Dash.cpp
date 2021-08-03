@@ -34,7 +34,7 @@ void UPlayer_State_Dash::Update()
 	{
 		dashTimer += playerRef->GetWorld()->DeltaTimeSeconds;
 
-		if(playerRef->GetActorLocation().Z != playerRef->GetPlayerStartPos().Z)
+		if(playerRef->GetActorLocation().Z != playerRef->GetStartPos().Z)
 		{
 			if(dashTimer > playerRef->dashTime * 0.5f)
 			{

@@ -9,6 +9,7 @@
 #include "ProjectParasite/Utilities/DevUtils.h"
 #include "EngineUtils.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "ProjectParasite/Actors/Weapons/WeaponBase.h"
 #include "Kismet/GameplayStatics.h"
@@ -93,6 +94,19 @@ void APawnEnemy::UpdatePawnBehavior(float deltaSeconds)
 	{
 		RotateToMouseCursor();
 		RotateWeaponToMouseCursor();
+
+		if(GetActorLocation().Z != GetStartPos().Z)
+		{
+			FVector targetPos = GetActorLocation();
+			targetPos.Z = GetStartPos().Z;
+
+			if(FVector::Dist(GetActorLocation(), targetPos) > 0.05f)
+			{
+				FVector currentLocation = FMath::Lerp(GetActorLocation(), targetPos, 5 * GetWorld()->GetDeltaSeconds());
+
+				SetActorLocation(currentLocation, true);
+			}
+		}
 	}
 }
 
@@ -104,6 +118,7 @@ void APawnEnemy::OnDeath(APawnBase* deadPawn, AActor* causerActor)
 
 	Cast<AAIControllerBase>(deadEnemy->GetAIController())->StopAIBehavior();
 
+	capsuleCollider->DestroyComponent();
 	//Drop weapon
 	SetWeapon(nullptr);
 

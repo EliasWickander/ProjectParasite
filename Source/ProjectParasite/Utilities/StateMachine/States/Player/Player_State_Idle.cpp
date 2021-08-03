@@ -14,10 +14,10 @@ void UPlayer_State_Idle::Update()
 {
 	playerRef->RotateToMouseCursor();
 
-	if(playerRef->GetActorLocation().Z != playerRef->GetPlayerStartPos().Z)
+	if(playerRef->GetActorLocation().Z != playerRef->GetStartPos().Z)
 	{
 		FVector targetPos = playerRef->GetActorLocation();
-		targetPos.Z = playerRef->GetPlayerStartPos().Z;
+		targetPos.Z = playerRef->GetStartPos().Z;
 
 		if(FVector::Dist(playerRef->GetActorLocation(), targetPos) > 0.05f)
 		{

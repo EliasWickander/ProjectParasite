@@ -52,6 +52,8 @@ void APawnBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	startPos = GetActorLocation();
+	
 	floatingPawnMovement = FindComponentByClass<UFloatingPawnMovement>();
 
 	playerControllerRef = Cast<APlayerControllerBase>(GetWorld()->GetFirstPlayerController());
@@ -69,7 +71,35 @@ void APawnBase::Tick(float DeltaSeconds)
 	{
 		if(canMove)
 		{
-			AddMovementInput(playerControllerRef->GetInputVelocity());		
+			AddMovementInput(playerControllerRef->GetInputVelocity());
+			
+			// FHitResult result;
+			//
+			// GetWorld()->SweepSingleByChannel(result,
+			// 	GetActorLocation(),
+			// 	GetActorLocation() + FVector::DownVector * 500,
+			// 	GetActorRotation().Quaternion(),
+			// 	ECollisionChannel::ECC_Vehicle,
+			// 	FCollisionShape::MakeCapsule(capsuleCollider->GetScaledCapsuleRadius(), capsuleCollider->GetScaledCapsuleHalfHeight()));
+			//
+			// if(result.GetActor())
+			// {
+			// 	float angle = acos(FVector::DotProduct(FVector::DownVector, -result.Normal));
+			// 	angle = FMath::RadiansToDegrees(angle);
+			//
+			// 	UE_LOG(LogTemp, Warning, TEXT("%f"), angle);
+			// 	if(angle < 10)
+			// 	{
+			// 		AddMovementInput(playerControllerRef->GetInputVelocity());				
+			// 	}
+			// 	else
+			// 	{
+			// 		FVector acrossSlope = FVector::CrossProduct(FVector::UpVector, result.Normal);
+			// 		FVector downSlope = FVector::CrossProduct(acrossSlope, result.Normal);
+			// 		
+			// 		AddMovementInput(downSlope);	
+			// 	}
+			// }
 		}
 	}
 	

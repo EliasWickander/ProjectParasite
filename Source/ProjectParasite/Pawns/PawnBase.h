@@ -64,6 +64,8 @@ public:
 	void MoveHorizontal(float axis);
 	void MoveVertical(float axis);
 
+	FVector GetStartPos() { return startPos; }
+
 	FOnDeathEvent onStartDeathEvent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -122,4 +124,6 @@ private:
 	bool canMove = true;
 	
 	UFloatingPawnMovement* floatingPawnMovement = nullptr;
+
+	FVector startPos;
 };

@@ -57,8 +57,6 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnPossessedEnemy(APawnEnemy* enemyPossessed);
 
-	FVector GetPlayerStartPos() { return playerStartPos; }
-
 	UStateMachine* GetStateMachine() { return stateMachine; }
 
 protected:
@@ -109,8 +107,6 @@ private:
 	float dashSpeed = 500;
 
 	float dashTimer = 0;
-
-	FVector playerStartPos;
 	
 	UPlayer_State_Idle* idleState;
 	UPlayer_State_Dash* dashState;
