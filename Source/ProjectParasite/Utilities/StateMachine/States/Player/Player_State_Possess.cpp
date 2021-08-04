@@ -30,6 +30,7 @@ void UPlayer_State_Possess::Start()
 
 void UPlayer_State_Possess::Update()
 {
+	playerRef->RotateToMouseCursor();
 	HandlePossessionLoop();
 }
 

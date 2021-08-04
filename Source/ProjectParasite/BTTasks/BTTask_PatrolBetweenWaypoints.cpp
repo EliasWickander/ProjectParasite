@@ -37,6 +37,7 @@ EBTNodeResult::Type UBTTask_PatrolBetweenWaypoints::ExecuteTask(UBehaviorTreeCom
 	SetupPatrolPoints(instanceMemory);
 	InitNextWaypoint(instanceMemory);
 
+	UE_LOG(LogTemp, Warning, TEXT("%s start patrolling"), *instanceMemory->ownerEnemy->GetName());
 	return EBTNodeResult::InProgress;
 }
 

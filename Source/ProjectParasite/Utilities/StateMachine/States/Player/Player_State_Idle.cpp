@@ -2,6 +2,7 @@
 
 #include "Player_State_Idle.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
+#include "ProjectParasite/PlayerControllers/PlayerControllerBase.h"
 #include "ProjectParasite/Utilities/StateMachine/StateMachine.h"
 
 void UPlayer_State_Idle::Start()
@@ -13,7 +14,7 @@ void UPlayer_State_Idle::Start()
 void UPlayer_State_Idle::Update()
 {
 	playerRef->RotateToMouseCursor();
-
+	
 	if(playerRef->GetActorLocation().Z != playerRef->GetStartPos().Z)
 	{
 		FVector targetPos = playerRef->GetActorLocation();

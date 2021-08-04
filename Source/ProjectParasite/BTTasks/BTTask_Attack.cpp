@@ -3,6 +3,7 @@
 
 #include "BTTask_Attack.h"
 
+#include "DrawDebugHelpers.h"
 #include "NavigationSystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
@@ -14,6 +15,7 @@
 #include "ProjectParasite/Pawns/RangedPawnEnemy.h"
 #include "ProjectParasite/PlayerControllers/PlayerControllerBase.h"
 #include "ProjectParasite/Utilities/DevUtils.h"
+#include "ProjectParasite/Actors/Weapons/RangedWeapon.h"
 
 UBTTask_Attack::UBTTask_Attack()
 {
@@ -82,7 +84,7 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		}
 	}
 
-	bool rotatedToTarget = SetFocusExtended(ownerEnemy->GetAIController(), targetActor, ownerEnemy->GetTurnRate(), 0.2f);
+	bool rotatedToTarget = SetFocusExtended(ownerEnemy->GetAIController(), targetActor, ownerEnemy->GetTurnRate(), 0.02f);
 
 	if(rotatedToTarget)
 	{
@@ -94,15 +96,6 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 	if(!IsInRange(NodeMemory))
 	{
 		instanceMemory->enemyAIController->SetCurrentState(EnemyStates::State_Chase);	
-	}
-
-	if(instanceMemory->targetActor->GetIsPendingDeath())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Target died"));
-		if(ownerEnemy->playerControllerRef->GetPlayer() != nullptr)
-		{
-			SetTarget(ownerEnemy->playerControllerRef->GetPlayer(), NodeMemory);
-		}
 	}
 }
 
@@ -132,7 +125,7 @@ void UBTTask_Attack::OnTargetDeath(AActor* deadActor, uint8* nodeMemory)
 	//If dead target was enemy, set parasite as new target
 	if(Cast<APawnEnemy>(deadActor))
 	{
-		SetTarget(playerRef, nodeMemory);
+		SetTarget(playerRef->playerControllerRef->GetPlayer(), nodeMemory);
 	}
 }
 
@@ -147,13 +140,11 @@ bool UBTTask_Attack::IsInRange(uint8* nodeMemory)
 
 void UBTTask_Attack::RotateWeaponToTarget(uint8* nodeMemory)
 {
-	//Rotates weapon towards target (will later be replaced by joint rotation logic)
-
 	BTTaskAttackMemory* instanceMemory = reinterpret_cast<BTTaskAttackMemory*>(nodeMemory);
 
 	AWeaponBase* weapon = instanceMemory->ownerEnemy->GetWeapon();
-	
-	FVector dirToTarget = instanceMemory->targetActor->GetActorLocation() - weapon->GetActorLocation();
+
+	FVector dirToTarget = instanceMemory->targetActor->GetSkeletalMesh()->GetComponentLocation() - weapon->GetActorLocation();
 
 	weapon->SetActorRotation(dirToTarget.Rotation());
 }
