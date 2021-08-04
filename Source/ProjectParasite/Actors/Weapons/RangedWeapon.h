@@ -24,6 +24,7 @@ public:
 
 	virtual void Reload();
 
+	USceneComponent* GetWeaponSocket() { return weaponSocket; }
 	int GetCurrentAmmo() { return currentAmmo; }
 	int GetMaxAmmo() { return maxAmmo; }
 	void SetCurrentAmmo(int ammo) { currentAmmo = ammo; }

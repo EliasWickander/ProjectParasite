@@ -26,7 +26,7 @@ EBTNodeResult::Type UBTTask_SearchNoise::ExecuteTask(UBehaviorTreeComponent& Own
 
 	instanceMemory->ownerEnemy->SetMoveSpeed(instanceMemory->ownerEnemy->GetChaseSpeed());
 
-	UE_LOG(LogTemp, Warning, TEXT("Noise Start"));
+	UE_LOG(LogTemp, Warning, TEXT("%s start search noise"), *instanceMemory->ownerEnemy->GetName());
 	return EBTNodeResult::InProgress;
 }
 

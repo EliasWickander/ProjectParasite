@@ -105,7 +105,7 @@ void APawnBase::Tick(float DeltaSeconds)
 	
 	if(isPendingDeath)
 	{
-		HandlePendingDeath();
+		//HandlePendingDeath();
 	}
 	
 	UpdatePawnBehavior(DeltaSeconds);

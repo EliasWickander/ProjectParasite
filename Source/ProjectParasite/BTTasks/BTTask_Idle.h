@@ -6,6 +6,14 @@
 #include "BehaviorTree/BTTaskNode.h"
 #include "BTTask_Idle.generated.h"
 
+class APawnEnemy;
+class AAIControllerBase;
+struct BTTaskIdleMemory
+{
+	APawnEnemy* ownerEnemy = nullptr;
+	AAIControllerBase* ownerAIController = nullptr;
+};
+
 UCLASS()
 class PROJECTPARASITE_API UBTTask_Idle : public UBTTaskNode
 {
@@ -17,4 +25,7 @@ public:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
     virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
     virtual void OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult) override;
+
+protected:
+	virtual uint16 GetInstanceMemorySize() const override;
 };
