@@ -7,6 +7,7 @@
 #include "NavigationSystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectParasite/Actors/Weapons/WeaponBase.h"
 #include "ProjectParasite/AIControllers/AIControllerBase.h"
@@ -144,7 +145,7 @@ void UBTTask_Attack::RotateWeaponToTarget(uint8* nodeMemory)
 
 	AWeaponBase* weapon = instanceMemory->ownerEnemy->GetWeapon();
 
-	FVector dirToTarget = instanceMemory->targetActor->GetSkeletalMesh()->GetComponentLocation() - weapon->GetActorLocation();
+	FVector dirToTarget = instanceMemory->targetActor->GetCollider()->GetComponentLocation() - weapon->GetActorLocation();
 
 	weapon->SetActorRotation(dirToTarget.Rotation());
 }

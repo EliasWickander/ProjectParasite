@@ -76,14 +76,16 @@ TArray<AActor*> AMeleeWeapon::GetHitActors()
 
 		FHitResult hitResult;
 		FCollisionQueryParams params;
+		params.AddIgnoredActor(weaponHolderRef);
 		
-		if(GetWorld()->LineTraceSingleByChannel(hitResult,GetActorLocation(),actor->GetActorLocation(), ECC_Visibility, params))
+		if(GetWorld()->LineTraceSingleByChannel(hitResult,weaponHolderRef->GetActorLocation(),actor->GetActorLocation(), ECC_Visibility, params))
 		{
 			if(hitResult.GetActor())
 			{
 				//If something is obstructing the vision
 				if(hitResult.GetActor() != actor && !Cast<ADestructibleActor>(hitResult.GetActor()))
 				{
+					UE_LOG(LogTemp, Warning, TEXT("%s"), *hitResult.GetActor()->GetName());
 					outActors.Remove(actor);
 					i = 0;
 				}	
