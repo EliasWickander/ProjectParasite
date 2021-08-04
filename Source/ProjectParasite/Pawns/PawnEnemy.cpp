@@ -83,7 +83,6 @@ void APawnEnemy::RotateWeaponToMouseCursor()
 			equippedWeapon->SetActorRotation(targetRotation);
 		}
 	}
-	
 }
 
 void APawnEnemy::UpdatePawnBehavior(float deltaSeconds)
@@ -169,12 +168,13 @@ void APawnEnemy::SetWeapon(AWeaponBase* newWeapon)
 
 		if(Cast<ARangedWeapon>(newWeapon))
 		{
+			skeletalMesh->SetAnimClass(rangedAnimBlueprint);
 			socket = skeletalMesh->GetSocketByName("Gun_ExpSocket");
 		}
 		else
 		{
+			skeletalMesh->SetAnimClass(meleeAnimBlueprint);
 			socket = skeletalMesh->GetSocketByName("Knife_ExpSocket");
-			UE_LOG(LogTemp, Warning, TEXT("Knife guy %s"), *GetName());
 		}
 
 		if(socket)

@@ -146,5 +146,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
 	AAIControllerBase* enemyAIController = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
+	TSubclassOf<UAnimInstance> meleeAnimBlueprint;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
+	TSubclassOf<UAnimInstance> rangedAnimBlueprint;
+	
 	FVector lastHeardNoisePos;
 };
