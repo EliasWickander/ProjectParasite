@@ -69,6 +69,28 @@ TArray<AActor*> AMeleeWeapon::GetHitActors()
 	
 	OverlapCone(coneData, GetWorld(), objectTypes, classFilter, actorsToIgnore, outActors);
 
+	for(int i = 0; i < outActors.Num(); i++)
+	{
+		AActor* actor = outActors[i];
+		//Check if something is obstructing the vision of actors
+
+		FHitResult hitResult;
+		FCollisionQueryParams params;
+		
+		if(GetWorld()->LineTraceSingleByChannel(hitResult,GetActorLocation(),actor->GetActorLocation(), ECC_Visibility, params))
+		{
+			if(hitResult.GetActor())
+			{
+				//If something is obstructing the vision
+				if(hitResult.GetActor() != actor && !Cast<ADestructibleActor>(hitResult.GetActor()))
+				{
+					outActors.Remove(actor);
+					i = 0;
+				}	
+			}
+		}
+	}
+
 	return outActors;
 }
 
@@ -78,6 +100,8 @@ void AMeleeWeapon::Attack()
 
 	weaponHolderRef->SetIsAttacking(true);
 	attackingTimer = 0.2f;
+
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), swingSound, GetActorLocation(), 1);
 	
 	if(hitActors.Num() > 0)
 	{

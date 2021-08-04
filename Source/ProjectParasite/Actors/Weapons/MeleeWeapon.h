@@ -42,5 +42,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
 	FVector attackConeOriginOffsetLocal = FVector(0, 0, -50);
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
+	USoundBase* swingSound = nullptr;
+	
 	float attackingTimer = 0;
 };
