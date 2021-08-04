@@ -92,9 +92,9 @@ void APawnEnemy::UpdatePawnBehavior(float deltaSeconds)
 	
 	if(IsPlayerControlled())
 	{
-		RotateToMouseCursor();
+		RotateToMouseCursor();	
 		RotateWeaponToMouseCursor();
-
+		
 		if(GetActorLocation().Z != GetStartPos().Z)
 		{
 			FVector targetPos = GetActorLocation();
