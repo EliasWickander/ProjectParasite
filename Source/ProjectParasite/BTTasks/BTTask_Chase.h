@@ -31,6 +31,8 @@ public:
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 	virtual void OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult) override;
 
+	bool IsTargetObstructed(uint8* NodeMemory);
+
 private:
 	virtual uint16 GetInstanceMemorySize() const override;
 	

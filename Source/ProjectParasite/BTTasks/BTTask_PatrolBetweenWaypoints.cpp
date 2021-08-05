@@ -91,6 +91,8 @@ void UBTTask_PatrolBetweenWaypoints::OnTaskFinished(UBehaviorTreeComponent& Owne
 	BTTaskPatrolBetweenWaypointsMemory* instanceMemory = reinterpret_cast<BTTaskPatrolBetweenWaypointsMemory*>(NodeMemory);
 
 	instanceMemory->ownerEnemy->GetAIController()->StopMovement();
+
+	UE_LOG(LogTemp, Warning, TEXT("Exit patrol"));
 }
 
 void UBTTask_PatrolBetweenWaypoints::SetupPatrolPoints(BTTaskPatrolBetweenWaypointsMemory* instanceMemory)

@@ -67,7 +67,7 @@ void UBTTask_SearchNoise::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 		}
 		else
 		{
-			AIController->SetCurrentState(EnemyStates::State_Patrol);
+			AIController->SetCurrentState(EnemyStates::State_LookAround);
 		}
 	}
 }
