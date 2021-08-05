@@ -44,6 +44,7 @@ EBTNodeResult::Type UBTTask_Chase::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 	SetTarget(playerRef, instanceMemory);
 	
 	instanceMemory->ownerEnemy->SetMoveSpeed(instanceMemory->ownerEnemy->GetChaseSpeed());
+	instanceMemory->obstructed = true;
 	
 	return EBTNodeResult::InProgress;
 }
@@ -60,19 +61,34 @@ void UBTTask_Chase::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
 
 		if(IsTargetObstructed(NodeMemory))
 		{
-			instanceMemory->enemyAIController->SetCurrentState(EnemyStates::State_LookAround);
+			instanceMemory->obstructed = true;
+
+			if(instanceMemory->lookAroundTransitionTimer < instanceMemory->ownerEnemy->GetChaseToLookAroundTransitionTime())
+			{
+				instanceMemory->lookAroundTransitionTimer += DeltaSeconds;
+				UE_LOG(LogTemp, Warning, TEXT("%f"), instanceMemory->lookAroundTransitionTimer);
+			}
+			else
+			{
+				instanceMemory->lookAroundTransitionTimer = 0;
+				instanceMemory->enemyAIController->SetCurrentState(EnemyStates::State_LookAround);	
+			}
 		}
 		else
 		{
-			//Chase the player
-			instanceMemory->enemyAIController->MoveToActor(instanceMemory->targetActor, instanceMemory->ownerEnemy->GetAttackRange());
-
-			//If reached the attack range, transition to attack state
-			if(instanceMemory->enemyAIController->GetPathFollowingComponent()->DidMoveReachGoal())
-			{
-				instanceMemory->enemyAIController->SetCurrentState(EnemyStates::State_Attack);
-			}	
+			instanceMemory->lookAroundTransitionTimer = 0;
+			instanceMemory->obstructed = false;
 		}
+		
+		//Chase the player
+		instanceMemory->enemyAIController->MoveToActor(instanceMemory->targetActor, instanceMemory->ownerEnemy->GetAttackRange());
+
+		//If reached the attack range, transition to attack state
+		if(instanceMemory->enemyAIController->GetPathFollowingComponent()->DidMoveReachGoal())
+		{
+			if(instanceMemory->obstructed == false)
+				instanceMemory->enemyAIController->SetCurrentState(EnemyStates::State_Attack);
+		}	
 	}
 	else
 	{
