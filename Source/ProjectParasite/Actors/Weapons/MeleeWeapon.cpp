@@ -85,7 +85,6 @@ TArray<AActor*> AMeleeWeapon::GetHitActors()
 				//If something is obstructing the vision
 				if(hitResult.GetActor() != actor && !Cast<ADestructibleActor>(hitResult.GetActor()))
 				{
-					UE_LOG(LogTemp, Warning, TEXT("%s"), *hitResult.GetActor()->GetName());
 					outActors.Remove(actor);
 					i = 0;
 				}	

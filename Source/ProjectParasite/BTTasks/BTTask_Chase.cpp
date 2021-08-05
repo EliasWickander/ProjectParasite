@@ -4,6 +4,7 @@
 #include "BTTask_Chase.h"
 
 #include "AIController.h"
+#include "DestructibleActor.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectParasite/AIControllers/AIControllerBase.h"
@@ -57,13 +58,20 @@ void UBTTask_Chase::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
 	{
 		SetFocusExtended(instanceMemory->enemyAIController, instanceMemory->targetActor, instanceMemory->ownerEnemy->GetTurnRate(), 0.2f);
 
-		//Chase the player
-		instanceMemory->enemyAIController->MoveToActor(instanceMemory->targetActor, instanceMemory->ownerEnemy->GetAttackRange());
-
-		//If reached the attack range, transition to attack state
-		if(instanceMemory->enemyAIController->GetPathFollowingComponent()->DidMoveReachGoal())
+		if(IsTargetObstructed(NodeMemory))
 		{
-			instanceMemory->enemyAIController->SetCurrentState(EnemyStates::State_Attack);
+			instanceMemory->enemyAIController->SetCurrentState(EnemyStates::State_LookAround);
+		}
+		else
+		{
+			//Chase the player
+			instanceMemory->enemyAIController->MoveToActor(instanceMemory->targetActor, instanceMemory->ownerEnemy->GetAttackRange());
+
+			//If reached the attack range, transition to attack state
+			if(instanceMemory->enemyAIController->GetPathFollowingComponent()->DidMoveReachGoal())
+			{
+				instanceMemory->enemyAIController->SetCurrentState(EnemyStates::State_Attack);
+			}	
 		}
 	}
 	else
@@ -79,6 +87,32 @@ void UBTTask_Chase::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	OwnerComp.GetAIOwner()->ClearFocus(EAIFocusPriority::Gameplay);
 	
 	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
+}
+
+bool UBTTask_Chase::IsTargetObstructed(uint8* NodeMemory)
+{
+	BTTaskChaseMemory* instanceMemory = reinterpret_cast<BTTaskChaseMemory*>(NodeMemory);
+	
+	FHitResult hitResult;
+	FCollisionQueryParams params;
+	params.AddIgnoredActor(instanceMemory->ownerEnemy);
+
+	AActor* targetActor = instanceMemory->targetActor;
+		
+	//Check if something is obstructing the vision of actor
+	if(GetWorld()->LineTraceSingleByChannel(hitResult,instanceMemory->ownerEnemy->GetActorLocation(),targetActor->GetActorLocation(), ECC_Visibility, params))
+	{
+		if(hitResult.GetActor())
+		{
+			//If something is obstructing the vision
+			if(hitResult.GetActor() != targetActor && !Cast<ADestructibleActor>(hitResult.GetActor()))
+			{
+				return true;
+			}	
+		}
+	}
+
+	return false;
 }
 
 void UBTTask_Chase::SetTarget(APawnBase* target, BTTaskChaseMemory* instanceMemory)
