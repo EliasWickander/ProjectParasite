@@ -36,6 +36,4 @@ private:
 	void Detect(BTTaskDetectMemory* instanceMemory);
 	
 	virtual uint16 GetInstanceMemorySize() const override;
-
-	APawnParasite* playerRef = nullptr;
 };

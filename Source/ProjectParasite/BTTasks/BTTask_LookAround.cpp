@@ -34,6 +34,10 @@ EBTNodeResult::Type UBTTask_LookAround::ExecuteTask(UBehaviorTreeComponent& Owne
 
 	instanceMemory->targetAngle = 60;
 	instanceMemory->targetRot = instanceMemory->startRot.Vector().RotateAngleAxis(instanceMemory->targetAngle, FVector::UpVector).Rotation();
+
+	instanceMemory->finishedMoving = false;
+
+	instanceMemory->ownerEnemy->GetAIController()->StopMovement();
 	
 	return EBTNodeResult::InProgress;
 }

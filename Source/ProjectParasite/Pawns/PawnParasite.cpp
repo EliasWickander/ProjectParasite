@@ -8,6 +8,7 @@
 #include "ProjectParasite/AIControllers/AIControllerBase.h"
 #include "ProjectParasite/Pawns/PawnEnemy.h"
 #include "EngineUtils.h"
+#include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectParasite/Components/Debug/ParasiteDebugComponent.h"
 #include "ProjectParasite/DamageTypes/DamageType_Environmental.h"
@@ -99,6 +100,8 @@ void APawnParasite::SetPossessed(APawnEnemy* actorToPossess)
 		GetPossessedEnemy()->isPossessed = false;
 		//Give them AI behavior again
 		GetPossessedEnemy()->GetAIController()->Possess(GetPossessedEnemy());
+
+		GetPossessedEnemy()->GetCollider()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Ignore);
 		
 		GetPossessedEnemy()->onStartDeathEvent.RemoveDynamic(this, &APawnParasite::OnPossessedEnemyDeath);
 
@@ -115,6 +118,7 @@ void APawnParasite::SetPossessed(APawnEnemy* actorToPossess)
 		//Set the move speed of possessed enemy to its chase speed
 		actorToPossess->SetMoveSpeed(actorToPossess->GetPossessedSpeed());
 
+		actorToPossess->GetCollider()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Block);
 		actorToPossess->onStartDeathEvent.AddDynamic(this, &APawnParasite::OnPossessedEnemyDeath);
 		OnPossessedEnemy(actorToPossess);
 	}

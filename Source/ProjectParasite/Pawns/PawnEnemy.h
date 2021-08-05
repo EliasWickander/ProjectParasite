@@ -11,6 +11,7 @@ class ATargetPoint;
 class AAIControllerBase;
 class APawnParasite;
 class UPawnSensingComponent;
+class UParticleEmitter;
 
 UCLASS()
 class PROJECTPARASITE_API APawnEnemy : public APawnBase
@@ -41,7 +42,8 @@ public:
 	virtual void SetWeapon(AWeaponBase* newWeapon);
 	AWeaponBase* GetWeapon() { return equippedWeapon; }
 
-	float GetAttackRange() { return attackRange; }
+	float GetAttackRangeMin() { return attackRangeMin; }
+	float GetAttackRangeMax() { return attackRangeMax; }
 	float GetDetectionRange() { return detectionRange; }
 	float GetDetectionAngle() { return detectionAngle; }
 	float GetSightReactionTime() { return sightReactionTime; }
@@ -54,8 +56,10 @@ public:
 	float GetTurnRate() { return turnRate; }
 	float GetAttackRate() { return attackRate; }
 	float GetLookAroundTime() { return lookAroundTime; }
-
+	
 	float GetChaseToLookAroundTransitionTime() { return lookAroundFromChaseTransitionTime; }
+
+	bool IsTargetObstructed(AActor* target);
 
 	void SetIsAttacking(bool enabled) { isAttacking = enabled; }
 	float GetIsAttacking() { return isAttacking; }
@@ -70,6 +74,8 @@ public:
 	float GetGuardTimeOffset() { return guardTimeOffset; }
 	bool GetIsStationary() { return isStationary; }
 	FVector GetLastHeardNoisePos() { return lastHeardNoisePos; }
+	FVector GetLastSeenPos() { return lastSeenPos; }
+	void SetLastSeenPos(FVector pos) { lastSeenPos = pos; }
 	
 protected:
 	virtual void BeginPlay() override;
@@ -112,7 +118,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
 	float attackRate = 0.2f;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float patrolSpeed = 200;
 
@@ -135,7 +141,10 @@ protected:
 	float detectionAngle = 60;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
-    float attackRange = 300;
+    float attackRangeMin = 300;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	float attackRangeMax = 800;
     
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Detection")
 	float sightReactionTime = 0.2f;
@@ -162,4 +171,5 @@ protected:
 	TSubclassOf<UAnimInstance> rangedAnimBlueprint;
 	
 	FVector lastHeardNoisePos;
+	FVector lastSeenPos;
 };

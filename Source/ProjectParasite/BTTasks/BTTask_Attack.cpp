@@ -64,11 +64,16 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 
 	APawnEnemy* ownerEnemy = instanceMemory->ownerEnemy;
 	APawnBase* targetActor = instanceMemory->targetActor;
-	
+
 	//If target actor is dead, trigger event method
 	if(targetActor->GetIsPendingDeath())
 	{
 		OnTargetDeath(targetActor, NodeMemory);
+	}
+
+	if(ownerEnemy->IsTargetObstructed(targetActor))
+	{
+		instanceMemory->enemyAIController->SetCurrentState(EnemyStates::State_Chase);	
 	}
 
 	if(Cast<ARangedPawnEnemy>(instanceMemory->ownerEnemy))
@@ -76,7 +81,7 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		FVector dirToTarget = targetActor->GetActorLocation() - ownerEnemy->GetActorLocation();
 		dirToTarget.Z = 0;
 
-		if(dirToTarget.Size() < ownerEnemy->GetAttackRange())
+		if(dirToTarget.Size() < ownerEnemy->GetAttackRangeMin())
 		{
 			bool finishedRetreating = Retreat(NodeMemory);
 
@@ -136,7 +141,9 @@ bool UBTTask_Attack::IsInRange(uint8* nodeMemory)
 		
 	UPathFollowingComponent* pathFollowingComponent = instanceMemory->ownerEnemy->GetAIController()->GetPathFollowingComponent();
 
-	return pathFollowingComponent->HasReached(*instanceMemory->targetActor, EPathFollowingReachMode::OverlapAgentAndGoal, instanceMemory->ownerEnemy->GetAttackRange(), true);;
+	float distToTarget = FVector::Dist(instanceMemory->ownerEnemy->GetActorLocation(), instanceMemory->targetActor->GetActorLocation());
+	
+	return distToTarget > instanceMemory->ownerEnemy->GetAttackRangeMin() && distToTarget < instanceMemory->ownerEnemy->GetAttackRangeMax();
 }
 
 void UBTTask_Attack::RotateWeaponToTarget(uint8* nodeMemory)
@@ -165,7 +172,9 @@ bool UBTTask_Attack::Retreat(uint8* nodeMemory)
 		ownerEnemy->GetActorLocation() - ownerEnemy->GetActorForwardVector() * 200,
 		ECollisionChannel::ECC_WorldStatic);
 
-	if(hitResult.GetActor() == nullptr)
+	FVector safePoint = ownerEnemy->GetActorLocation() - ownerEnemy->GetActorForwardVector() * ownerEnemy->GetAttackRangeMin();
+	
+	if(instanceMemory->startBackOff == false)
 	{
 		if(instanceMemory->backOffTimer < 0.2f)
 		{
@@ -173,16 +182,22 @@ bool UBTTask_Attack::Retreat(uint8* nodeMemory)
 		}
 		else
 		{
-			FVector safePoint = ownerEnemy->GetActorLocation() - ownerEnemy->GetActorForwardVector() * ownerEnemy->GetAttackRange();
-			instanceMemory->backOffTimer = 0;
-
-			ownerEnemy->GetAIController()->MoveToLocation(safePoint);
-			ownerEnemy->GetAIController()->SetFocus(targetActor);
-		}
+			instanceMemory->startBackOff = true;
+		}	
 	}
 	else
 	{
-		return true;
+		if(hitResult.GetActor() == nullptr && FVector::Dist(ownerEnemy->GetActorLocation(), safePoint) > 0.2f)
+		{
+			instanceMemory->backOffTimer = 0;
+
+			ownerEnemy->GetAIController()->MoveToLocation(ownerEnemy->GetActorLocation() - ownerEnemy->GetActorForwardVector() * 100);
+			ownerEnemy->GetAIController()->SetFocus(targetActor);	
+		}
+		else
+		{
+			return true;
+		}	
 	}
 
 	return false;

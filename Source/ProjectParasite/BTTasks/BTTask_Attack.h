@@ -21,6 +21,7 @@ struct BTTaskAttackMemory
 	APawnBase* targetActor = nullptr;
 
 	float backOffTimer = 0;
+	bool startBackOff = false;
 
 	float attackTimer = 0;
 	bool preparingAttack = false;
