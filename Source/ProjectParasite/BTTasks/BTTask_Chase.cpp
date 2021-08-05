@@ -68,8 +68,6 @@ void UBTTask_Chase::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
 
 				instanceMemory->ownerEnemy->SetLastSeenPos(instanceMemory->targetActor->GetActorLocation());
 				instanceMemory->ownerEnemy->GetAIController()->MoveToLocation(instanceMemory->ownerEnemy->GetLastSeenPos(), 0);
-
-				DrawDebugBox(GetWorld(), instanceMemory->ownerEnemy->GetLastSeenPos(), FVector::OneVector * 100, FColor::Red, false, 2);
 			}
 
 			if(FVector::Dist(instanceMemory->ownerEnemy->GetActorLocation(), instanceMemory->ownerEnemy->GetLastSeenPos()) < 100 || instanceMemory->ownerEnemy->GetAIController()->GetMoveStatus() == EPathFollowingStatus::Idle)

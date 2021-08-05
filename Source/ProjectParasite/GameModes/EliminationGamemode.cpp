@@ -138,6 +138,12 @@ void AEliminationGamemode::OnEnemyDeath(APawnBase* deadEnemy, AActor* causerActo
 			if(gameManagerRef->IsCurrentFloorLast())
 			{
 				gameManagerRef->ResetTransitionData();
+
+				UE_LOG(LogTemp, Warning, TEXT("%f, %f"), gameManagerRef->GetLevelTimer(), levelTimeLimit);
+				if(gameManagerRef->GetLevelTimer() < levelTimeLimit)
+				{
+					gameManagerRef->GetScoreHandler()->AddScore(UScoreHandler::TimeBonus, finishOnTimeScore);
+				}
 				
 				gameManagerRef->OnFinishLevel();
 			}
@@ -164,14 +170,7 @@ void AEliminationGamemode::OnGoalTriggered()
 		}
 		else
 		{
-			//Add score if player finished level before time limit
-			if(gameManagerRef->GetLevelTimer() < levelTimeLimit)
-			{
-				gameManagerRef->GetScoreHandler()->AddScore(UScoreHandler::TimeBonus, finishOnTimeScore);
-			}
 
-			gameManagerRef->OnFinishLevel();
-			//UGameplayStatics::OpenLevel(GetWorld(), "Hideout");
 		}
 	}
 }

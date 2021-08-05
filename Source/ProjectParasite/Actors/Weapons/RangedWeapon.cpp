@@ -87,7 +87,7 @@ void ARangedWeapon::Fire()
 {
 	OnFireEvent();
 	weaponHolderRef->SetIsAttacking(true);
-	attackingTimer = 0.2f;
+	attackingTimer = 0.1f;
 	//Fire from weapon socket
 	FVector spawnPos = weaponSocket->GetComponentLocation();
 	FRotator spawnRot = weaponSocket->GetComponentRotation();
