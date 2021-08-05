@@ -53,6 +53,7 @@ public:
 	float GetAttackMoveSpeed() { return attackMoveSpeed; }
 	float GetTurnRate() { return turnRate; }
 	float GetAttackRate() { return attackRate; }
+	float GetLookAroundTime() { return lookAroundTime; }
 
 	void SetIsAttacking(bool enabled) { isAttacking = enabled; }
 	float GetIsAttacking() { return isAttacking; }
@@ -103,6 +104,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
 	float guardTimeOffset = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
+	float lookAroundTime = 2;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
 	float attackRate = 0.2f;
