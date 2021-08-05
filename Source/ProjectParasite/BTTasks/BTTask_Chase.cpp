@@ -66,7 +66,6 @@ void UBTTask_Chase::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
 			if(instanceMemory->lookAroundTransitionTimer < instanceMemory->ownerEnemy->GetChaseToLookAroundTransitionTime())
 			{
 				instanceMemory->lookAroundTransitionTimer += DeltaSeconds;
-				UE_LOG(LogTemp, Warning, TEXT("%f"), instanceMemory->lookAroundTransitionTimer);
 			}
 			else
 			{
@@ -81,10 +80,12 @@ void UBTTask_Chase::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
 		}
 		
 		//Chase the player
-		instanceMemory->enemyAIController->MoveToActor(instanceMemory->targetActor, instanceMemory->ownerEnemy->GetAttackRange());
+		instanceMemory->enemyAIController->MoveToActor(instanceMemory->targetActor, instanceMemory->ownerEnemy->GetAttackRangeMin());
 
+		float distToTarget = FVector::Dist(instanceMemory->ownerEnemy->GetActorLocation(), instanceMemory->targetActor->GetActorLocation());
+		
 		//If reached the attack range, transition to attack state
-		if(instanceMemory->enemyAIController->GetPathFollowingComponent()->DidMoveReachGoal())
+		if(distToTarget < instanceMemory->ownerEnemy->GetAttackRangeMax())
 		{
 			if(instanceMemory->obstructed == false)
 				instanceMemory->enemyAIController->SetCurrentState(EnemyStates::State_Attack);
