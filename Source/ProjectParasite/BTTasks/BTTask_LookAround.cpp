@@ -80,7 +80,6 @@ bool UBTTask_LookAround::LookAtRotation(float duration, uint8* NodeMemory)
 	{
 		instanceMemory->lookAroundTimer += GetWorld()->GetDeltaSeconds();
 
-		UE_LOG(LogTemp, Warning, TEXT("%f"), instanceMemory->lookAroundTimer);
 		FRotator lerpedRot = FMath::Lerp(instanceMemory->currentRot, instanceMemory->targetRot, instanceMemory->lookAroundTimer / duration);
 
 		instanceMemory->ownerEnemy->SetActorRotation(lerpedRot);
