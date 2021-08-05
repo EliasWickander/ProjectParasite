@@ -19,6 +19,7 @@ struct BTTaskChaseMemory
 	APawnBase* targetActor = nullptr;
 
 	float lookAroundTransitionTimer = 0;
+	bool obstructed = false;
 };
 
 UCLASS()
