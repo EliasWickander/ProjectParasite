@@ -114,6 +114,7 @@ void UBTTask_Attack::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* No
 	
 	AWeaponBase* weapon = instanceMemory->ownerEnemy->GetWeapon();
 
+	UE_LOG(LogTemp, Warning, TEXT("Exit attack"));
 	if(weapon)
 		weapon->SetActorRotation(instanceMemory->ownerEnemy->GetActorForwardVector().Rotation());
 	
@@ -143,7 +144,7 @@ bool UBTTask_Attack::IsInRange(uint8* nodeMemory)
 
 	float distToTarget = FVector::Dist(instanceMemory->ownerEnemy->GetActorLocation(), instanceMemory->targetActor->GetActorLocation());
 	
-	return distToTarget > instanceMemory->ownerEnemy->GetAttackRangeMin() && distToTarget < instanceMemory->ownerEnemy->GetAttackRangeMax();
+	return distToTarget < instanceMemory->ownerEnemy->GetAttackRangeMax();
 }
 
 void UBTTask_Attack::RotateWeaponToTarget(uint8* nodeMemory)
@@ -161,7 +162,6 @@ bool UBTTask_Attack::Retreat(uint8* nodeMemory)
 {
 	BTTaskAttackMemory* instanceMemory = reinterpret_cast<BTTaskAttackMemory*>(nodeMemory);
 
-	UE_LOG(LogTemp, Warning, TEXT("Retreat"));
 	APawnEnemy* ownerEnemy = instanceMemory->ownerEnemy;
 	APawnBase* targetActor = instanceMemory->targetActor;
 
