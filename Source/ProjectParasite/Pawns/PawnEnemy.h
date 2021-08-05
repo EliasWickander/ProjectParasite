@@ -55,6 +55,8 @@ public:
 	float GetAttackRate() { return attackRate; }
 	float GetLookAroundTime() { return lookAroundTime; }
 
+	float GetChaseToLookAroundTransitionTime() { return lookAroundFromChaseTransitionTime; }
+
 	void SetIsAttacking(bool enabled) { isAttacking = enabled; }
 	float GetIsAttacking() { return isAttacking; }
 
@@ -141,6 +143,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Detection")
 	float noiseReactionTime = 0.4f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
+	float lookAroundFromChaseTransitionTime = 1;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 	bool isPossessed = false;
 

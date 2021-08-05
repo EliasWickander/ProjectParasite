@@ -17,6 +17,8 @@ struct BTTaskChaseMemory
 	UBlackboardComponent* blackboard = nullptr;
 	AAIControllerBase* enemyAIController = nullptr;
 	APawnBase* targetActor = nullptr;
+
+	float lookAroundTransitionTimer = 0;
 };
 
 UCLASS()

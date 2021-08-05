@@ -60,7 +60,15 @@ void UBTTask_Chase::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
 
 		if(IsTargetObstructed(NodeMemory))
 		{
-			instanceMemory->enemyAIController->SetCurrentState(EnemyStates::State_LookAround);
+			if(instanceMemory->lookAroundTransitionTimer < instanceMemory->ownerEnemy->GetChaseToLookAroundTransitionTime())
+			{
+				instanceMemory->lookAroundTransitionTimer += DeltaSeconds;
+			}
+			else
+			{
+				instanceMemory->lookAroundTransitionTimer = 0;
+				instanceMemory->enemyAIController->SetCurrentState(EnemyStates::State_LookAround);	
+			}
 		}
 		else
 		{
