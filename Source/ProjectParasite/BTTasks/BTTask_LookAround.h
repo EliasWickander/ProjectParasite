@@ -18,6 +18,7 @@ struct BTTaskLookAroundMemory
 	FRotator currentRot = FRotator::ZeroRotator;
 	FRotator targetRot = FRotator::ZeroRotator;
 	float targetAngle = 0;
+	bool finishedMoving = false;
 };
 
 UCLASS()

@@ -56,8 +56,10 @@ public:
 	float GetTurnRate() { return turnRate; }
 	float GetAttackRate() { return attackRate; }
 	float GetLookAroundTime() { return lookAroundTime; }
-
+	
 	float GetChaseToLookAroundTransitionTime() { return lookAroundFromChaseTransitionTime; }
+
+	bool IsTargetObstructed(AActor* target);
 
 	void SetIsAttacking(bool enabled) { isAttacking = enabled; }
 	float GetIsAttacking() { return isAttacking; }
@@ -72,6 +74,8 @@ public:
 	float GetGuardTimeOffset() { return guardTimeOffset; }
 	bool GetIsStationary() { return isStationary; }
 	FVector GetLastHeardNoisePos() { return lastHeardNoisePos; }
+	FVector GetLastSeenPos() { return lastSeenPos; }
+	void SetLastSeenPos(FVector pos) { lastSeenPos = pos; }
 	
 protected:
 	virtual void BeginPlay() override;
@@ -115,9 +119,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
 	float attackRate = 0.2f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "VFX")
-	UParticleEmitter* stunEmitter = nullptr;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float patrolSpeed = 200;
 
@@ -170,4 +171,5 @@ protected:
 	TSubclassOf<UAnimInstance> rangedAnimBlueprint;
 	
 	FVector lastHeardNoisePos;
+	FVector lastSeenPos;
 };

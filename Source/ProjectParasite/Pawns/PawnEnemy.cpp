@@ -6,6 +6,7 @@
 #include "ProjectParasite/PlayerControllers/PlayerControllerBase.h"
 #include "ProjectParasite/Pawns/PawnParasite.h"
 #include "AIController.h"
+#include "DestructibleActor.h"
 #include "ProjectParasite/Utilities/DevUtils.h"
 #include "EngineUtils.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -29,6 +30,28 @@ APawnEnemy::APawnEnemy()
 	weaponSocket->SetupAttachment(skeletalMesh);
 
 	pawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("Pawn Sensing"));
+}
+
+bool APawnEnemy::IsTargetObstructed(AActor* target)
+{
+	FHitResult hitResult;
+	FCollisionQueryParams params;
+	params.AddIgnoredActor(this);
+		
+	//Check if something is obstructing the vision of actor
+	if(GetWorld()->LineTraceSingleByChannel(hitResult,GetActorLocation(),target->GetActorLocation(), ECC_Vehicle, params))
+	{
+		if(hitResult.GetActor())
+		{
+			//If something is obstructing the vision
+			if(hitResult.GetActor() != target && !Cast<ADestructibleActor>(hitResult.GetActor()))
+			{
+				return true;
+			}	
+		}
+	}
+
+	return false;
 }
 
 void APawnEnemy::BeginPlay()

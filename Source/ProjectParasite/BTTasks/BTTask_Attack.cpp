@@ -71,6 +71,11 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		OnTargetDeath(targetActor, NodeMemory);
 	}
 
+	if(ownerEnemy->IsTargetObstructed(targetActor))
+	{
+		instanceMemory->enemyAIController->SetCurrentState(EnemyStates::State_Chase);	
+	}
+
 	if(Cast<ARangedPawnEnemy>(instanceMemory->ownerEnemy))
 	{
 		FVector dirToTarget = targetActor->GetActorLocation() - ownerEnemy->GetActorLocation();

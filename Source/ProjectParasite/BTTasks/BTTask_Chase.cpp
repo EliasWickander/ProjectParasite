@@ -5,6 +5,7 @@
 
 #include "AIController.h"
 #include "DestructibleActor.h"
+#include "DrawDebugHelpers.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectParasite/AIControllers/AIControllerBase.h"
@@ -44,7 +45,7 @@ EBTNodeResult::Type UBTTask_Chase::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 	SetTarget(playerRef, instanceMemory);
 	
 	instanceMemory->ownerEnemy->SetMoveSpeed(instanceMemory->ownerEnemy->GetChaseSpeed());
-	instanceMemory->obstructed = true;
+	instanceMemory->obstructed = false;
 	
 	return EBTNodeResult::InProgress;
 }
@@ -57,38 +58,50 @@ void UBTTask_Chase::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
 
 	if(instanceMemory->targetActor != nullptr)
 	{
-		SetFocusExtended(instanceMemory->enemyAIController, instanceMemory->targetActor, instanceMemory->ownerEnemy->GetTurnRate(), 0.2f);
+		SetFocusExtended(instanceMemory->enemyAIController, instanceMemory->targetActor, instanceMemory->ownerEnemy->GetTurnRate(), 100);
 
-		if(IsTargetObstructed(NodeMemory))
+		if(instanceMemory->ownerEnemy->IsTargetObstructed(instanceMemory->targetActor))
 		{
-			instanceMemory->obstructed = true;
+			if(instanceMemory->obstructed == false)
+			{
+				instanceMemory->obstructed = true;
 
-			if(instanceMemory->lookAroundTransitionTimer < instanceMemory->ownerEnemy->GetChaseToLookAroundTransitionTime())
-			{
-				instanceMemory->lookAroundTransitionTimer += DeltaSeconds;
+				instanceMemory->ownerEnemy->SetLastSeenPos(instanceMemory->targetActor->GetActorLocation());
+				instanceMemory->ownerEnemy->GetAIController()->MoveToLocation(instanceMemory->ownerEnemy->GetLastSeenPos(), 0);
+
+				DrawDebugBox(GetWorld(), instanceMemory->ownerEnemy->GetLastSeenPos(), FVector::OneVector * 100, FColor::Red, false, 2);
 			}
-			else
+
+			if(FVector::Dist(instanceMemory->ownerEnemy->GetActorLocation(), instanceMemory->ownerEnemy->GetLastSeenPos()) < 100 || instanceMemory->ownerEnemy->GetAIController()->GetMoveStatus() == EPathFollowingStatus::Idle)
 			{
-				instanceMemory->lookAroundTransitionTimer = 0;
-				instanceMemory->enemyAIController->SetCurrentState(EnemyStates::State_LookAround);	
+				instanceMemory->ownerEnemy->GetAIController()->StopMovement();
+				
+				if(instanceMemory->lookAroundTransitionTimer < instanceMemory->ownerEnemy->GetChaseToLookAroundTransitionTime())
+				{
+					instanceMemory->lookAroundTransitionTimer += DeltaSeconds;
+				}
+				else
+				{
+					instanceMemory->lookAroundTransitionTimer = 0;
+					instanceMemory->enemyAIController->SetCurrentState(EnemyStates::State_LookAround);	
+				}	
 			}
 		}
 		else
 		{
 			instanceMemory->lookAroundTransitionTimer = 0;
 			instanceMemory->obstructed = false;
-		}
-		
-		//Chase the player
-		instanceMemory->enemyAIController->MoveToActor(instanceMemory->targetActor, instanceMemory->ownerEnemy->GetAttackRangeMin());
 
-		float distToTarget = FVector::Dist(instanceMemory->ownerEnemy->GetActorLocation(), instanceMemory->targetActor->GetActorLocation());
+			//Chase the player
+			instanceMemory->enemyAIController->MoveToActor(instanceMemory->targetActor, instanceMemory->ownerEnemy->GetAttackRangeMin());
+
+			float distToTarget = FVector::Dist(instanceMemory->ownerEnemy->GetActorLocation(), instanceMemory->targetActor->GetActorLocation());
 		
-		//If reached the attack range, transition to attack state
-		if(distToTarget < instanceMemory->ownerEnemy->GetAttackRangeMax())
-		{
-			if(instanceMemory->obstructed == false)
+			//If reached the attack range, transition to attack state
+			if(distToTarget < instanceMemory->ownerEnemy->GetAttackRangeMax())
+			{
 				instanceMemory->enemyAIController->SetCurrentState(EnemyStates::State_Attack);
+			}
 		}	
 	}
 	else
@@ -104,32 +117,6 @@ void UBTTask_Chase::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	OwnerComp.GetAIOwner()->ClearFocus(EAIFocusPriority::Gameplay);
 	
 	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
-}
-
-bool UBTTask_Chase::IsTargetObstructed(uint8* NodeMemory)
-{
-	BTTaskChaseMemory* instanceMemory = reinterpret_cast<BTTaskChaseMemory*>(NodeMemory);
-	
-	FHitResult hitResult;
-	FCollisionQueryParams params;
-	params.AddIgnoredActor(instanceMemory->ownerEnemy);
-
-	AActor* targetActor = instanceMemory->targetActor;
-		
-	//Check if something is obstructing the vision of actor
-	if(GetWorld()->LineTraceSingleByChannel(hitResult,instanceMemory->ownerEnemy->GetActorLocation(),targetActor->GetActorLocation(), ECC_Visibility, params))
-	{
-		if(hitResult.GetActor())
-		{
-			//If something is obstructing the vision
-			if(hitResult.GetActor() != targetActor && !Cast<ADestructibleActor>(hitResult.GetActor()))
-			{
-				return true;
-			}	
-		}
-	}
-
-	return false;
 }
 
 void UBTTask_Chase::SetTarget(APawnBase* target, BTTaskChaseMemory* instanceMemory)
