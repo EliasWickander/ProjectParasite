@@ -25,6 +25,8 @@ void UPlayer_State_Dash::Start()
 	playerRef->SetMoveSpeed(playerRef->dashSpeed);
 
 	playerRef->SetActorRotation(dashDir.Rotation());
+
+	playerRef->OnDashStart();
 }
 
 void UPlayer_State_Dash::Update()
@@ -60,4 +62,6 @@ void UPlayer_State_Dash::Exit()
 	playerRef->SetMoveSpeed(prevMoveSpeed);
 	playerRef->SetCanMove(true);
 	playerRef->SetDashTimer(playerRef->GetDashCooldown());
+	
+	playerRef->OnDashEnd();
 }

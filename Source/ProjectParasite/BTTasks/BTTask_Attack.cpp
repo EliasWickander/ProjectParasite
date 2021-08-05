@@ -161,6 +161,7 @@ bool UBTTask_Attack::Retreat(uint8* nodeMemory)
 {
 	BTTaskAttackMemory* instanceMemory = reinterpret_cast<BTTaskAttackMemory*>(nodeMemory);
 
+	UE_LOG(LogTemp, Warning, TEXT("Retreat"));
 	APawnEnemy* ownerEnemy = instanceMemory->ownerEnemy;
 	APawnBase* targetActor = instanceMemory->targetActor;
 

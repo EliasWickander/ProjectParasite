@@ -59,6 +59,12 @@ public:
 
 	UStateMachine* GetStateMachine() { return stateMachine; }
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnDashStart();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnDashEnd();
+
 protected:
 	virtual void BeginPlay() override;
 

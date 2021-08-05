@@ -29,6 +29,7 @@ void AMeleeWeapon::Tick(float DeltaTime)
 		else
 		{
 			weaponHolderRef->SetIsAttacking(false);
+			OnStabEnd();
 			attackingTimer = 0;
 		}	
 	}
@@ -103,6 +104,7 @@ void AMeleeWeapon::Attack()
 	attackingTimer = 0.2f;
 
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), swingSound, GetActorLocation(), 1);
+	OnStabStart();
 	
 	if(hitActors.Num() > 0)
 	{

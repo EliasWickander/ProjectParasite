@@ -41,4 +41,5 @@ private:
 	TMap<FString, UState*> states;
 	
 	AActor* owner = nullptr;
+
 };

@@ -23,6 +23,12 @@ public:
 	float GetAttackConeRange() { return attackConeRange; }
 	float GetAttackConeAngle() { return attackConeAngle; }
 	FVector GetAttackConeOffset() { return attackConeOriginOffsetLocal; }
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnStabStart();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnStabEnd();
 	
 protected:
 	virtual void Attack();
