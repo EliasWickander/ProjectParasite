@@ -125,7 +125,6 @@ void AMeleeWeapon::Attack()
 					//Only hit units that aren't controlled by player
 					if(hitPawn->GetController() != playerController && !hitPawnIsParasite)
 					{
-						UE_LOG(LogTemp, Warning, TEXT("Hit %s, %s"), *actor->GetName(), *hitPawn->StaticClass()->GetName());
 						UGameplayStatics::ApplyDamage(hitPawn, damage, playerController, weaponHolderRef, damageType);
 					}	
 				}

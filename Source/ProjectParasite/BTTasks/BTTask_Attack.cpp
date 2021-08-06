@@ -113,8 +113,7 @@ void UBTTask_Attack::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* No
 	BTTaskAttackMemory* instanceMemory = reinterpret_cast<BTTaskAttackMemory*>(NodeMemory);
 	
 	AWeaponBase* weapon = instanceMemory->ownerEnemy->GetWeapon();
-
-	UE_LOG(LogTemp, Warning, TEXT("Exit attack"));
+	
 	if(weapon)
 		weapon->SetActorRotation(instanceMemory->ownerEnemy->GetActorForwardVector().Rotation());
 	

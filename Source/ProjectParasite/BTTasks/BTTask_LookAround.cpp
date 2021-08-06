@@ -38,7 +38,8 @@ EBTNodeResult::Type UBTTask_LookAround::ExecuteTask(UBehaviorTreeComponent& Owne
 	instanceMemory->finishedMoving = false;
 
 	instanceMemory->ownerEnemy->GetAIController()->StopMovement();
-	
+
+	instanceMemory->ownerEnemy->OnSearchStart();
 	return EBTNodeResult::InProgress;
 }
 
@@ -65,6 +66,8 @@ void UBTTask_LookAround::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8
 	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
 
 	BTTaskLookAroundMemory* instanceMemory = reinterpret_cast<BTTaskLookAroundMemory*>(NodeMemory);
+	
+	instanceMemory->ownerEnemy->OnSearchEnd();
 }
 
 void UBTTask_LookAround::Search(uint8* NodeMemory)

@@ -76,6 +76,12 @@ public:
 	FVector GetLastHeardNoisePos() { return lastHeardNoisePos; }
 	FVector GetLastSeenPos() { return lastSeenPos; }
 	void SetLastSeenPos(FVector pos) { lastSeenPos = pos; }
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnSearchStart();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnSearchEnd();
 	
 protected:
 	virtual void BeginPlay() override;

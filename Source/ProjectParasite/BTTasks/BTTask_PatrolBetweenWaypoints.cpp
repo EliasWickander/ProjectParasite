@@ -37,7 +37,6 @@ EBTNodeResult::Type UBTTask_PatrolBetweenWaypoints::ExecuteTask(UBehaviorTreeCom
 	SetupPatrolPoints(instanceMemory);
 	InitNextWaypoint(instanceMemory);
 
-	UE_LOG(LogTemp, Warning, TEXT("%s start patrolling"), *instanceMemory->ownerEnemy->GetName());
 	return EBTNodeResult::InProgress;
 }
 
@@ -91,8 +90,6 @@ void UBTTask_PatrolBetweenWaypoints::OnTaskFinished(UBehaviorTreeComponent& Owne
 	BTTaskPatrolBetweenWaypointsMemory* instanceMemory = reinterpret_cast<BTTaskPatrolBetweenWaypointsMemory*>(NodeMemory);
 
 	instanceMemory->ownerEnemy->GetAIController()->StopMovement();
-
-	UE_LOG(LogTemp, Warning, TEXT("Exit patrol"));
 }
 
 void UBTTask_PatrolBetweenWaypoints::SetupPatrolPoints(BTTaskPatrolBetweenWaypointsMemory* instanceMemory)

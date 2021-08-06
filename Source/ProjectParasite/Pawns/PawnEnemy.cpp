@@ -160,8 +160,6 @@ void APawnEnemy::OnHearNoise(APawn* pawnInstigator, const FVector& location, flo
 {
 	if(pawnInstigator != this)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Heard noise from %s"), *pawnInstigator->GetName());
-
 		lastHeardNoisePos = location;
 
 		EnemyStates currentState = GetAIController()->GetCurrentState();

@@ -42,7 +42,6 @@ void AEliminationGamemode::Tick(float DeltaSeconds)
 
 void AEliminationGamemode::OnFloorEnter(int floor)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Enter floor"));
 	//When an enemy dies, call the OnEnemyDeath method
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APawnEnemy::StaticClass(), enemiesAlive);
 
@@ -78,24 +77,14 @@ bool AEliminationGamemode::HasEliminatedAllEnemies()
 {
 	//If there are no enemies left (excluding a possessed one), the game is won
 	
-	int targetAmountEnemiesLeft = 0;
-
-	if(enemiesAlive.Num() == 1 && playerRef->GetPossessedEnemy())
-	{
-		if(playerRef->GetPossessedEnemy() == enemiesAlive[0])
-		{
-			targetAmountEnemiesLeft = 1;
-		}	
-	}
-
-	return enemiesAlive.Num() <= targetAmountEnemiesLeft;
+	return enemiesAlive.Num() <= 0;
 }
 
 void AEliminationGamemode::OnEnemyDeath(APawnBase* deadEnemy, AActor* causerActor)
 {
 	Cast<APawnEnemy>(deadEnemy)->onStartDeathEvent.RemoveDynamic(this, &AEliminationGamemode::OnEnemyDeath);
 	
-	enemiesAlive.Remove(deadEnemy);
+	RemoveFromEnemiesAlive(deadEnemy);
 
 	if(causerActor != nullptr)
 	{
@@ -139,7 +128,6 @@ void AEliminationGamemode::OnEnemyDeath(APawnBase* deadEnemy, AActor* causerActo
 			{
 				gameManagerRef->ResetTransitionData();
 
-				UE_LOG(LogTemp, Warning, TEXT("%f, %f"), gameManagerRef->GetLevelTimer(), levelTimeLimit);
 				if(gameManagerRef->GetLevelTimer() < levelTimeLimit)
 				{
 					gameManagerRef->GetScoreHandler()->AddScore(UScoreHandler::TimeBonus, finishOnTimeScore);
@@ -167,10 +155,6 @@ void AEliminationGamemode::OnGoalTriggered()
 		if(!gameManagerRef->IsCurrentFloorLast())
 		{
 			gameManagerRef->LoadNextFloor();		
-		}
-		else
-		{
-
 		}
 	}
 }

@@ -18,6 +18,7 @@
 #include "ProjectParasite/Utilities/StateMachine/States/Player/Player_State_Possess.h"
 
 #include "ProjectParasite/PlayerControllers/PlayerControllerBase.h"
+#include "ProjectParasite/GameModes/EliminationGamemode.h"
 
 APawnParasite::APawnParasite()
 {
@@ -40,6 +41,7 @@ void APawnParasite::BeginPlay()
 {
 	Super::BeginPlay();
 
+	gameModeRef = Cast<AEliminationGamemode>(UGameplayStatics::GetGameMode(GetWorld()));
 	SetMoveSpeed(baseMoveSpeed);
 	stateMachine->SetState("State_Idle");
 }
@@ -113,6 +115,7 @@ void APawnParasite::SetPossessed(APawnEnemy* actorToPossess)
 		actorToPossess->isPossessed = true;
 		actorToPossess->OnPossessed();
 		
+		actorToPossess->GetAIController()->SetCurrentState(EnemyStates::State_Idle);
 		playerControllerRef->Possess(actorToPossess);
 
 		//Set the move speed of possessed enemy to its chase speed
@@ -120,6 +123,10 @@ void APawnParasite::SetPossessed(APawnEnemy* actorToPossess)
 
 		actorToPossess->GetCollider()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Block);
 		actorToPossess->onStartDeathEvent.AddDynamic(this, &APawnParasite::OnPossessedEnemyDeath);
+
+		gameModeRef->RemoveFromEnemiesAlive(actorToPossess);
+
+		actorToPossess->OnPossessed();
 		OnPossessedEnemy(actorToPossess);
 	}
 	else

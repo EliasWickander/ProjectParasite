@@ -33,7 +33,6 @@ void AAIControllerBase::Tick(float DeltaSeconds)
 
 void AAIControllerBase::SetCurrentState(EnemyStates state)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%i"), state);
 	blackboard->SetValueAsEnum("CurrentState", (uint8)state);
 	currentState = state;
 }

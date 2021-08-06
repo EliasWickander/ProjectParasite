@@ -41,6 +41,8 @@ public:
 
 	bool HasEliminatedAllEnemies();
 
+	void RemoveFromEnemiesAlive(AActor* enemyToRemove) {enemiesAlive.Remove(enemyToRemove);}
+
 
 private:
 	UFUNCTION()

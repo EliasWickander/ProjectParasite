@@ -10,6 +10,7 @@
 class UParasiteDebugComponent;
 class UStateMachine;
 class APawnEnemy;
+class AEliminationGamemode;
 UCLASS()
 class PROJECTPARASITE_API APawnParasite : public APawnBase
 {
@@ -119,4 +120,6 @@ private:
 	UPlayer_State_Possess* possessState;
 	
 	APawnEnemy* possessedEnemy = nullptr;
+
+	AEliminationGamemode* gameModeRef = nullptr;
 };

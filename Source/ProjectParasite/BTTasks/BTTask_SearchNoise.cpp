@@ -26,7 +26,7 @@ EBTNodeResult::Type UBTTask_SearchNoise::ExecuteTask(UBehaviorTreeComponent& Own
 
 	instanceMemory->ownerEnemy->SetMoveSpeed(instanceMemory->ownerEnemy->GetChaseSpeed());
 
-	UE_LOG(LogTemp, Warning, TEXT("%s start search noise"), *instanceMemory->ownerEnemy->GetName());
+	instanceMemory->ownerEnemy->OnSearchStart();
 	return EBTNodeResult::InProgress;
 }
 
@@ -76,6 +76,10 @@ void UBTTask_SearchNoise::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint
 	EBTNodeResult::Type TaskResult)
 {
 	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
+
+	BTTaskSearchNoiseMemory* instanceMemory = reinterpret_cast<BTTaskSearchNoiseMemory*>(NodeMemory);
+	
+	instanceMemory->ownerEnemy->OnSearchEnd();
 }
 
 uint16 UBTTask_SearchNoise::GetInstanceMemorySize() const

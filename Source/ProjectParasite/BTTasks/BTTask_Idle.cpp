@@ -24,8 +24,6 @@ EBTNodeResult::Type UBTTask_Idle::ExecuteTask(UBehaviorTreeComponent& OwnerComp,
 
 	instanceMemory->ownerAIController->ClearFocus(EAIFocusPriority::Gameplay);
 	instanceMemory->ownerAIController->StopMovement();
-
-	UE_LOG(LogTemp, Warning, TEXT("%s start patrolling"), *instanceMemory->ownerEnemy->GetName());
 	
 	return EBTNodeResult::InProgress;
 }
