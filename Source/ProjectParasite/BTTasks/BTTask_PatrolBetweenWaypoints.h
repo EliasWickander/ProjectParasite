@@ -14,6 +14,7 @@ struct BTTaskPatrolBetweenWaypointsMemory
 	FVector currentWaypoint = FVector::ZeroVector;
 	APawnEnemy* ownerEnemy = nullptr;
 	bool reachedGoalLastFrame = false;
+	bool finishedRotating = false;
 };
 
 UCLASS()

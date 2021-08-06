@@ -34,9 +34,11 @@ EBTNodeResult::Type UBTTask_PatrolBetweenWaypoints::ExecuteTask(UBehaviorTreeCom
 
 	instanceMemory->ownerEnemy->SetMoveSpeed(instanceMemory->ownerEnemy->GetPatrolSpeed());
 
+	instanceMemory->finishedRotating = false;
+	
 	SetupPatrolPoints(instanceMemory);
 	InitNextWaypoint(instanceMemory);
-
+	
 	return EBTNodeResult::InProgress;
 }
 
@@ -54,20 +56,34 @@ void UBTTask_PatrolBetweenWaypoints::TickTask(UBehaviorTreeComponent& OwnerComp,
 	}
 	
 	AAIControllerBase* AIController = instanceMemory->ownerEnemy->GetAIController();
-	
-	bool finishedRotating = SetFocalPointExtended(AIController, instanceMemory->currentWaypoint, ownerEnemy->GetTurnRate(), 0.2f);
 
-	if(finishedRotating)
+	if(!instanceMemory->finishedRotating)
 	{
-		AIController->MoveToLocation(instanceMemory->currentWaypoint, 20, false);
+		if(SetFocalPointExtended(AIController, instanceMemory->currentWaypoint, ownerEnemy->GetTurnRate(), 0.2f))
+		{
+			instanceMemory->finishedRotating = true;
+		}
+	}
+
+	if(instanceMemory->finishedRotating)
+	{
+		AIController->MoveToLocation(instanceMemory->currentWaypoint, 0, false);
+		
+		SetFocalPointExtended(AIController, instanceMemory->ownerEnemy->GetVelocity(), ownerEnemy->GetTurnRate(), 0.2f);
 		instanceMemory->reachedGoalLastFrame = false;
 	}
+
+	instanceMemory->currentWaypoint.Z = instanceMemory->ownerEnemy->GetActorLocation().Z;
+	FVector dirToTargetPoint = instanceMemory->currentWaypoint - instanceMemory->ownerEnemy->GetActorLocation();
+	
+	float distToTargetPoint = dirToTargetPoint.Size();
 	
 	//If enemy reached current waypoint, initialize next one in queue
-	if(AIController->GetPathFollowingComponent()->DidMoveReachGoal() && !instanceMemory->reachedGoalLastFrame)
+	if(distToTargetPoint <= 50 && !instanceMemory->reachedGoalLastFrame)
 	{
 		instanceMemory->patrolPointQueue->Enqueue(instanceMemory->currentWaypoint);
 		InitNextWaypoint(instanceMemory);
+		instanceMemory->finishedRotating = false;
 		instanceMemory->reachedGoalLastFrame = true;
 	}
 }
