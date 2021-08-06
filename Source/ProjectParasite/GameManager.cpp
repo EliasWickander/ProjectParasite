@@ -57,6 +57,7 @@ void UGameManager::BeginPlay()
 
 void UGameManager::Tick(float DeltaSeconds)
 {
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%i"), totalScoreHandler->totalScore));
 	if(beginPlayTriggered)
 	{
 		//Handle enemy transition after the first frame to prevent conflicts
@@ -244,7 +245,8 @@ int UGameManager::GetCurrentLevel()
 void UGameManager::OnLevelStart()
 {
 	levelTimer = 0;
-	totalScoreHandler = NewObject<UScoreHandler>();	
+	
+	totalScoreHandler = NewObject<UScoreHandler>();
 }
 
 void UGameManager::SetPaused(bool paused)

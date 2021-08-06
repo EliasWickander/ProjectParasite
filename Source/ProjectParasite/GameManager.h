@@ -46,6 +46,7 @@ public:
 	void Tick(float DeltaSeconds);
 
 	UScoreHandler* GetScoreHandler() { return totalScoreHandler; }
+	UScoreHandler* GetScoreHandlerFloor() { return scoreOnFloorStart; }
 	float GetLevelTimer() { return levelTimer; }
 	UFUNCTION(BlueprintCallable)
 	void OpenLevel(int level, int floor);

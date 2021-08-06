@@ -228,6 +228,6 @@ void APawnBase::ReportNoise(USoundBase* soundToPlay, float volume)
 
 void APawnBase::OnDeath(APawnBase* deadPawn, AActor* causerActor)
 {
-	
+	OnDied();
 }
 

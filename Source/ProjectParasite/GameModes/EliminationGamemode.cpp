@@ -92,7 +92,13 @@ void AEliminationGamemode::HandleWinCondition()
 
 			if(gameManagerRef->GetLevelTimer() < levelTimeLimit)
 			{
+				if(gameManagerRef->GetScoreHandler()->GetTotalScore() < 0)
+				{
+					gameManagerRef->GetScoreHandler()->Copy(gameManagerRef->GetScoreHandlerFloor());
+				}
+				
 				gameManagerRef->GetScoreHandler()->AddScore(UScoreHandler::TimeBonus, finishOnTimeScore);
+				
 			}
 				
 			gameManagerRef->OnFinishLevel();
