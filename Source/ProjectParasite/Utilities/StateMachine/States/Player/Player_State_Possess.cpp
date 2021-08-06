@@ -30,7 +30,6 @@ void UPlayer_State_Possess::Start()
 
 void UPlayer_State_Possess::Update()
 {
-	playerRef->RotateToMouseCursor();
 	HandlePossessionLoop();
 }
 
@@ -52,6 +51,7 @@ void UPlayer_State_Possess::HandlePossessionLoop()
 	case PossessState::PrePossess:
 		{
 			FVector napeLocation = possessedEnemy->GetNapeComponent()->GetComponentLocation();
+			FRotator napeRotation = possessedEnemy->GetNapeComponent()->GetComponentRotation();
 	
 			if(FVector::Dist(playerRef->GetActorLocation(), napeLocation) > 1 && !instantPossession)
 			{
@@ -63,10 +63,11 @@ void UPlayer_State_Possess::HandlePossessionLoop()
 				}
 			}
 			else
-			{
-				playerRef->SetActorLocation(napeLocation);
-				playerRef->SetActorRotation(possessedEnemy->GetActorForwardVector().Rotation());
+			{	
+				 playerRef->SetActorLocation(napeLocation);
+				 playerRef->SetActorRotation(napeRotation);
 
+				
 				//Parent nape to player to make sure player follows possessed enemy
 				playerRef->AttachToComponent(possessedEnemy->GetNapeComponent(), FAttachmentTransformRules::KeepWorldTransform);
 
@@ -90,6 +91,7 @@ void UPlayer_State_Possess::HandlePossessionLoop()
 		}
 	case PossessState::PostPossess:
 		{
+			playerRef->RotateToMouseCursor();
 			stateMachine->SetState("State_Dash");
 			// detachTimer = FMath::Clamp<float>(detachTimer += playerRef->detachLocationLerpSpeed * GetWorld()->GetDeltaSeconds(), 0, 1);
 			//
@@ -111,14 +113,15 @@ void UPlayer_State_Possess::MoveToEnemyNape()
 {
 	//Rotate and move player towards enemy nape
 	FVector napeLocation = possessedEnemy->GetNapeComponent()->GetComponentLocation();
-
+	FRotator napeRotation = possessedEnemy->GetNapeComponent()->GetComponentRotation();
+	
 	//TODO: Use linear interpolation instead of exponential
 	FVector lerpedPos = FMath::Lerp(playerRef->GetActorLocation(), napeLocation, playerRef->attachLocationLerpSpeed * playerRef->GetWorld()->DeltaTimeSeconds);
 
-	FRotator lerpedRot = FMath::Lerp(playerRef->GetActorRotation(), possessedEnemy->GetActorForwardVector().Rotation(), playerRef->attachRotationLerpSpeed * playerRef->GetWorld()->DeltaTimeSeconds);
+	FRotator lerpedRot = FMath::Lerp(playerRef->GetActorRotation(), napeRotation, playerRef->attachRotationLerpSpeed * playerRef->GetWorld()->DeltaTimeSeconds);
 			
 	playerRef->SetActorLocation(lerpedPos);
-	playerRef->SetActorRotation(lerpedRot);
+	//playerRef->SetActorRotation(lerpedRot);
 	
 }
 
@@ -126,5 +129,4 @@ void UPlayer_State_Possess::SetPossessedEnemy(APawnEnemy* enemy, bool instant)
 {
 	instantPossession = instant;
 	possessedEnemy = enemy;
-	int t = 1;
 }
