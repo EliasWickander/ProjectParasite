@@ -126,6 +126,7 @@ void APawnParasite::SetPossessed(APawnEnemy* actorToPossess)
 
 		gameModeRef->RemoveFromEnemiesAlive(actorToPossess);
 
+		gameModeRef->HandleWinCondition();
 		OnPossessedEnemy(actorToPossess);
 	}
 	else

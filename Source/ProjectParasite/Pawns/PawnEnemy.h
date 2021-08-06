@@ -83,6 +83,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnSearchEnd();
 	
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnChaseStart();
+	
 protected:
 	virtual void BeginPlay() override;
 

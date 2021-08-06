@@ -66,7 +66,6 @@ void UPlayer_State_Possess::HandlePossessionLoop()
 			{	
 				 playerRef->SetActorLocation(napeLocation);
 				 playerRef->SetActorRotation(napeRotation);
-
 				
 				//Parent nape to player to make sure player follows possessed enemy
 				playerRef->AttachToComponent(possessedEnemy->GetNapeComponent(), FAttachmentTransformRules::KeepWorldTransform);

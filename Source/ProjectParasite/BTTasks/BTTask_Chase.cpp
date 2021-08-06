@@ -46,7 +46,8 @@ EBTNodeResult::Type UBTTask_Chase::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 	
 	instanceMemory->ownerEnemy->SetMoveSpeed(instanceMemory->ownerEnemy->GetChaseSpeed());
 	instanceMemory->obstructed = false;
-	
+
+	instanceMemory->ownerEnemy->OnChaseStart();
 	return EBTNodeResult::InProgress;
 }
 

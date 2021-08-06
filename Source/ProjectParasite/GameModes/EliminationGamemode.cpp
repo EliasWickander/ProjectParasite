@@ -80,6 +80,26 @@ bool AEliminationGamemode::HasEliminatedAllEnemies()
 	return enemiesAlive.Num() <= 0;
 }
 
+void AEliminationGamemode::HandleWinCondition()
+{
+	if(HasEliminatedAllEnemies())
+	{
+		OnFloorFinished();
+
+		if(gameManagerRef->IsCurrentFloorLast())
+		{
+			gameManagerRef->ResetTransitionData();
+
+			if(gameManagerRef->GetLevelTimer() < levelTimeLimit)
+			{
+				gameManagerRef->GetScoreHandler()->AddScore(UScoreHandler::TimeBonus, finishOnTimeScore);
+			}
+				
+			gameManagerRef->OnFinishLevel();
+		}
+	}	
+}
+
 void AEliminationGamemode::OnEnemyDeath(APawnBase* deadEnemy, AActor* causerActor)
 {
 	Cast<APawnEnemy>(deadEnemy)->onStartDeathEvent.RemoveDynamic(this, &AEliminationGamemode::OnEnemyDeath);
@@ -120,22 +140,7 @@ void AEliminationGamemode::OnEnemyDeath(APawnBase* deadEnemy, AActor* causerActo
 			comboTimer = comboWindow;
 		}
 
-		 if(HasEliminatedAllEnemies())
-		 {
-			OnFloorFinished();
-
-			if(gameManagerRef->IsCurrentFloorLast())
-			{
-				gameManagerRef->ResetTransitionData();
-
-				if(gameManagerRef->GetLevelTimer() < levelTimeLimit)
-				{
-					gameManagerRef->GetScoreHandler()->AddScore(UScoreHandler::TimeBonus, finishOnTimeScore);
-				}
-				
-				gameManagerRef->OnFinishLevel();
-			}
-		}	
+		HandleWinCondition();
 	}
 	else
 	{
