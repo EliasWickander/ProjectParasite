@@ -25,18 +25,19 @@ public:
 
 	void AddScore(ScoreType type, float score);
 	void Copy(UScoreHandler* scoreHandler);
+	int GetTotalScore() { return totalScore; }
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	int lethalityScore;
+	int lethalityScore = 0;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	int comboScore;
+	int comboScore = 0;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	int timeBonusScore;
+	int timeBonusScore = 0;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	int totalScore;
+	int totalScore = 0;
 	
 };

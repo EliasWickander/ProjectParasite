@@ -54,6 +54,9 @@ public:
 
 	UFUNCTION()
 	virtual void OnDeath(APawnBase* deadPawn, AActor* causerActor);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnDied();
 	
 	UFUNCTION()
 	virtual void OnTakeDamage(AActor* damagedActor, float damage, const UDamageType* damageType, AController* causerController, AActor* causerActor);

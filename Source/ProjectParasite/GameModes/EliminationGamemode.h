@@ -41,6 +41,7 @@ public:
 
 	bool HasEliminatedAllEnemies();
 
+	void HandleWinCondition();
 	void RemoveFromEnemiesAlive(AActor* enemyToRemove) {enemiesAlive.Remove(enemyToRemove);}
 
 
